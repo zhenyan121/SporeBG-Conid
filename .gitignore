@@ -1,0 +1,86 @@
+# --- 构建系统 (CMake) 生成物 ---
+# CMake 生成的构建系统和缓存文件
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+Makefile
+CTestTestfile.cmake
+compile_commands.json # 此文件有时可保留以辅助代码分析，若需忽略请取消注释
+
+# CMake 的构建输出目录（常见命名）
+build/
+Build/
+cmake-build-*/
+out/
+install/
+_deps/ # CMake 自动下载的依赖项目录
+
+# --- 编译输出和可执行文件 ---
+# 编译产生的中间文件和最终产物
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# 预编译头文件
+*.gch
+*.pch
+
+# 依赖文件
+*.d
+
+# --- 集成开发环境 (IDE) 配置 ---
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.sln
+*.vcxproj*
+*.vcxproj.user
+*.suo
+*.sdf
+*.ipch
+*.VC.db
+
+# CLion
+.idea/
+cmake-build-*/
+*.iws
+
+# 其他通用临时文件
+*~
+
+# --- 操作系统特定文件 ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# --- 项目资源与配置（请谨慎选择） ---
+# 如果你的 assets 目录包含需要编译生成的资源，可以按模式忽略。
+# 但如果全是原始资源（图片、声音），则不应忽略。
+# assets/generated/ # 示例：假设有存放生成资源的子目录
+
+# 本地或敏感配置文件（示例，请根据实际情况调整）
+*.local
+.env
+.env.local
