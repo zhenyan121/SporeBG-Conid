@@ -15,7 +15,7 @@ ninja
 ChessGame/
 ├── src/
 │   ├── core/                 # 核心游戏逻辑
-│   │   ├── Game.h/cpp        # 游戏主循环和状态管理
+│   │   ├── Game.h/cpp        # 游戏核心管理
 │   │   ├── Board.h/cpp       # 棋盘逻辑和规则实现
 │   │   ├── Piece.h/cpp       # 棋子基类和具体棋子实现
 │   │   └── Rules.h/cpp       # 游戏规则验证
@@ -31,7 +31,7 @@ ChessGame/
 │   │   ├── Renderer.h/cpp    # 渲染器(SDL3)
 │   │   ├── UIComponents.h/cpp 
 │   │   └── MenuSystem.h/cpp  
-│   ├── input/                # ← 新增：输入处理模块（键盘、鼠标等）
+│   ├── input/                # ← 输入处理模块（键盘、鼠标等）
 │   │   ├── InputManager.h/cpp
 │   ├── utils/                # 工具类
 │   │   ├── Logger.h/cpp      
@@ -47,4 +47,4 @@ ChessGame/
 ```
 
 ## 一些想说的
-这是我第一次用cpp写的项目，想写个比较完整的出来，但是遇到了一堆问题，只能说`路漫漫其修远兮，吾将上下而求索`，如果你有好的建议也是可以提出来的
+这是我第一次用cpp写的项目，想写个比较完整的出来，但是遇到了一堆问题，只能说**路漫漫其修远兮，吾将上下而求索**，如果你有好的建议也是可以提出来的

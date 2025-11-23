@@ -15,9 +15,7 @@ add_subdirectory(third_party/SDL3)
 set(SOURCE_FILES
     src/main.cpp
     src/core/Game.cpp
-    src/core/Game.h
     src/ui/Render.cpp
-    src/ui/Render.h
 )
 
 # 添加可执行文件

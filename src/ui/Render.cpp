@@ -51,3 +51,8 @@ void Renderer::Renderhello() {
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
     SDL_RenderPresent(m_renderer);
 }
+
+
+void Renderer::render() {
+    Renderhello();
+}
