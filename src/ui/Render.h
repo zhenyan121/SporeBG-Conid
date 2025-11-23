@@ -13,6 +13,7 @@ public:
     Renderer(int WIDTH, int HEIGHT);  
     Renderer();
     ~Renderer();
+    void render();
     bool initialize();
     void Renderhello();
 };
