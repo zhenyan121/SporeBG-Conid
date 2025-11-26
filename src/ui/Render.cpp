@@ -1,10 +1,10 @@
 #include "Render.h"
 
-Renderer::Renderer(int WIDTH, int HEIGHT) : Width(WIDTH), Height(HEIGHT) {
+Renderer::Renderer(int WIDTH, int HEIGHT) : m_Width(WIDTH), m_Height(HEIGHT) {
     
 }
 
-Renderer::Renderer() : Width(1600), Height(900) {
+Renderer::Renderer() : m_Width(1600), m_Height(900) {
 
 }
 
@@ -17,8 +17,8 @@ bool Renderer::initialize() {
     // 创建窗口（支持高DPI和横屏）[3,4](@ref)
     m_window = SDL_CreateWindow(
     "孢子棋",                          // 窗口标题，显示在标题栏上         
-    Width,                    // 窗口的逻辑宽度（例如 800），用于统一布局，不受屏幕 DPI 影响
-    Height,                   // 窗口的逻辑高度（例如 600）
+    m_Width,                    // 窗口的逻辑宽度（例如 800），用于统一布局，不受屏幕 DPI 影响
+    m_Height,                   // 窗口的逻辑高度（例如 600）
     SDL_WINDOW_HIGH_PIXEL_DENSITY |   // 启用高像素密度支持（HiDPI/Retina），确保在高分屏上画面清晰
     SDL_WINDOW_RESIZABLE              // 允许用户调整窗口大小（可拉伸）
 );
@@ -38,10 +38,10 @@ bool Renderer::initialize() {
     
     // 设置逻辑呈现模式，实现分辨率自适应[3](@ref)
     SDL_SetRenderLogicalPresentation(m_renderer,
-                                    Width,
-                                    Height,
+                                    m_Width,
+                                    m_Height,
                                     SDL_LOGICAL_PRESENTATION_LETTERBOX);
-    SDL_SetWindowSize(m_window, Width, Height);
+    SDL_SetWindowSize(m_window, m_Width, m_Height);
     return true;
 }
 

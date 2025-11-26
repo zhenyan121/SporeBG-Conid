@@ -7,8 +7,8 @@ class Renderer
 private:
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr; 
-    int Width;
-    int Height;
+    int m_Width;
+    int m_Height;
 public:
     Renderer(int WIDTH, int HEIGHT);  
     Renderer();
