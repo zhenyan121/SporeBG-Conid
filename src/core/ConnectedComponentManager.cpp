@@ -98,7 +98,7 @@ bool ConnectedComponentManager::disconnectFromComponent(int pieceId) {
 
 void ConnectedComponentManager::recomputeComponentsAfterDisconnection(int disconnectedPiece) {
     int oldComponentId = find(disconnectedPiece);
-    if (oldComponentId = -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
+    if (oldComponentId == -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
         return;
     }
 
@@ -182,17 +182,17 @@ int ConnectedComponentManager::createNewComponent(int rootPiece) {
 }
 
 void ConnectedComponentManager::selectComponentByPiece(int pieceId) {
-    m_slelectedComponentId = find(pieceId);
+    m_selectedComponentId = find(pieceId);
 }
 
 const std::unordered_set<int>& ConnectedComponentManager::getSelectedComponent() const {
     static std::unordered_set<int> emptySet;
-    if (m_slelectedComponentId == -1 ||
-        m_componentPieces.find(m_slelectedComponentId) == m_componentPieces.end()) {
+    if (m_selectedComponentId == -1 ||
+        m_componentPieces.find(m_selectedComponentId) == m_componentPieces.end()) {
 
             return emptySet;
         }
-    return m_componentPieces.at(m_slelectedComponentId);
+    return m_componentPieces.at(m_selectedComponentId);
 }
 
 int ConnectedComponentManager::getComponentId(int pieceId) const {
@@ -226,7 +226,7 @@ bool ConnectedComponentManager::areDirectlyConnected(int pieceId1, int pieceId2)
 }
 
 void ConnectedComponentManager::clearSelection() {
-    m_slelectedComponentId = -1;
+    m_selectedComponentId = -1;
 }
 
 std:: unordered_map<int, std::unordered_set<int>> ConnectedComponentManager::getAllComponents() const {

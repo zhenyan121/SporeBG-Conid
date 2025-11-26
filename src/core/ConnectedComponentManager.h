@@ -18,7 +18,7 @@ private:
     // 棋子ID到组件ID的映射
     std::unordered_map<int, int> m_pieceToComponent;
     // 当前选中的组件ID
-    int m_slelectedComponentId = -1;
+    int m_selectedComponentId = -1;
     // 总棋子数
     int m_totalPieces;
 
