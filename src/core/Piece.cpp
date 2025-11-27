@@ -1,6 +1,6 @@
 #include "Piece.h"
 
-Piece::Piece(PlayerColer color) : m_color(color) {
+Piece::Piece(PlayerID ID) : m_owner(ID) {
 
 }
 
@@ -8,6 +8,6 @@ Piece::~Piece() {
 
 }
 
-PlayerColer Piece::getPlayerColor() const {
-    return m_color;
+PlayerID Piece::getPieceOwner() const {
+    return m_owner;
 }

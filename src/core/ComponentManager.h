@@ -5,7 +5,7 @@
 #include <queue>
 #include <memory>
 
-class ConnectedComponentManager {
+class ComponentManager {
 private:
     // 并查集的父节点数组，使用连续内存存储
     std::vector<int> m_parent;
@@ -35,7 +35,7 @@ private:
 
 public:
     // 构造函数：初始化指定数量的棋子
-    explicit ConnectedComponentManager(int numPieces);
+    explicit ComponentManager(int numPieces);
     // 查找操作（带路径压缩）
     int find(int pieceId);
     // 合并两个棋子所在的组件（按秩合并）

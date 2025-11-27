@@ -4,7 +4,7 @@
 
 Game::Game()         
 {
-
+    m_board = std::make_unique<Board>();
 }
 
 
@@ -19,12 +19,15 @@ void Game::cleanup() {
 
 
 bool Game::initialize() {
-    
+    // 初始化游戏特定资源（棋盘、棋子等）
+    if (!m_board->initialize()) {
+        return false;
+    }
     
 
    
     
-    // 初始化游戏特定资源（棋盘、棋子等）
+    
     // ...
     return true;
 }

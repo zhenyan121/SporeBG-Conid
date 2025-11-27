@@ -1,6 +1,6 @@
-#include "ConnectedComponentManager.h"
+#include "ComponentManager.h"
 
-ConnectedComponentManager::ConnectedComponentManager(int numPieces)
+ComponentManager::ComponentManager(int numPieces)
     : m_totalPieces(numPieces) {
     //初始化数组大小 ROWS * COLS
     m_parent.resize(numPieces);
@@ -14,14 +14,14 @@ ConnectedComponentManager::ConnectedComponentManager(int numPieces)
     }
 }
 
-int ConnectedComponentManager::find(int pieceId) {
+int ComponentManager::find(int pieceId) {
     if (m_parent[pieceId] != pieceId) {
         m_parent[pieceId] = find(m_parent[pieceId]);
     }
     return m_parent[pieceId];
 }
 
-void ConnectedComponentManager::unite(int pieceId1, int pieceId2) {
+void ComponentManager::unite(int pieceId1, int pieceId2) {
     int root1 = find(pieceId1);
     int root2 = find(pieceId2);
 
@@ -49,14 +49,14 @@ void ConnectedComponentManager::unite(int pieceId1, int pieceId2) {
     addConnection(pieceId1, pieceId2);
 }
 
-void ConnectedComponentManager::addConnection(int pieceId1, int pieceId2) {
+void ComponentManager::addConnection(int pieceId1, int pieceId2) {
     //将元素放入邻接表
     m_adjacentList[pieceId1].insert(pieceId2);
     m_adjacentList[pieceId2].insert(pieceId1);
 
 }
 
-bool ConnectedComponentManager::disconnectFromNeighbor(int pieceId, int neighborId){
+bool ComponentManager::disconnectFromNeighbor(int pieceId, int neighborId){
     // 检查是否真的相连
     if (!areDirectlyConnected(pieceId, neighborId)) {
         return false;
@@ -70,7 +70,7 @@ bool ConnectedComponentManager::disconnectFromNeighbor(int pieceId, int neighbor
     return true;
 }
 
-bool ConnectedComponentManager::disconnectFromComponent(int pieceId) {
+bool ComponentManager::disconnectFromComponent(int pieceId) {
     int oldComponentId = find(pieceId);
     if (oldComponentId == -1) return false;
 
@@ -96,7 +96,7 @@ bool ConnectedComponentManager::disconnectFromComponent(int pieceId) {
     return true;
 }
 
-void ConnectedComponentManager::recomputeComponentsAfterDisconnection(int disconnectedPiece) {
+void ComponentManager::recomputeComponentsAfterDisconnection(int disconnectedPiece) {
     int oldComponentId = find(disconnectedPiece);
     if (oldComponentId == -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
         return;
@@ -110,7 +110,7 @@ void ConnectedComponentManager::recomputeComponentsAfterDisconnection(int discon
     handleComponentSplit(oldComponentId, remainingPieces);
 }
 
-void ConnectedComponentManager::handleComponentSplit(int oldComponentId, const std:: unordered_set<int>& remainingPieces ) {
+void ComponentManager::handleComponentSplit(int oldComponentId, const std:: unordered_set<int>& remainingPieces ) {
     std::unordered_set<int> visited;
     std::vector<std::unordered_set<int>> newComponents;
     
@@ -148,7 +148,7 @@ void ConnectedComponentManager::handleComponentSplit(int oldComponentId, const s
 }
 
 
-std::unordered_set<int> ConnectedComponentManager::bfsConnectedRegion(int startPiece, const std::unordered_set<int>& availablepieces) {
+std::unordered_set<int> ComponentManager::bfsConnectedRegion(int startPiece, const std::unordered_set<int>& availablepieces) {
     std::unordered_set<int> connectedRegion;
     std::queue<int> queue;
 
@@ -173,7 +173,7 @@ std::unordered_set<int> ConnectedComponentManager::bfsConnectedRegion(int startP
     return connectedRegion;
 }
 
-int ConnectedComponentManager::createNewComponent(int rootPiece) {
+int ComponentManager::createNewComponent(int rootPiece) {
     m_parent[rootPiece] = rootPiece;
     m_rank[rootPiece] = 0;
     m_componentPieces[rootPiece] = {rootPiece};
@@ -181,11 +181,11 @@ int ConnectedComponentManager::createNewComponent(int rootPiece) {
     return rootPiece;
 }
 
-void ConnectedComponentManager::selectComponentByPiece(int pieceId) {
+void ComponentManager::selectComponentByPiece(int pieceId) {
     m_selectedComponentId = find(pieceId);
 }
 
-const std::unordered_set<int>& ConnectedComponentManager::getSelectedComponent() const {
+const std::unordered_set<int>& ComponentManager::getSelectedComponent() const {
     static std::unordered_set<int> emptySet;
     if (m_selectedComponentId == -1 ||
         m_componentPieces.find(m_selectedComponentId) == m_componentPieces.end()) {
@@ -195,29 +195,29 @@ const std::unordered_set<int>& ConnectedComponentManager::getSelectedComponent()
     return m_componentPieces.at(m_selectedComponentId);
 }
 
-int ConnectedComponentManager::getComponentId(int pieceId) const {
+int ComponentManager::getComponentId(int pieceId) const {
     auto it = m_pieceToComponent.find(pieceId);
     return (it != m_pieceToComponent.end()) ? it->second : -1;
 }
 
-const std::unordered_set<int>& ConnectedComponentManager::getPiecesInComponent(int componentId) const {
+const std::unordered_set<int>& ComponentManager::getPiecesInComponent(int componentId) const {
     static std::unordered_set<int> emptySet;
     auto it = m_componentPieces.find(componentId);
 
     return (it != m_componentPieces.end()) ? it->second : emptySet;
 }
 
-bool ConnectedComponentManager::areConnected(int pieceId1, int pieceId2) {
+bool ComponentManager::areConnected(int pieceId1, int pieceId2) {
     return find(pieceId1) == find(pieceId2);
 }
 
-const std::unordered_set<int>& ConnectedComponentManager::getPieceConnections(int pieceId) const {
+const std::unordered_set<int>& ComponentManager::getPieceConnections(int pieceId) const {
     static std::unordered_set<int> emptySet;
     if (pieceId < 0 || pieceId >= m_totalPieces) return emptySet;
     return m_adjacentList[pieceId];
 }
 
-bool ConnectedComponentManager::areDirectlyConnected(int pieceId1, int pieceId2) const {
+bool ComponentManager::areDirectlyConnected(int pieceId1, int pieceId2) const {
     if (pieceId1 < 0 || pieceId1 >= m_totalPieces || 
         pieceId2 < 0 || pieceId2 >= m_totalPieces) {
         return false;
@@ -225,11 +225,11 @@ bool ConnectedComponentManager::areDirectlyConnected(int pieceId1, int pieceId2)
     return m_adjacentList[pieceId1].find(pieceId2) != m_adjacentList[pieceId1].end();
 }
 
-void ConnectedComponentManager::clearSelection() {
+void ComponentManager::clearSelection() {
     m_selectedComponentId = -1;
 }
 
-std:: unordered_map<int, std::unordered_set<int>> ConnectedComponentManager::getAllComponents() const {
+std:: unordered_map<int, std::unordered_set<int>> ComponentManager::getAllComponents() const {
     return m_componentPieces;
 }
 
