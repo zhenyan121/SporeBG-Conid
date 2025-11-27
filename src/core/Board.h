@@ -1,5 +1,6 @@
 #pragma once
 #include "Piece.h"
+#include "ComponentManager.h"
 #include <memory>
 #include <vector>
 // 用 (row, col) 表示坐标，0-based
@@ -14,11 +15,15 @@ struct Position {
 
 class Board {
 private:
-    std::vector<std::vector<std::unique_ptr<Piece>>> m_grid;
+    //使用一维数组表示棋盘
+    std::vector<std::unique_ptr<Piece>> m_grid;
+    std::unique_ptr<ComponentManager> m_component;
     const int m_rows;
     const int m_cols;
 public:
     Board(int rows, int cols);
     ~Board();
-
+    const int getIndex(int row, int col);
+    std::unique_ptr<Piece>& at(int row, int col);
+    bool initialize();
 };

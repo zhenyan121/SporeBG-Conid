@@ -1,18 +1,18 @@
 #pragma once
 
-enum class PlayerColer {
-    WHITE,
-    BLACK
+enum class PlayerID {
+    P1,
+    P2
 };
 
 
 class Piece {
 private:
-    PlayerColer m_color;
+    PlayerID m_owner;
 public:
-    Piece(PlayerColer color);
+    Piece(PlayerID ID);
     ~Piece();
-    PlayerColer getPlayerColor() const;
+    PlayerID getPieceOwner() const;
         
     
 };

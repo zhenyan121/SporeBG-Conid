@@ -2,14 +2,14 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <memory>
-//#include "Board.h"
+#include "Board.h"
 
 
 
 
 class Game {
 private:
-    
+    std::unique_ptr<Board> m_board;
     
     
     
