@@ -1,6 +1,7 @@
 #pragma once
 #include "Piece.h"
 #include "ComponentManager.h"
+#include "Rule.h"
 #include <memory>
 #include <vector>
 // 用 (row, col) 表示坐标，0-based
@@ -17,6 +18,7 @@ class Board {
 private:
     //使用一维数组表示棋盘
     std::vector<std::unique_ptr<Piece>> m_grid;
+    // 连接片管理
     std::unique_ptr<ComponentManager> m_component;
     const int m_rows;
     const int m_cols;
@@ -26,4 +28,6 @@ public:
     const int getIndex(int row, int col);
     std::unique_ptr<Piece>& at(int row, int col);
     bool initialize();
+    // 放置棋子
+    void placePieceAt(int row, int col, PlayerID ID);
 };

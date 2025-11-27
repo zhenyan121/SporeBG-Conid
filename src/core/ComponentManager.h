@@ -18,14 +18,14 @@ private:
     // 棋子ID到组件ID的映射
     std::unordered_map<int, int> m_pieceToComponent;
     // 当前选中的组件ID
-    int m_selectedComponentId = -1;
+    int m_selectedComponentID = -1;
     // 总棋子数
-    int m_totalPieces;
+    int m_maxPossiblePieces;
 
     // 重新计算连通性（断开后调用）
     void recomputeComponentsAfterDisconnection(int disconnectedPiece);
     // 处理组件分裂
-    void handleComponentSplit(int oldComponentId, const std::unordered_set<int>& affectedPieces);
+    void handleComponentSplit(int oldComponentID, const std::unordered_set<int>& affectedPieces);
 
     // 使用BFS查找连通区域
     std::unordered_set<int> bfsConnectedRegion(int startPiece, const std::unordered_set<int>& afftedPieces);
@@ -35,31 +35,33 @@ private:
 
 public:
     // 构造函数：初始化指定数量的棋子
-    explicit ComponentManager(int numPieces);
+    explicit ComponentManager(int maxPossiblePieces);
+    //添加棋子
+    void addPiece(int PieceID, const std::vector<int>& adjacentPiece);
     // 查找操作（带路径压缩）
-    int find(int pieceId);
+    int find(int pieceID);
     // 合并两个棋子所在的组件（按秩合并）
-    void unite(int pieceId1, int pieceId2);
+    void unite(int pieceID1, int pieceID2);
     // 连接两个组件
-    void addConnection(int pieceId1, int pieceId2);
+    void addConnection(int pieceID1, int pieceID2);
     // 断开棋子与指定邻居的连接
-    bool disconnectFromNeighbor(int pieceId, int neighborId);
+    bool disconnectFromNeighbor(int pieceID, int neighborID);
     // 将棋子完全从当前组件断开，成为独立组件
-    bool disconnectFromComponent(int pieceId);
+    bool disconnectFromComponent(int pieceID);
     // 通过棋子选择整个连通片
-    void selectComponentByPiece(int pieceId);
+    void selectComponentByPiece(int pieceID);
     // 获取当前选中的组件中的所有棋子
     const std::unordered_set<int>& getSelectedComponent() const;
     // 获取棋子所属的组件ID
-    int getComponentId(int pieceId) const;
+    int getComponentID(int pieceID) const;
     // 获取组件内所有棋子
-    const std::unordered_set<int>& getPiecesInComponent(int pieceId) const;
+    const std::unordered_set<int>& getPiecesInComponent(int pieceID) const;
     // 检查两个棋子是否在同一个组件中
-    bool areConnected(int pieceId1, int pieceId2);
+    bool areConnected(int pieceID1, int pieceID2);
     // 获取棋子的所有直接连接
-    const std::unordered_set<int>& getPieceConnections(int pieceId) const;
+    const std::unordered_set<int>& getPieceConnections(int pieceID) const;
     // 检查两个棋子是否直接相连
-    bool areDirectlyConnected(int pieceId1, int pieceId2) const;
+    bool areDirectlyConnected(int pieceID1, int pieceID2) const;
     // 清除选中状态
     void clearSelection();
 
