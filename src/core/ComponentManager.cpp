@@ -1,29 +1,44 @@
 #include "ComponentManager.h"
 
-ComponentManager::ComponentManager(int numPieces)
-    : m_totalPieces(numPieces) {
+ComponentManager::ComponentManager(int maxPossiblePieces)
+    : m_maxPossiblePieces(maxPossiblePieces) {
     //初始化数组大小 ROWS * COLS
-    m_parent.resize(numPieces);
-    m_rank.resize(numPieces, 0);
-    m_adjacentList.resize(numPieces);
-    //初始化每个棋子为独立组件
-    for (int i = 0; i < numPieces; i++) {
-        m_parent[i] = i;
-        m_componentPieces[i] = {i}; //每个组件初始包含一个棋子
-        m_pieceToComponent[i] = i; //棋子指向的组件
-    }
+    m_parent.resize(maxPossiblePieces, -1); // -1表示无棋子
+    m_rank.resize(maxPossiblePieces, 0);
+    m_adjacentList.resize(maxPossiblePieces);
+    
 }
 
-int ComponentManager::find(int pieceId) {
-    if (m_parent[pieceId] != pieceId) {
-        m_parent[pieceId] = find(m_parent[pieceId]);
+void ComponentManager::addPiece(int PieceID, const std::vector<int>& adjacentPiece) {
+    if (PieceID < 0 || PieceID >= m_maxPossiblePieces) return;
+    if (m_parent[PieceID] == -1) return; // 已存在
+
+    m_parent[PieceID] = PieceID;
+    m_rank[PieceID] = PieceID;
+    m_componentPieces[PieceID] = {PieceID};
+    m_pieceToComponent[PieceID] = PieceID;
+
+    for (int neighbor : adjacentPiece) {
+        if (neighbor < 0 || neighbor >= m_maxPossiblePieces || m_parent[neighbor] == -1)
+            continue; // 邻居无效或不存在
+        // 合并连通组件（unite 会自动处理是否已在同一组件）
+        unite(PieceID, neighbor);
+
+        addConnection(PieceID, neighbor);
     }
-    return m_parent[pieceId];
+
 }
 
-void ComponentManager::unite(int pieceId1, int pieceId2) {
-    int root1 = find(pieceId1);
-    int root2 = find(pieceId2);
+int ComponentManager::find(int pieceID) {
+    if (m_parent[pieceID] != pieceID) {
+        m_parent[pieceID] = find(m_parent[pieceID]);
+    }
+    return m_parent[pieceID];
+}
+
+void ComponentManager::unite(int pieceID1, int pieceID2) {
+    int root1 = find(pieceID1);
+    int root2 = find(pieceID2);
 
     if (root1 == root2) {
         return;
@@ -46,71 +61,71 @@ void ComponentManager::unite(int pieceId1, int pieceId2) {
             m_pieceToComponent[piece] = root1;
         }
     }
-    addConnection(pieceId1, pieceId2);
+    addConnection(pieceID1, pieceID2);
 }
 
-void ComponentManager::addConnection(int pieceId1, int pieceId2) {
+void ComponentManager::addConnection(int pieceID1, int pieceID2) {
     //将元素放入邻接表
-    m_adjacentList[pieceId1].insert(pieceId2);
-    m_adjacentList[pieceId2].insert(pieceId1);
+    m_adjacentList[pieceID1].insert(pieceID2);
+    m_adjacentList[pieceID2].insert(pieceID1);
 
 }
 
-bool ComponentManager::disconnectFromNeighbor(int pieceId, int neighborId){
+bool ComponentManager::disconnectFromNeighbor(int pieceID, int neighborID){
     // 检查是否真的相连
-    if (!areDirectlyConnected(pieceId, neighborId)) {
+    if (!areDirectlyConnected(pieceID, neighborID)) {
         return false;
     }
     // 从邻接表中移除连接
-    m_adjacentList[pieceId].erase(neighborId);
-    m_adjacentList[neighborId].erase(pieceId);
+    m_adjacentList[pieceID].erase(neighborID);
+    m_adjacentList[neighborID].erase(pieceID);
     // 重新计算连通性
-    recomputeComponentsAfterDisconnection(pieceId);
+    recomputeComponentsAfterDisconnection(pieceID);
 
     return true;
 }
 
-bool ComponentManager::disconnectFromComponent(int pieceId) {
-    int oldComponentId = find(pieceId);
-    if (oldComponentId == -1) return false;
+bool ComponentManager::disconnectFromComponent(int pieceID) {
+    int oldComponentID = find(pieceID);
+    if (oldComponentID == -1) return false;
 
     // 记录所有直接连接
-    auto neighbors = m_adjacentList[pieceId];
+    auto neighbors = m_adjacentList[pieceID];
 
     // 断开所有连接
-    for (int neighborId : neighbors) {
-    m_adjacentList[pieceId].erase(neighborId);
-    m_adjacentList[neighborId].erase(pieceId);
+    for (int neighborID : neighbors) {
+    m_adjacentList[pieceID].erase(neighborID);
+    m_adjacentList[neighborID].erase(pieceID);
     }
 
     // 将被断开的棋子设为独立组件
-    m_parent[pieceId] = pieceId;
-    m_rank[pieceId] = 0;
-    m_componentPieces[pieceId] = {pieceId};
-    m_pieceToComponent[pieceId] = pieceId;
+    m_parent[pieceID] = pieceID;
+    m_rank[pieceID] = 0;
+    m_componentPieces[pieceID] = {pieceID};
+    m_pieceToComponent[pieceID] = pieceID;
 
     // 如果原组件还有其他棋子，需要重新计算连通性
     if (!neighbors.empty()) {
-    recomputeComponentsAfterDisconnection(pieceId);
+    recomputeComponentsAfterDisconnection(pieceID);
     }
     return true;
 }
 
 void ComponentManager::recomputeComponentsAfterDisconnection(int disconnectedPiece) {
-    int oldComponentId = find(disconnectedPiece);
-    if (oldComponentId == -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
+    int oldComponentID = find(disconnectedPiece);
+    if (oldComponentID == -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
         return;
     }
 
     // 获取原组件中除断开棋子外的所有棋子
-    std::unordered_set<int> remainingPieces = m_componentPieces[oldComponentId];
+    std::unordered_set<int> remainingPieces = m_componentPieces[oldComponentID];
     remainingPieces.erase(disconnectedPiece);
 
     //处理组件分裂
-    handleComponentSplit(oldComponentId, remainingPieces);
+    handleComponentSplit(oldComponentID, remainingPieces);
 }
 
-void ComponentManager::handleComponentSplit(int oldComponentId, const std:: unordered_set<int>& remainingPieces ) {
+void ComponentManager::handleComponentSplit(int oldComponentID, const std:: unordered_set<int>& remainingPieces ) {
     std::unordered_set<int> visited;
     std::vector<std::unordered_set<int>> newComponents;
     
@@ -128,7 +143,7 @@ void ComponentManager::handleComponentSplit(int oldComponentId, const std:: unor
         newComponents.push_back(connectedRegion);
     }
     // 删除原组件
-    m_componentPieces.erase(oldComponentId);
+    m_componentPieces.erase(oldComponentID);
 
     // 为每个新连通区域创建组件
     for (const auto& region : newComponents) {
@@ -181,52 +196,52 @@ int ComponentManager::createNewComponent(int rootPiece) {
     return rootPiece;
 }
 
-void ComponentManager::selectComponentByPiece(int pieceId) {
-    m_selectedComponentId = find(pieceId);
+void ComponentManager::selectComponentByPiece(int pieceID) {
+    m_selectedComponentID = find(pieceID);
 }
 
 const std::unordered_set<int>& ComponentManager::getSelectedComponent() const {
     static std::unordered_set<int> emptySet;
-    if (m_selectedComponentId == -1 ||
-        m_componentPieces.find(m_selectedComponentId) == m_componentPieces.end()) {
+    if (m_selectedComponentID == -1 ||
+        m_componentPieces.find(m_selectedComponentID) == m_componentPieces.end()) {
 
             return emptySet;
         }
-    return m_componentPieces.at(m_selectedComponentId);
+    return m_componentPieces.at(m_selectedComponentID);
 }
 
-int ComponentManager::getComponentId(int pieceId) const {
-    auto it = m_pieceToComponent.find(pieceId);
+int ComponentManager::getComponentID(int pieceID) const {
+    auto it = m_pieceToComponent.find(pieceID);
     return (it != m_pieceToComponent.end()) ? it->second : -1;
 }
 
-const std::unordered_set<int>& ComponentManager::getPiecesInComponent(int componentId) const {
+const std::unordered_set<int>& ComponentManager::getPiecesInComponent(int componentID) const {
     static std::unordered_set<int> emptySet;
-    auto it = m_componentPieces.find(componentId);
+    auto it = m_componentPieces.find(componentID);
 
     return (it != m_componentPieces.end()) ? it->second : emptySet;
 }
 
-bool ComponentManager::areConnected(int pieceId1, int pieceId2) {
-    return find(pieceId1) == find(pieceId2);
+bool ComponentManager::areConnected(int pieceID1, int pieceID2) {
+    return find(pieceID1) == find(pieceID2);
 }
 
-const std::unordered_set<int>& ComponentManager::getPieceConnections(int pieceId) const {
+const std::unordered_set<int>& ComponentManager::getPieceConnections(int pieceID) const {
     static std::unordered_set<int> emptySet;
-    if (pieceId < 0 || pieceId >= m_totalPieces) return emptySet;
-    return m_adjacentList[pieceId];
+    if (pieceID < 0 || pieceID >= m_maxPossiblePieces) return emptySet;
+    return m_adjacentList[pieceID];
 }
 
-bool ComponentManager::areDirectlyConnected(int pieceId1, int pieceId2) const {
-    if (pieceId1 < 0 || pieceId1 >= m_totalPieces || 
-        pieceId2 < 0 || pieceId2 >= m_totalPieces) {
+bool ComponentManager::areDirectlyConnected(int pieceID1, int pieceID2) const {
+    if (pieceID1 < 0 || pieceID1 >= m_maxPossiblePieces || 
+        pieceID2 < 0 || pieceID2 >= m_maxPossiblePieces) {
         return false;
     }
-    return m_adjacentList[pieceId1].find(pieceId2) != m_adjacentList[pieceId1].end();
+    return m_adjacentList[pieceID1].find(pieceID2) != m_adjacentList[pieceID1].end();
 }
 
 void ComponentManager::clearSelection() {
-    m_selectedComponentId = -1;
+    m_selectedComponentID = -1;
 }
 
 std:: unordered_map<int, std::unordered_set<int>> ComponentManager::getAllComponents() const {

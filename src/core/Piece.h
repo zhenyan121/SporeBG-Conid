@@ -1,9 +1,5 @@
 #pragma once
-
-enum class PlayerID {
-    P1,
-    P2
-};
+#include "GameTypes.h"
 
 
 class Piece {
