@@ -11,10 +11,10 @@ ComponentManager::ComponentManager(int maxPossiblePieces)
 
 void ComponentManager::addPiece(int PieceID, const std::vector<int>& adjacentPiece) {
     if (PieceID < 0 || PieceID >= m_maxPossiblePieces) return;
-    if (m_parent[PieceID] == -1) return; // 已存在
+    if (m_parent[PieceID] != -1) return; // 已存在
 
     m_parent[PieceID] = PieceID;
-    m_rank[PieceID] = PieceID;
+    m_rank[PieceID] = 0;
     m_componentPieces[PieceID] = {PieceID};
     m_pieceToComponent[PieceID] = PieceID;
 
@@ -24,10 +24,19 @@ void ComponentManager::addPiece(int PieceID, const std::vector<int>& adjacentPie
         // 合并连通组件（unite 会自动处理是否已在同一组件）
         unite(PieceID, neighbor);
 
-        addConnection(PieceID, neighbor);
+        
     }
 
 }
+
+void ComponentManager::removePiece(int PieceID) {
+    disconnectFromComponent(PieceID);
+    m_parent[PieceID] = -1;
+    //m_rank[PieceID] = 0; 重复设置了
+    //m_componentPieces.erase(PieceID);
+    
+}
+
 
 int ComponentManager::find(int pieceID) {
     if (m_parent[pieceID] != pieceID) {
@@ -70,7 +79,7 @@ void ComponentManager::addConnection(int pieceID1, int pieceID2) {
     m_adjacentList[pieceID2].insert(pieceID1);
 
 }
-
+/*
 bool ComponentManager::disconnectFromNeighbor(int pieceID, int neighborID){
     // 检查是否真的相连
     if (!areDirectlyConnected(pieceID, neighborID)) {
@@ -84,7 +93,7 @@ bool ComponentManager::disconnectFromNeighbor(int pieceID, int neighborID){
 
     return true;
 }
-
+*/
 bool ComponentManager::disconnectFromComponent(int pieceID) {
     int oldComponentID = find(pieceID);
     if (oldComponentID == -1) return false;
@@ -94,33 +103,44 @@ bool ComponentManager::disconnectFromComponent(int pieceID) {
 
     // 断开所有连接
     for (int neighborID : neighbors) {
-    m_adjacentList[pieceID].erase(neighborID);
+    
     m_adjacentList[neighborID].erase(pieceID);
     }
-
-    // 将被断开的棋子设为独立组件
+    // 删除pieceID的邻接表
+    m_adjacentList[pieceID].clear();
+   /* // 将被断开的棋子设为独立组件
     m_parent[pieceID] = pieceID;
     m_rank[pieceID] = 0;
     m_componentPieces[pieceID] = {pieceID};
     m_pieceToComponent[pieceID] = pieceID;
+*/
+    // 从原组件中移除 pieceID
+    if (m_componentPieces.count(oldComponentID)) {
+        m_componentPieces[oldComponentID].erase(pieceID);
+    }
 
+    m_pieceToComponent.erase(pieceID);
     // 如果原组件还有其他棋子，需要重新计算连通性
-    if (!neighbors.empty()) {
-    recomputeComponentsAfterDisconnection(pieceID);
+    if (!m_componentPieces[oldComponentID].empty()) {
+    recomputeComponentsAfterDisconnection(oldComponentID, m_componentPieces[oldComponentID]);
+    } else {
+        m_componentPieces.erase(oldComponentID);
     }
     return true;
 }
 
-void ComponentManager::recomputeComponentsAfterDisconnection(int disconnectedPiece) {
-    int oldComponentID = find(disconnectedPiece);
-    if (oldComponentID == -1 || m_componentPieces[disconnectedPiece].size() <= 1) {
+void ComponentManager::recomputeComponentsAfterDisconnection(int oldComponentID, const std::unordered_set<int>& remainingPieces) {
+    
+   
+
+    // 安全检查：remainingPieces 至少要有 2 个棋子才可能分裂
+    if (remainingPieces.size() <= 1) {
+        // 如果只剩 0 或 1 个棋子，不需要分裂
+        // （如果剩 1 个，它自己就是一个新组件；如果为 0，调用方应已处理）
         return;
     }
 
-    // 获取原组件中除断开棋子外的所有棋子
-    std::unordered_set<int> remainingPieces = m_componentPieces[oldComponentID];
-    remainingPieces.erase(disconnectedPiece);
-
+   
     //处理组件分裂
     handleComponentSplit(oldComponentID, remainingPieces);
 }
@@ -246,6 +266,7 @@ void ComponentManager::clearSelection() {
 
 std:: unordered_map<int, std::unordered_set<int>> ComponentManager::getAllComponents() const {
     return m_componentPieces;
+    
 }
 
 
