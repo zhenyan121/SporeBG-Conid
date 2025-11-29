@@ -23,7 +23,7 @@ private:
     int m_maxPossiblePieces;
 
     // 重新计算连通性（断开后调用）
-    void recomputeComponentsAfterDisconnection(int disconnectedPiece);
+    void recomputeComponentsAfterDisconnection(int oldComponentID, const std::unordered_set<int>& remainingPieces);
     // 处理组件分裂
     void handleComponentSplit(int oldComponentID, const std::unordered_set<int>& affectedPieces);
 
@@ -38,6 +38,8 @@ public:
     explicit ComponentManager(int maxPossiblePieces);
     //添加棋子
     void addPiece(int PieceID, const std::vector<int>& adjacentPiece);
+    //移除棋子
+    void removePiece(int PieceID);
     // 查找操作（带路径压缩）
     int find(int pieceID);
     // 合并两个棋子所在的组件（按秩合并）

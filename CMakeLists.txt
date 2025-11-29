@@ -16,6 +16,10 @@ set(SOURCE_FILES
     src/main.cpp
     src/core/Game.cpp
     src/ui/Render.cpp
+    src/core/Board.cpp
+    src/core/Piece.cpp
+    src/core/Rule.cpp
+    src/core/ComponentManager.cpp
 )
 
 # 添加可执行文件
