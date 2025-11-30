@@ -1,12 +1,10 @@
 #include "Render.h"
 
 Renderer::Renderer(int WIDTH, int HEIGHT) : m_Width(WIDTH), m_Height(HEIGHT) {
-    
+    m_cellSize = HEIGHT / m_boardRow;
 }
 
-Renderer::Renderer() : m_Width(1600), m_Height(900) {
 
-}
 
 Renderer::~Renderer() {
     if (m_renderer) SDL_DestroyRenderer(m_renderer);
@@ -45,14 +43,70 @@ bool Renderer::initialize() {
     return true;
 }
 
-void Renderer::Renderhello() {
-    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(m_renderer);
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    SDL_RenderPresent(m_renderer);
-}
+
 
 
 void Renderer::render() {
-    Renderhello();
+    clear();
+    
+    drawBoard();
+
+    present();
+
+
+}
+
+void Renderer::clear() {
+    // 设置画笔颜色
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    // 使用画笔颜色填充整个屏幕
+    SDL_RenderClear(m_renderer);
+}
+
+void Renderer::present() {
+    SDL_RenderPresent(m_renderer);
+}
+
+void Renderer::drawBoard() {
+    auto area = getBoardArea();
+    
+
+// 绘制棋盘格子（交替颜色）
+for (int row = 0; row < area.rows; ++row) {
+    for (int col = 0; col < area.cols; ++col) {
+        // 使用 SDL_FRect（浮点数）
+        SDL_FRect rect{
+            static_cast<float>(area.x + col * area.cellSize),
+            static_cast<float>(area.y + row * area.cellSize),
+            static_cast<float>(area.cellSize),
+            static_cast<float>(area.cellSize)
+        };
+
+        bool isLight = (row + col) % 2 == 0;
+        SDL_SetRenderDrawColor(m_renderer, 
+            isLight ? 240 : 180,
+            isLight ? 220 : 160,
+            isLight ? 180 : 120,
+            255);
+
+        // SDL3: RenderFillRect 接受 const SDL_FRect*
+        SDL_RenderFillRect(m_renderer, &rect);
+    }
+}
+
+
+}
+
+ui::BoardArea Renderer::getBoardArea() const {
+    return {
+        (m_Width - m_cellSize * m_boardCOL) / 2,
+        (m_Height - m_cellSize * m_boardRow) / 2,
+        m_cellSize,
+        m_boardRow,
+        m_boardCOL
+    };
+}
+
+SDL_Renderer* Renderer::getSDLRenderer() const {
+    return m_renderer;
 }

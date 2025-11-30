@@ -20,6 +20,7 @@ set(SOURCE_FILES
     src/core/Piece.cpp
     src/core/Rule.cpp
     src/core/ComponentManager.cpp
+    src/input/InputManager.cpp
 )
 
 # 添加可执行文件
