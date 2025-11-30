@@ -47,7 +47,7 @@ public:
     // 连接两个组件
     void addConnection(int pieceID1, int pieceID2);
     // 断开棋子与指定邻居的连接
-    bool disconnectFromNeighbor(int pieceID, int neighborID);
+    //bool disconnectFromNeighbor(int pieceID, int neighborID);
     // 将棋子完全从当前组件断开，成为独立组件
     bool disconnectFromComponent(int pieceID);
     // 通过棋子选择整个连通片
@@ -66,9 +66,10 @@ public:
     bool areDirectlyConnected(int pieceID1, int pieceID2) const;
     // 清除选中状态
     void clearSelection();
-
+    // 不能返回引用因为要保存旧的组件
     //获取所有组件
     std::unordered_map<int, std::unordered_set<int>> getAllComponents() const;
-    
+    //获取棋子ID到组件ID的映射
+    std::unordered_map<int, int> getAllPiecetoComponent() const;
 
 };

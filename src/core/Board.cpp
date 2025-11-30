@@ -122,6 +122,10 @@ std::unordered_set<int> Board::getAllPlayerComponent(PlayerID ID) const {
     return PlayerComponentIDs;
 }
 
+std::unordered_map<int, int> Board::getALLPiecetoComponent() const {
+    return m_component->getAllPiecetoComponent();
+}
+
 int Board::getComponentID(int row, int col) const{
     int pieceID = getPieceID(row, col);
     int componentID = m_component->getComponentID(pieceID);

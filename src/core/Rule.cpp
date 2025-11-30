@@ -21,7 +21,7 @@ bool Rule::canPlacePiece(const Piece* piecePos) {
 }
 
 bool Rule::canbeSelect(const Piece* PieceID, PlayerID ID) {
-      if (PieceID->getPieceOwner() != ID) {
+      if (PieceID == nullptr || PieceID->getPieceOwner() != ID) {
             return false;
       }
       return true;
