@@ -98,7 +98,7 @@ void Game::printBoard() const {
 }
 
 void Game::nextTurn() {
-    std::cout << "switch to P2\n";
+    std::cout << "switch to " << ((m_currentPlayer == PlayerID::P1) ? "P2" : "P1") << "\n";
     m_seletedPiece = std::nullopt;
     m_currentPlayer = (m_currentPlayer == PlayerID::P1) ? PlayerID::P2 : PlayerID::P1;
     resetOldPieceIDtoComponent();
