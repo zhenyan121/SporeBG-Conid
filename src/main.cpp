@@ -3,11 +3,13 @@
 #include <SDL3/SDL_main.h>
 #include "core/Game.h"
 #include "ui/Render.h"
+#include "input/InputManager.h"
 
 //使用SDL3的appstate进行隔离，避免全局变量
 struct AppState {
     std::unique_ptr<Game> g_game;
     std::unique_ptr<Renderer> g_renderer;
+    std::unique_ptr<InputManager> g_input;
 };
 
 
@@ -31,7 +33,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     auto state = new AppState();
     state->g_game = std::make_unique<Game>();
     state->g_renderer = std::make_unique<Renderer>(WIDTH, HEIGHT);
-    
+    state->g_input = std::make_unique<InputManager>();
     
     if (!state->g_game->initialize() || !state->g_renderer->initialize()) {
         SDL_Log("游戏初始化失败!");
@@ -46,13 +48,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 // 2. 事件处理回调
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     auto s = static_cast<AppState*>(appstate);
-    if (event->type == SDL_EVENT_KEY_DOWN ||
-        event->type == SDL_EVENT_QUIT) {
-        return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
-    }
     
+    auto result = s->g_input->handleInputEvent(event, s->g_renderer.get(), s->g_game.get());
     
-    return SDL_APP_CONTINUE;
+    return result;
 }
 
 // 3. 主循环迭代回调（每帧调用）
