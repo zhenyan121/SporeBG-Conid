@@ -43,6 +43,8 @@ public:
     void printBoard();
     //获取相同玩家棋子的所有棋子块的根节点
     std::unordered_set<int> getAllPlayerComponent(PlayerID ID) const;
+    //获取棋子ID到组件ID的映射
+    std::unordered_map<int, int> getALLPiecetoComponent() const;
     // 获取坐标对应的块的ID
     int getComponentID(int row, int col) const;
     // 获取组件ID对应的组件

@@ -13,19 +13,12 @@ int main() {
     while (true) {
         std::cout << "Current player: " 
                   << (game.getCurrentPlayer() == PlayerID::P1 ? "P1" : "P2") << "\n";
-        std::cout << "Action type (0=GROW, 1=MOVE, 2=SPORE): ";
-        int act;
-        std::cin >> act;
-        game.setPlayerAction(static_cast<ActionType>(act));
+        
 
-        std::cout << "Select piece (row col): ";
+        std::cout << "input piece (row col): ";
         int r, c;
         std::cin >> r >> c;
-        game.playerSelectPiece(r, c);
-
-        std::cout << "Target position (row col): ";
-        std::cin >> r >> c;
-        game.executeAction(r, c);
+        game.handleCoordinateInput(r, c);
 
         game.printBoard();
     }

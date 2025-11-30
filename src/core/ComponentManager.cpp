@@ -269,6 +269,10 @@ std:: unordered_map<int, std::unordered_set<int>> ComponentManager::getAllCompon
     
 }
 
+std::unordered_map<int, int> ComponentManager::getAllPiecetoComponent() const {
+    return m_pieceToComponent;
+}
+
 
 
 

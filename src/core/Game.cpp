@@ -24,8 +24,8 @@ bool Game::initialize() {
         return false;
     }
     m_board->printBoard();
-    
-
+    resetActionableComponents();
+    resetOldPieceIDtoComponent();
    
     
     
@@ -38,15 +38,8 @@ void Game::resetActionableComponents() {
     m_actionableComponents = m_board->getAllPlayerComponent(m_currentPlayer);
 }
 
-
-bool Game::playerSelectPiece(int row, int col) {
-    if (Rule::canbeSelect(m_board->getPieceAt(row, col), m_currentPlayer)) {
-        /*if (m_seletedPiece == std::nullopt) {
-            m_seletedPiece = {row, col};
-        }*/
-       m_seletedPiece = {row, col};
-    }
-    return true;
+void Game::resetOldPieceIDtoComponent() {
+    m_oldPieceIDtoComponentID = m_board->getALLPiecetoComponent();
 }
 
 void Game::setPlayerAction(ActionType type) {
@@ -60,7 +53,7 @@ void Game::executeAction(int toRow, int toCol) {
         if (Rule::canGrow(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
             // 如果执行了操作就擦除
-            markComponentAsUsed(m_board->getComponentID(fromRow, fromCol));
+            markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return;
         }
     }
@@ -70,7 +63,7 @@ void Game::executeAction(int toRow, int toCol) {
             m_board->removePieceAt(toRow, toCol);
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
 
-            markComponentAsUsed(m_board->getComponentID(fromRow, fromCol));
+            markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return;
         }
     }
@@ -79,7 +72,7 @@ void Game::executeAction(int toRow, int toCol) {
             m_board->removePieceAt(fromRow, fromCol);
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
 
-            markComponentAsUsed(m_board->getComponentID(fromRow, fromCol));
+            markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return;
         }
     }
@@ -87,7 +80,13 @@ void Game::executeAction(int toRow, int toCol) {
 }
 
 void Game::markComponentAsUsed(int componentID) {
-    m_actionableComponents.erase(componentID);
+    std::cout << "try erase the componentID is " << componentID <<"\n";
+    int num = m_actionableComponents.erase(componentID);
+    if (num == 1) {
+        std::cout << "erase successful\n";
+    } else {
+        std::cout << "erase error\n";
+    }
 }
 
 PlayerID Game::getCurrentPlayer() const {
@@ -96,4 +95,95 @@ PlayerID Game::getCurrentPlayer() const {
 
 void Game::printBoard() const {
     m_board->printBoard();
+}
+
+void Game::nextTurn() {
+    std::cout << "switch to P2\n";
+    m_seletedPiece = std::nullopt;
+    m_currentPlayer = (m_currentPlayer == PlayerID::P1) ? PlayerID::P2 : PlayerID::P1;
+    resetOldPieceIDtoComponent();
+    resetActionableComponents();
+    
+    m_currentActionType = ActionType::GROW;
+}
+
+bool Game::handleCoordinateInput(int row, int col) {
+    // 如果当前没有选择棋子就选择棋子
+    if (m_seletedPiece == std::nullopt) {
+        if (!Rule::canbeSelect(m_board->getPieceAt(row, col), m_currentPlayer)) {
+            std::cout << "sorry you can't select the piece\n";
+            return false;
+        }
+        m_seletedPiece = {row, col};
+        std::cout << "selcte piece successful\n";
+        return true;
+    }
+    std::cout << "selectedpiece is " << m_seletedPiece->first << " " << m_seletedPiece->second << "\n";
+    // 如果点击了选择的棋子就切换行动方式
+    std::pair<int ,int> newSelectedPiece = {row, col}; 
+    if (m_seletedPiece ==  newSelectedPiece) {
+        switch (m_currentActionType)
+        {
+        case ActionType::GROW:
+            m_currentActionType = ActionType::MOVE;
+            std::cout << "switch actiontype to MOVE successful\n";
+            break;
+        case ActionType::MOVE:
+            m_currentActionType = ActionType::SPORE;
+            std::cout << "switch actiontype to SPORE successful\n";
+            break;
+        case ActionType::SPORE:
+            m_currentActionType = ActionType::GROW;
+            std::cout << "switch actiontype to GROW successful\n";
+            break;
+        default:
+            std::cout << "switch actiontype wrong\n";
+            return false;
+            
+        }
+        
+        return true;
+    }
+    //如果点击了属于当前玩家且没有行动的的其它棋子，就切换选择棋子到其它棋子
+    int selectComponentID = getOldComponentID(row, col);
+    if (m_actionableComponents.find(selectComponentID) != m_actionableComponents.end()) {
+        m_seletedPiece = newSelectedPiece;
+        std::cout << "switch the selectedpiece to " << m_seletedPiece->first << " " << m_seletedPiece->second << "\n";
+        return true;
+    }
+    
+    // 如果点击了已经行动的棋子，则不进行处理,已行动的棋子如果是在一个单独的区域不用处理，但如果是在一个未行动的组件中欧是可以再次行动的，
+    //但是如果点击同一块 也无需处理，因为 在m_actionableComponents已经不存在了，直接尝试执行行动，但因为rule处理了所以不用管
+
+    // 其它情况则执行行动
+    executeAction(row, col);
+    
+    
+    // 执行完之后检查是否m_actionableComponents为空，
+
+    // m_actionableComponents只保存了ID，但是在执行棋子之后会处理组件的连通性，rule会获取到新的连通性，不过这样更符合逻辑
+    
+    //如果不是空的这默认将m_seletedPiece切换到这个组件之中
+    //如果是空的则进行下一轮切换玩家
+    if (m_actionableComponents.empty()) {
+        nextTurn();
+        return true;
+    } else {
+        for (auto leftcomponentID : m_actionableComponents) {
+            std::cout << "leftcomponentID is " << leftcomponentID << "\n";
+        }  
+        auto leftcomponent =  m_actionableComponents.begin();
+        m_seletedPiece = m_board->getCoordFromID(*leftcomponent);
+        std::cout << "switch the selectedpiece to " << m_seletedPiece->first << " " << m_seletedPiece->second << "\n";
+        return true; 
+    }
+    
+
+}
+
+int Game::getOldComponentID(int row, int col) {
+    int pieceID = m_board->getPieceID(row, col);
+    auto it = m_oldPieceIDtoComponentID.find(pieceID);
+    //for (auto [pieceID, y] : m_oldPieceIDtoComponentID)
+    return (it != m_oldPieceIDtoComponentID.end()) ? it->second : -1;
 }
