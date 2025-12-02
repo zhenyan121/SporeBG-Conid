@@ -47,14 +47,14 @@ void Game::setPlayerAction(ActionType type) {
 }
 
 
-void Game::executeAction(int toRow, int toCol) {
+bool Game::executeAction(int toRow, int toCol) {
     auto [fromRow, fromCol] = *m_seletedPiece;
     if (m_currentActionType == ActionType::GROW) {
         if (Rule::canGrow(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
             // 如果执行了操作就擦除
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
-            return;
+            return true;
         }
     }
     if (m_currentActionType == ActionType::MOVE) {
@@ -64,7 +64,7 @@ void Game::executeAction(int toRow, int toCol) {
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
 
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
-            return;
+            return true;
         }
     }
     if (m_currentActionType == ActionType::SPORE) {
@@ -73,9 +73,10 @@ void Game::executeAction(int toRow, int toCol) {
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
 
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
-            return;
+            return true;
         }
     }
+    return false;
 
 }
 
@@ -156,7 +157,10 @@ bool Game::handleCoordinateInput(int row, int col) {
     //但是如果点击同一块 也无需处理，因为 在m_actionableComponents已经不存在了，直接尝试执行行动，但因为rule处理了所以不用管
 
     // 其它情况则执行行动
-    executeAction(row, col);
+    if(!executeAction(row, col)) {
+        std::cout << "action pos invaild!\n";
+        return false;
+    }
     
     
     // 执行完之后检查是否m_actionableComponents为空，

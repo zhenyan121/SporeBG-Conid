@@ -34,7 +34,7 @@ public:
     // 设置行动类型
     void setPlayerAction(ActionType type);
     // 执行玩家的行动
-    void executeAction(int row, int col);
+    bool executeAction(int row, int col);
     // 获取当前玩家
     PlayerID getCurrentPlayer() const;
     // 打印棋盘
