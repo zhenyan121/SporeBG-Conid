@@ -9,7 +9,7 @@
 
 
 
-class Game {
+class GameSession {
 private:
     std::unique_ptr<Board> m_board;
     PlayerID m_currentPlayer = PlayerID::P1;
@@ -23,8 +23,8 @@ private:
     
 
 public:
-    Game();
-    ~Game();
+    GameSession();
+    ~GameSession();
     void cleanup();
     bool initialize();
     //获取当前玩家的拥有的组件

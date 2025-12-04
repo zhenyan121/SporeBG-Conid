@@ -1,9 +1,9 @@
 // main.cpp
-#include "Game.h"
+#include "GameSession.h"
 #include <iostream>
 
 int main() {
-    Game game;
+    GameSession game;
     if (!game.initialize()) {
         std::cerr << "Failed to initialize game.\n";
         return -1;
