@@ -1,24 +1,24 @@
-// src/core/Game.cpp
-#include "Game.h"
+// src/core/GameSession.cpp
+#include "GameSession.h"
 
 
-Game::Game()         
+GameSession::GameSession()         
 {
     m_board = std::make_unique<Board>(7, 7);
 }
 
 
-Game::~Game() {
+GameSession::~GameSession() {
     cleanup();
 }
 //清理资源
-void Game::cleanup() {
+void GameSession::cleanup() {
     
      
 }
 
 
-bool Game::initialize() {
+bool GameSession::initialize() {
     // 初始化游戏特定资源（棋盘、棋子等）
     if (!m_board->initialize()) {
         return false;
@@ -33,21 +33,21 @@ bool Game::initialize() {
     return true;
 }
 
-void Game::resetActionableComponents() {
+void GameSession::resetActionableComponents() {
     
     m_actionableComponents = m_board->getAllPlayerComponent(m_currentPlayer);
 }
 
-void Game::resetOldPieceIDtoComponent() {
+void GameSession::resetOldPieceIDtoComponent() {
     m_oldPieceIDtoComponentID = m_board->getALLPiecetoComponent();
 }
 
-void Game::setPlayerAction(ActionType type) {
+void GameSession::setPlayerAction(ActionType type) {
     m_currentActionType = type;
 }
 
 
-bool Game::executeAction(int toRow, int toCol) {
+bool GameSession::executeAction(int toRow, int toCol) {
     auto [fromRow, fromCol] = *m_seletedPiece;
     if (m_currentActionType == ActionType::GROW) {
         if (Rule::canGrow(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
@@ -80,7 +80,7 @@ bool Game::executeAction(int toRow, int toCol) {
 
 }
 
-void Game::markComponentAsUsed(int componentID) {
+void GameSession::markComponentAsUsed(int componentID) {
     std::cout << "try erase the componentID is " << componentID <<"\n";
     int num = m_actionableComponents.erase(componentID);
     if (num == 1) {
@@ -90,15 +90,15 @@ void Game::markComponentAsUsed(int componentID) {
     }
 }
 
-PlayerID Game::getCurrentPlayer() const {
+PlayerID GameSession::getCurrentPlayer() const {
     return m_currentPlayer;
 }
 
-void Game::printBoard() const {
+void GameSession::printBoard() const {
     m_board->printBoard();
 }
 
-void Game::nextTurn() {
+void GameSession::nextTurn() {
     std::cout << "switch to " << ((m_currentPlayer == PlayerID::P1) ? "P2" : "P1") << "\n";
     m_seletedPiece = std::nullopt;
     m_currentPlayer = (m_currentPlayer == PlayerID::P1) ? PlayerID::P2 : PlayerID::P1;
@@ -108,7 +108,7 @@ void Game::nextTurn() {
     m_currentActionType = ActionType::GROW;
 }
 
-bool Game::handleCoordinateInput(int row, int col) {
+bool GameSession::handleCoordinateInput(int row, int col) {
     // 如果当前没有选择棋子就选择棋子
     if (m_seletedPiece == std::nullopt) {
         if (!Rule::canbeSelect(m_board->getPieceAt(row, col), m_currentPlayer)) {
@@ -185,7 +185,7 @@ bool Game::handleCoordinateInput(int row, int col) {
 
 }
 
-int Game::getOldComponentID(int row, int col) {
+int GameSession::getOldComponentID(int row, int col) {
     int pieceID = m_board->getPieceID(row, col);
     auto it = m_oldPieceIDtoComponentID.find(pieceID);
     //for (auto [pieceID, y] : m_oldPieceIDtoComponentID)
