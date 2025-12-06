@@ -48,4 +48,8 @@ public:
     bool handleCoordinateInput(int row, int col);
 
     int getOldComponentID(int row, int col);
+
+    std::optional<std::pair<int, int>> getSelectedPiece() const;
+
+    const Board* getBoard() const;
 };

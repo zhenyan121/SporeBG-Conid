@@ -191,3 +191,11 @@ int GameSession::getOldComponentID(int row, int col) {
     //for (auto [pieceID, y] : m_oldPieceIDtoComponentID)
     return (it != m_oldPieceIDtoComponentID.end()) ? it->second : -1;
 }
+
+ std::optional<std::pair<int, int>> GameSession::getSelectedPiece() const {
+    return m_seletedPiece;
+ }
+
+ const Board* GameSession::getBoard() const {
+    return m_board.get();
+ }

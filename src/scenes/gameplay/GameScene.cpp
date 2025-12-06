@@ -13,6 +13,8 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT) {
     m_gameSession = std::make_unique<GameSession>();
     m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
     m_gameSession->initialize();
+
+    m_renderer->setBoard(m_gameSession->getBoard());
 }
 
 void GameScene::update() {
@@ -23,6 +25,7 @@ void GameScene::render() {
     m_renderer->beginFrame();
     m_renderer->drawBackground();
     m_renderer->drawBoard();
+    m_renderer->drawPiece(m_gameSession->getSelectedPiece());
     m_renderer->endFrame();
 }
 
