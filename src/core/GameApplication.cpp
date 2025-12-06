@@ -6,9 +6,9 @@ GameApplication::GameApplication() {
 
 }
 
-void GameApplication::initialize() {
+bool GameApplication::initialize() {
     m_gameSession->initialize();
-    
+    return true;
 }
 
 SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {

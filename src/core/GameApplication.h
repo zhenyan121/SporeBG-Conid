@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/GameSession.h"
+#include "game/GameSession.h"
 
 #include "input/InputManager.h"
 #include "utils/Config.h"
@@ -17,7 +17,7 @@ private:
 public:
     GameApplication();
     ~GameApplication();
-    void initialize();
+    bool initialize();
     SDL_AppResult handleInputEvent(SDL_Event* event);
     void run();
 
