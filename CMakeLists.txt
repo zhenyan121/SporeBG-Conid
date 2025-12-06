@@ -15,13 +15,18 @@ add_subdirectory(third_party/SDL3)
 set(SOURCE_FILES
     src/main.cpp
     src/core/GameApplication.cpp
+    src/core/WindowManager.cpp
     src/game/GameSession.cpp
     src/game/Board.cpp
     src/game/Piece.cpp
     src/game/Rule.cpp
     src/game/ComponentManager.cpp
     src/input/InputManager.cpp
-    src/core/WindowManager.cpp
+    src/scenes/base/SceneManager.cpp
+    src/scenes/gameplay/GameScene.cpp
+    src/graphics/GameRenderer.cpp
+    src/graphics/CoordinateConverter.cpp
+
 )
 
 # 添加可执行文件
