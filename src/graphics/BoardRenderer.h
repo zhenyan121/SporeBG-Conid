@@ -19,10 +19,7 @@ public:
     // 渲染画面
     void render();
     bool initialize();
-    // 清除上一帧的渲染
-    void clear();
-    // 展现画面
-    void present();
+
 
 
 
