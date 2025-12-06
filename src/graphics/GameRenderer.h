@@ -1,11 +1,10 @@
 #pragma once
-#include "UIType.h"
+#include "utils/Config.h"
 #include <SDL3/SDL.h>
 
-class Renderer
+class GameRenderer
 {
 private:
-    SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr; 
     int m_Width;
     int m_Height;
@@ -13,23 +12,29 @@ private:
     int m_boardRow = 7;
     int m_boardCOL = 7;
 public:
-    Renderer(int WIDTH, int HEIGHT);  
+    GameRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
     
-    ~Renderer();
+    ~GameRenderer();
     // 渲染画面
-    void render();
+    // 初始化加载纹理
     bool initialize();
 
+    // 帧控制
+    void beginFrame();
+    void endFrame();
 
 
 
-    // 绘制棋盘
+    // 渲染函数
+    // 绘制背景
+    void drawBackground();
+    //绘制棋盘
     void drawBoard();
 
     
-    ui::BoardArea getBoardArea() const;
+    BoardArea getBoardArea() const;
 
-    SDL_Renderer* getSDLRenderer() const;
+  
 };
 
 

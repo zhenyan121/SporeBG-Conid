@@ -1,34 +1,47 @@
-#include "BoardRenderer.h"
-
-Renderer::Renderer(int WIDTH, int HEIGHT) : m_Width(WIDTH), m_Height(HEIGHT) {
+#include "GameRenderer.h"
+#include <iostream>
+GameRenderer::GameRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer) : m_Width(WIDTH), m_Height(HEIGHT), m_renderer(renderer) {
     m_cellSize = HEIGHT / m_boardRow;
 }
 
 
 
-Renderer::~Renderer() {
+GameRenderer::~GameRenderer() {
     
 }
 
-bool Renderer::initialize() { 
-    
+bool GameRenderer::initialize() { 
+    return true;
+}
+
+void GameRenderer::beginFrame() {
+    if (!m_renderer) {
+        std::cout << "ERROR: Renderer is NULL!\n";
+        return;
+    }
+    // 清屏为白色色背景
+    SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255); 
+    SDL_RenderClear(m_renderer);
+    //std::cout << "begin frame\n";
+    // 临时测试：画个红框
+    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+    SDL_FRect test{100, 100, 200, 200};
+    SDL_RenderFillRect(m_renderer, &test);
+}
+
+void GameRenderer::endFrame() {
+    // 提交到屏幕
+    //std::cout << "end frame\n";
+    SDL_RenderPresent(m_renderer);
 }
 
 
-
-
-void Renderer::render() {
-  
-    
-    drawBoard();
-
-   
-
+void GameRenderer::drawBackground() {
 
 }
 
 
-void Renderer::drawBoard() {
+void GameRenderer::drawBoard() {
     auto area = getBoardArea();
     
 
@@ -58,7 +71,7 @@ for (int row = 0; row < area.rows; ++row) {
 
 }
 
-ui::BoardArea Renderer::getBoardArea() const {
+BoardArea GameRenderer::getBoardArea() const {
     return {
         (m_Width - m_cellSize * m_boardCOL) / 2,
         (m_Height - m_cellSize * m_boardRow) / 2,
@@ -68,6 +81,3 @@ ui::BoardArea Renderer::getBoardArea() const {
     };
 }
 
-SDL_Renderer* Renderer::getSDLRenderer() const {
-    return m_renderer;
-}
