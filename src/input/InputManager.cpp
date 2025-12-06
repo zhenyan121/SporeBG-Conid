@@ -1,6 +1,5 @@
 #include "InputManager.h"
-#include "ui/Render.h"
-#include "core/Game.h"
+
 SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event, const Renderer* g_renderer, Game* g_game) {
 
     switch (event->type) {
