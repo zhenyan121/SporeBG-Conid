@@ -12,38 +12,21 @@ ninja
 ```
 ## 项目结构
 ```bash
-ChessGame/
+SporeBG-Conid/
 ├── src/
-│   ├── core/                 # 核心游戏逻辑
-│   │   ├── Game.h/cpp        # 游戏核心管理
-│   │   ├── Board.h/cpp       # 棋盘逻辑和规则实现
-│   │   ├── Piece.h/cpp       # 棋子基类和具体棋子实现
-│   │   └── Rules.h/cpp       # 游戏规则验证
-│   ├── ai/                   # 人工智能模块
-│   │   ├── AIBase.h/cpp      
-│   │   ├── MinimaxAI.h/cpp   
-│   │   └── Heuristics.h/cpp  
-│   ├── network/              # 网络模块
-│   │   ├── NetworkManager.h/cpp 
-│   │   ├── Protocol.h/cpp    
-│   │   └── Server.h/cpp      
-│   ├── ui/                   # 用户界面
-│   │   ├── Renderer.h/cpp    # 渲染器(SDL3)
-│   │   ├── UIComponents.h/cpp 
-│   │   └── MenuSystem.h/cpp  
-│   ├── input/                # ← 输入处理模块（键盘、鼠标等）
-│   │   ├── InputManager.h/cpp
-│   ├── utils/                # 工具类
-│   │   ├── Logger.h/cpp      
-│   │   ├── Config.h/cpp      
-│   │   └── Utils.h/cpp       
-│   └── main.cpp              # 程序入口（使用 SDL3 回调）
-├── assets/                   # 资源文件
-│   ├── images/              
-│   ├── fonts/               
-│   └── sounds/              
-├── config/                  # 配置文件（如 game.ini）
-└── build/                   # 构建输出目录（.gitignore 掉）
+│   ├── core/                 # 核心应用与窗口管理
+│   ├── game/                 # 游戏逻辑核心：棋盘、棋子、规则等
+│   ├── graphics/             # 图形渲染相关
+│   ├── input/                # 输入处理系统（键盘、鼠标）
+│   ├── scenes/               # 场景管理系统（菜单、对局等）
+│   ├── utils/                # 工具类与配置
+│   └── main.cpp              # 程序入口（SDL3 回调）
+├── assets/                   # 资源文件：图片、字体、音效
+│   ├── images/
+│   ├── fonts/
+│   └── sounds/
+├── config/                   # 配置文件（如 game.ini）
+└── build/                    # 编译输出目录（建议 .gitignore 掉）
 ```
 
 ## 一些想说的

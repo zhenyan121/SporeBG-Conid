@@ -14,19 +14,21 @@ add_subdirectory(third_party/SDL3)
 
 set(SOURCE_FILES
     src/main.cpp
-    src/core/Game.cpp
-    src/ui/Render.cpp
-    src/core/Board.cpp
-    src/core/Piece.cpp
-    src/core/Rule.cpp
-    src/core/ComponentManager.cpp
+    src/core/GameApplication.cpp
+    src/game/GameSession.cpp
+    src/game/Board.cpp
+    src/game/Piece.cpp
+    src/game/Rule.cpp
+    src/game/ComponentManager.cpp
     src/input/InputManager.cpp
+    src/core/WindowManager.cpp
 )
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_include_directories(SporeBG-Conid PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(SporeBG-Conid PRIVATE 
+    ${CMAKE_SOURCE_DIR}/src)
 # 使用正确的目标名称链接SDL3
 # 方法1：使用别名（推荐）
 target_link_libraries(SporeBG-Conid PRIVATE SDL3::SDL3)
