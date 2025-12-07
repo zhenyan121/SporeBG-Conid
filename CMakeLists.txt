@@ -50,6 +50,34 @@ target_link_libraries(${PROJECT_NAME}
 
 # ========== Windows: 复制 DLL ==========
 if (WIN32)
+# 查找 MinGW 运行时库
+    if(MINGW)
+        # 查找 libgcc DLL
+        execute_process(
+            COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcc_s_seh-1.dll
+            OUTPUT_VARIABLE GCC_DLL_PATH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        
+        # 查找 libstdc++ DLL
+        execute_process(
+            COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++-6.dll
+            OUTPUT_VARIABLE STDCPP_DLL_PATH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        
+        # 复制编译器运行时库
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${GCC_DLL_PATH}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${STDCPP_DLL_PATH}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMENT "Copying MinGW runtime DLLs"
+        )
+    endif()
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:SDL3::SDL3>
