@@ -4,7 +4,7 @@
 ## 构建指南
 确保电脑安装了`cmake`和`ninja`，使用`gcc`与`g++`：
 ```bash
-git clone --recursive https://github.com/zhenyan121/SporeBG-Conid.git
+git clone https://github.com/zhenyan121/SporeBG-Conid.git
 mkdir build
 cd build
 cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
