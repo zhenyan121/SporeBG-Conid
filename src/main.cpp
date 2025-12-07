@@ -17,11 +17,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     // 设置应用元数据[8](@ref)
     SDL_SetAppMetadata("孢子棋", "1.0.0", "com.zhenyan121.sporebgconid");
     
-    // 初始化SDL视频子系统[6,7](@ref)
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("SDL初始化失败: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    
 
     // 创建游戏实例
     auto gameapp = new GameApplication();

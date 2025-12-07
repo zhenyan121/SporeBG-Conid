@@ -9,6 +9,12 @@ GameApplication::~GameApplication() {
 }
 
 bool GameApplication::initialize() {
+    // 初始化SDL视频子系统[6,7](@ref)
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        SDL_Log("SDL初始化失败: %s", SDL_GetError());
+        return false;
+    }
+
     m_inputManager = std::make_unique<InputManager>();
     m_windowManager = std::make_unique<WindowManager>();
     
