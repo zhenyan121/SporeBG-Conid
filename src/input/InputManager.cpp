@@ -10,10 +10,20 @@ SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
             if (event->button.button == SDL_BUTTON_LEFT) {
                 // 更新状态
                 m_currentInputState.mouseCilckOn = {event->button.x, event->button.y};
+                m_currentInputState.leftMouseDown = true;
                 
-                
-                return SDL_APP_CONTINUE;
+                break;
             }
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            if (event->button.button == SDL_BUTTON_LEFT) {
+                m_currentInputState.leftMouseDown = false;
+
+                break;
+            }
+        case SDL_EVENT_MOUSE_MOTION:
+            m_currentInputState.mouseCurrentPosition = {static_cast<float>(event->motion.x), 
+                                                        static_cast<float>(event->motion.y)};
+            break;
     }
     return SDL_APP_CONTINUE;
 }
