@@ -136,8 +136,24 @@ int Board::getComponentID(int row, int col) const{
 }
 
 std::unordered_set<int> Board::getComponentByPieceID(int PieceID) const {
+    std::cout << "DEBUG: getComponentByPieceID(" << PieceID << ")" << std::endl;
+    // 检查该位置是否有棋子
+    auto [row, col] = getCoordFromID(PieceID);
+    if (getPieceAt(row, col) == nullptr) {
+        std::cout << "this postion don't have piece\n";
+        return std::unordered_set<int>();  // 返回空集合
+    }
+
+    // 检查 ComponentManager 的状态
+    int componentID = m_component->getComponentID(PieceID);
+    std::cout << "DEBUG: componentID = " << componentID << std::endl;
+    //  临时选中组件
     m_component->selectComponentByPiece(PieceID);
     auto SelectedComponent =  m_component->getSelectedComponent();
+
+    // 立即清除选中状态
+    m_component->clearSelection();
+    std::cout << "DEBUG: Component size = " << SelectedComponent.size() << std::endl;
     return SelectedComponent;
 }
 

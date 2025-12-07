@@ -29,7 +29,7 @@ bool Rule::canbeSelect(const Piece* PieceID, PlayerID ID) {
 
 bool Rule::canGrow(const Board* board, const int fromRow, const int fromCol, const int toRow, const int toCol, const PlayerID player) {
       
-      
+      std::cout << "try to grow\n";
 
       // 检查是否有棋子并且属于自己
       const Piece* fromPiece = board->getPieceAt(fromRow, fromCol);
@@ -42,6 +42,7 @@ bool Rule::canGrow(const Board* board, const int fromRow, const int fromCol, con
       
       
       if (board->getPieceAt(toRow, toCol) != nullptr) {
+            std::cout << "is exist a piece can't grow\n";
             return false; // 有棋子不能生长
       }
       
