@@ -1,3 +1,11 @@
 [submodule "third_party/SDL3"]
 	path = third_party/SDL3
 	url = https://github.com/libsdl-org/SDL.git
+
+[submodule "third_party/SDL3_ttf"]
+    path = third_party/SDL3_ttf
+    url = https://github.com/libsdl-org/SDL_ttf.git
+    
+[submodule "third_party/freetype"]
+	path = third_party/freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git
