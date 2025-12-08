@@ -14,7 +14,10 @@ bool GameApplication::initialize() {
         SDL_Log("SDL初始化失败: %s", SDL_GetError());
         return false;
     }
-
+    if (!TTF_Init()) {
+        SDL_Log("无法初始化 SDL_ttf: %s", SDL_GetError());
+        return false;
+    }
     m_inputManager = std::make_unique<InputManager>();
     m_windowManager = std::make_unique<WindowManager>();
     

@@ -5,7 +5,7 @@
 #include "scenes/base/SceneManager.h"
 #include "input/InputManager.h"
 #include "utils/Config.h"
-
+#include <SDL3_ttf/SDL_ttf.h>
 
 class GameApplication {
 private:

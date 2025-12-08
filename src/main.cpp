@@ -58,5 +58,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 // 4. 应用退出回调（清理资源）
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     delete static_cast<GameApplication*>(appstate);
+    TTF_Quit();
     SDL_Quit();
 }
