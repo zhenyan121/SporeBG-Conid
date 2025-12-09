@@ -8,7 +8,10 @@ FontManager::~FontManager() {
     for (auto& pair : m_fonts) {
         TTF_CloseFont(pair.second);
     }
+
     m_fonts.clear();
+
+   
 }
 
 TTF_Font* FontManager::loadFont(const std::string& fontID, int ptSize) {
@@ -32,4 +35,6 @@ TTF_Font* FontManager::getFont(const std::string& key) {
     auto it = m_fonts.find(key);
     return (it != m_fonts.end()) ? it->second : nullptr;
 }
+
+
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 class FontManager {
@@ -14,7 +15,12 @@ public:
     
     // 获取已加载的字体
     TTF_Font* getFont(const std::string& key);
+
+   
+
 private:
     // 用哈希表存储字体
     std::unordered_map<std::string, TTF_Font*> m_fonts;
+
+    
 };
