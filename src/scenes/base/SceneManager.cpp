@@ -1,8 +1,12 @@
 #include "SceneManager.h"
 
-SceneManager::SceneManager(SDL_Renderer* renderer) {
+SceneManager::SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer) :
+    m_renderer(renderer),
+    m_uiRenderer(uiRenderer)
+
+{
     m_scene = std::make_unique<GameScene>();
-    m_scene->onEnter(renderer, 1600, 900);
+    m_scene->onEnter(renderer, 1600, 900, m_uiRenderer);
 }
 
 SceneManager::~SceneManager() {

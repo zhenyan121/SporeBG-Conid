@@ -8,13 +8,21 @@ GameScene::~GameScene() {
 
 }
 
-void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT) {
-    m_renderer = std::make_unique<GameRenderer>(WIDTH, HEIGHT, renderer);
+void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
+    m_renderer = renderer;
+    m_uiRenderer = uiRenderer;
+    m_gameUIManager = std::make_unique<GameUIManager>();
+    m_gameUIManager->init();
+    m_gameRenderer = std::make_unique<GameRenderer>(WIDTH, HEIGHT, renderer);
     m_gameSession = std::make_unique<GameSession>();
     m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
     m_gameSession->initialize();
 
-    m_renderer->setBoard(m_gameSession->getBoard());
+    m_gameRenderer->setBoard(m_gameSession->getBoard());
+
+    
+    
+    
 }
 
 void GameScene::update() {
@@ -22,15 +30,17 @@ void GameScene::update() {
 }
 
 void GameScene::render() {
-    m_renderer->beginFrame();
-    m_renderer->drawBackground();
-    m_renderer->drawBoard();
-    m_renderer->drawPiece(m_gameSession->getSelectedPiece());
-    m_renderer->endFrame();
+    m_gameRenderer->beginFrame();
+    m_gameRenderer->drawBackground();
+    m_gameRenderer->drawBoard();
+    
+    m_gameRenderer->drawPiece(m_gameSession->getSelectedPiece());
+    m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
+    m_gameRenderer->endFrame();
 }
 
 void GameScene::handleClick(float screenX, float screenY) {
-    auto click = m_CoordinateConverter->ScreenToBoard(screenX, screenY, m_renderer->getBoardArea());
+    auto click = m_CoordinateConverter->ScreenToBoard(screenX, screenY, m_gameRenderer->getBoardArea());
         if (click) {
             auto [row, col] = click.value();
             m_gameSession->handleCoordinateInput(row, col);

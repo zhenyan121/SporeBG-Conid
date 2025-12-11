@@ -8,7 +8,7 @@
 #include <unordered_map>
 class SceneManager {
 public:
-    SceneManager(SDL_Renderer* renderer);
+    SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer);
     ~SceneManager();
 
     void PushScene(const std::string& sceneName, std::unique_ptr<Scene> scene);
@@ -20,6 +20,8 @@ public:
 
 
 private:
+    SDL_Renderer* m_renderer;
+    UIRenderer* m_uiRenderer;
     std::unique_ptr<Scene> m_scene;
     // 用栈的形式来存储场景
     std::stack<std::unique_ptr<Scene>> m_scenes;

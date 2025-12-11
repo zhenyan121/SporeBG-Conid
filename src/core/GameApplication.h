@@ -5,7 +5,10 @@
 #include "scenes/base/SceneManager.h"
 #include "input/InputManager.h"
 #include "utils/Config.h"
-#include <SDL3_ttf/SDL_ttf.h>
+
+#include "graphics/font/TextRenderer.h"
+#include "graphics/font/FontManager.h"
+
 
 class GameApplication {
 private:
@@ -14,6 +17,10 @@ private:
     std::unique_ptr<WindowManager> m_windowManager;
     std::unique_ptr<SceneManager> m_sceneManager;
     std::unique_ptr<InputManager> m_inputManager;
+    std::unique_ptr<FontManager> m_fontManager;
+    std::unique_ptr<TextRenderer> m_textRenderer;
+    std::unique_ptr<UIRenderer> m_uiRenderer;
+    
     GameConfig m_config;
 
 public:

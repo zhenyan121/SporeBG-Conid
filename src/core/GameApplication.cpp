@@ -18,12 +18,25 @@ bool GameApplication::initialize() {
         SDL_Log("无法初始化 SDL_ttf: %s", SDL_GetError());
         return false;
     }
+    // 输入管理
     m_inputManager = std::make_unique<InputManager>();
+    // 窗口管理
     m_windowManager = std::make_unique<WindowManager>();
     
     m_windowManager->Initialize(m_config);
-    m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer());
     
+    
+    
+    // 字体管理
+    m_fontManager = std::make_unique<FontManager>();
+    // 文字渲染
+    m_textRenderer = std::make_unique<TextRenderer>(m_windowManager->GetRenderer(), m_fontManager.get());
+
+    m_uiRenderer = std:: make_unique<UIRenderer>(m_windowManager->GetRenderer(), m_textRenderer.get());
+
+    // 场景管理
+    m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer(), m_uiRenderer.get());
+
     return true;
 }
 
