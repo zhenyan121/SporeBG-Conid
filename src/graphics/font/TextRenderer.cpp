@@ -1,6 +1,6 @@
 #include "TextRenderer.h"
 
-TextRenderer::TextRenderer(FontManager& fontManager,SDL_Renderer* renderer) :
+TextRenderer::TextRenderer(SDL_Renderer* renderer, FontManager* fontManager) :
                             m_fontManager(fontManager),
                             m_renderer(renderer)
 {
@@ -18,8 +18,8 @@ TextRenderer::~TextRenderer() {
 
 
 
-void TextRenderer::renderText(const std::string& text, const std::string& fontID, int x, int y, SDL_Color color) {
-    std::string key = makeCacheKey(text, fontID, color);
+void TextRenderer::renderText(const std::string& text, TextStyle style, int x, int y) {
+    auto key = style.hash();
     auto it = m_cache.find(key);
     
     // 查找缓存
@@ -35,13 +35,13 @@ void TextRenderer::renderText(const std::string& text, const std::string& fontID
     }
 
     // 创建新的纹理
-    TTF_Font* font = m_fontManager.getFont(fontID);
+    TTF_Font* font = m_fontManager->getFont(style.fontID, style.fontSize);
     if (!font) {
-        SDL_Log("错误：字体未找到 %s\n", fontID.c_str());
+        SDL_Log("错误：字体未找到 %s\n", style.fontID.c_str());
         return;
     }
     // 创建文字表面
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(),text.length(), color);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(),text.length(), style.color);
     if (!surface) {
         printf("错误：无法创建文字表面\n");
         return;
@@ -74,7 +74,7 @@ void TextRenderer::renderText(const std::string& text, const std::string& fontID
 }
 
 SDL_Texture* TextRenderer::createTextTexture(const std::string& text, const std::string& fontID, SDL_Color color) {
-
+    return nullptr;
 }
 
 

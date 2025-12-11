@@ -31,9 +31,13 @@ TTF_Font* FontManager::loadFont(const std::string& fontID, int ptSize) {
     return font;
 }
 
-TTF_Font* FontManager::getFont(const std::string& key) {
+TTF_Font* FontManager::getFont(const std::string& key, int ptSize) {
     auto it = m_fonts.find(key);
-    return (it != m_fonts.end()) ? it->second : nullptr;
+    if (it != m_fonts.end()) {
+        return it->second;
+    }
+    
+    return loadFont(key, ptSize);;
 }
 
 

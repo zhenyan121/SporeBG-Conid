@@ -14,7 +14,7 @@ public:
     TTF_Font* loadFont(const std::string& fontID, int ptSize);
     
     // 获取已加载的字体
-    TTF_Font* getFont(const std::string& key);
+    TTF_Font* getFont(const std::string& key, int ptSize);
 
    
 
