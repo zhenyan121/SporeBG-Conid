@@ -33,6 +33,11 @@ set(SOURCE_FILES
     src/graphics/GameRenderer.cpp
     src/graphics/CoordinateConverter.cpp
     src/utils/CoordinateTools.cpp
+    src/graphics/font/FontManager.cpp
+    src/graphics/font/TextRenderer.cpp
+    src/ui/components/Button.cpp
+    src/ui/managers/GameUIManager.cpp
+    src/graphics/ui/UIRenderer.cpp
 )
 
 
@@ -87,4 +92,32 @@ if (WIN32)
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMENT "Copying SDL3 runtime DLLs"
     )
+
+
+
+
+# ========== 仅复制修改过的 assets ==========
+set(ASSETS_SRC_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(ASSETS_DST_DIR "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets")
+
+# 收集所有 asset 文件
+file(GLOB_RECURSE ASSET_FILES
+    "${ASSETS_SRC_DIR}/*"
+)
+
+# 为每个文件生成复制规则
+foreach(ASSET_FILE ${ASSET_FILES})
+    # 计算目标路径
+    file(RELATIVE_PATH REL_PATH "${ASSETS_SRC_DIR}" "${ASSET_FILE}")
+    set(OUT_FILE "${ASSETS_DST_DIR}/${REL_PATH}")
+
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${ASSET_FILE}" "${OUT_FILE}"
+        COMMENT "Copying changed asset: ${REL_PATH}"
+    )
+endforeach()
 endif()
