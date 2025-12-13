@@ -52,4 +52,7 @@ public:
     std::optional<std::pair<int, int>> getSelectedPiece() const;
 
     const Board* getBoard() const;
+
+    ActionType getCurrentActionType() const;
+
 };

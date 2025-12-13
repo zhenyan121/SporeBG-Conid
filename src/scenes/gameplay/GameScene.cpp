@@ -45,6 +45,7 @@ void GameScene::handleClick(float screenX, float screenY) {
             auto [row, col] = click.value();
             m_gameSession->handleCoordinateInput(row, col);
             m_gameSession->printBoard();
+            m_gameUIManager->updateActionType( m_gameSession->getCurrentActionType());
         } else {
             SDL_Log("invail cilck aera!");
         }
