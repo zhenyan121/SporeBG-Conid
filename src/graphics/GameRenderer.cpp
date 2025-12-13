@@ -15,23 +15,6 @@ bool GameRenderer::initialize() {
     return true;
 }
 
-void GameRenderer::beginFrame() {
-    if (!m_renderer) {
-        std::cout << "ERROR: Renderer is NULL!\n";
-        return;
-    }
-    // 清屏为白色色背景
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); 
-    SDL_RenderClear(m_renderer);
-    //std::cout << "begin frame\n";
-    
-}
-
-void GameRenderer::endFrame() {
-    // 提交到屏幕
-    //std::cout << "end frame\n";
-    SDL_RenderPresent(m_renderer);
-}
 
 
 void GameRenderer::setBoard(const Board* board) {

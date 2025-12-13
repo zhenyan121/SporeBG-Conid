@@ -18,6 +18,5 @@ public:
 private:
     // 其他私有成员变量和方法
     std::unique_ptr<MainMenuUIManager> m_mainMenuUIManager = nullptr;
-    void beginFrame();
-    void endFrame();
+
 };
