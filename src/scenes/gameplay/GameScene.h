@@ -1,7 +1,7 @@
 #pragma once
 #include "scenes/base/Scene.h"
-#include "graphics/GameRenderer.h"
-#include "graphics/CoordinateConverter.h"
+#include "graphics/game/BoardRenderer.h"
+#include "graphics/game/CoordinateConverter.h"
 #include "game/GameSession.h"
 #include "graphics/ui/UIRenderer.h"
 #include "ui/managers/GameUIManager.h"
@@ -20,7 +20,7 @@ public:
     void renderMousePosition(float x, float y) override;
 private:
     
-    std::unique_ptr<GameRenderer> m_gameRenderer;
+    std::unique_ptr<BoardRenderer> m_boardRenderer;
     std::unique_ptr<CoordinateConverter> m_CoordinateConverter;
     std::unique_ptr<GameSession> m_gameSession;
     

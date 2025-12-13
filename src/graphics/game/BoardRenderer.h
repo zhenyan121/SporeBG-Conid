@@ -14,7 +14,7 @@ struct PlayerColors {
 
 class Board;
 
-class GameRenderer
+class BoardRenderer
 {
 private:
     SDL_Renderer* m_renderer = nullptr; 
@@ -30,9 +30,9 @@ private:
     float m_pieceRadiusRatio = 0.8f; // 棋子半径相对于格子大小的比例
     PlayerColors m_colors;
 public:
-    GameRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
+    BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
     
-    ~GameRenderer();
+    ~BoardRenderer();
     // 渲染画面
     // 初始化加载纹理
     bool initialize();

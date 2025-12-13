@@ -1,32 +1,32 @@
-#include "GameRenderer.h"
+#include "BoardRenderer.h"
 #include "game/Board.h"
 #include <iostream>
-GameRenderer::GameRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer) : m_Width(WIDTH), m_Height(HEIGHT), m_renderer(renderer) {
+BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer) : m_Width(WIDTH), m_Height(HEIGHT), m_renderer(renderer) {
     m_cellSize = HEIGHT / m_boardRow;
 }
 
 
 
-GameRenderer::~GameRenderer() {
+BoardRenderer::~BoardRenderer() {
     
 }
 
-bool GameRenderer::initialize() { 
+bool BoardRenderer::initialize() { 
     return true;
 }
 
 
 
-void GameRenderer::setBoard(const Board* board) {
+void BoardRenderer::setBoard(const Board* board) {
     m_board = board;
 }
 
-void GameRenderer::drawBackground() {
+void BoardRenderer::drawBackground() {
 
 }
 
 
-void GameRenderer::drawBoard() {
+void BoardRenderer::drawBoard() {
     auto area = getBoardArea();
     
 
@@ -56,7 +56,7 @@ for (int row = 0; row < area.rows; ++row) {
 
 }
 
-void GameRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) {
+void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) {
     if (!m_board || !m_renderer) return;
 
     auto area = getBoardArea();
@@ -99,7 +99,7 @@ void GameRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) {
     }
 }
 
-BoardArea GameRenderer::getBoardArea() const {
+BoardArea BoardRenderer::getBoardArea() const {
     return {
         (m_Width - m_cellSize * m_boardCOL) / 2,
         (m_Height - m_cellSize * m_boardRow) / 2,

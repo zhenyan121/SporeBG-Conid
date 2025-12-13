@@ -31,8 +31,8 @@ set(SOURCE_FILES
     src/scenes/base/SceneManager.cpp
     src/scenes/gameplay/GameScene.cpp
     src/scenes/menu/MainMenuScene.cpp
-    src/graphics/GameRenderer.cpp
-    src/graphics/CoordinateConverter.cpp
+    src/graphics/game/BoardRenderer.cpp
+    src/graphics/game/CoordinateConverter.cpp
     src/utils/CoordinateTools.cpp
     src/graphics/font/FontManager.cpp
     src/graphics/font/TextRenderer.cpp
