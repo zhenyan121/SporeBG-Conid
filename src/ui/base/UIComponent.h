@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
-
+#include <string>
 /**
  * @brief UI组件抽象基类
  * 
@@ -71,10 +71,26 @@ public:
      */
     bool isEnabled() const { return m_isEnabled; }
 
+    /** 
+     * @brief 获取组件名称的哈希值
+     * @return 组件名称的哈希值
+     */
+    size_t getNameHash() const {
+        return std::hash<std::string>{}(m_name);
+    }
+
+    /**
+     * @brief 设置组件名称
+     * @param name 组件名称字符串
+     */
+    void setName(const std::string& name) {
+        m_name = name;
+    }
+
 protected:
     UIComponent() = default;
     SDL_FRect m_rect = {0.0f, 0.0f, 0.0f, 0.0f};    ///< 组件位置和尺寸
     bool m_isVisible = true;                      ///< 可见性标志
     bool m_isEnabled = true;                      ///< 启用标志
-
+    std::string m_name;                           ///< 组件名称
 };

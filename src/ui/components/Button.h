@@ -1,9 +1,17 @@
 #pragma once
 #include "ui/base/UIRenderData.h"
 #include "ui/base/UIComponent.h"
+#include <memory>
+
+// 前向声明，避免在头文件包含过多实现细节
+class TextRenderer;
+#include <functional>
 class Button : public UIComponent{
 public:
+    // 默认构造（不进行自动测量）
     Button();
+    // 可以传入 TextRenderer 指针以便在 setText 时立即计算文字尺寸并更新 rect
+    explicit Button(TextRenderer* textRenderer);
     ~Button() override = default;
 
     // 实现UIComponent接口
@@ -31,18 +39,28 @@ public:
      */
     void setBorder(int thickness, SDL_Color color);
 
+    void setCallback(std::function<void()> callback);
 
     ButtonData& getButtonDate() {
         m_buttonData.rect = m_rect;
         return m_buttonData;
     }
 
+    /**
+     * @brief 处理点击事件
+     * @param x 点击位置的X坐标
+     * @param y 点击位置的Y坐标
+     */
+    void handleCilck(int x, int y);
+
 private:
 
     
             
-    
+    std::function<void()> m_callback;
     ButtonData m_buttonData;
+    // 用于在 setText 时测量文本尺寸（非拥有）
+    TextRenderer* m_textRenderer = nullptr;
 
     
 };

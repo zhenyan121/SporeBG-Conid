@@ -30,13 +30,16 @@ set(SOURCE_FILES
     src/input/InputManager.cpp
     src/scenes/base/SceneManager.cpp
     src/scenes/gameplay/GameScene.cpp
+    src/scenes/menu/MainMenuScene.cpp
     src/graphics/GameRenderer.cpp
     src/graphics/CoordinateConverter.cpp
     src/utils/CoordinateTools.cpp
     src/graphics/font/FontManager.cpp
     src/graphics/font/TextRenderer.cpp
     src/ui/components/Button.cpp
+    src/ui/components/Label.cpp
     src/ui/managers/GameUIManager.cpp
+    src/ui/managers/MainMenuUIManager.cpp
     src/graphics/ui/UIRenderer.cpp
 )
 
