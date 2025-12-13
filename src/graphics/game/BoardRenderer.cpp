@@ -30,7 +30,7 @@ void BoardRenderer::drawBoard() {
     auto area = getBoardArea();
     
 
-// 绘制棋盘格子（交替颜色）
+// 绘制棋盘格子
 for (int row = 0; row < area.rows; ++row) {
     for (int col = 0; col < area.cols; ++col) {
         // 使用 SDL_FRect（浮点数）
@@ -68,8 +68,8 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             if (!piece) continue; // 没有棋子则跳过
             
             // 计算棋子中心位置
-            float centerX = area.x + col * area.cellSize + area.cellSize / 2.0f;
-            float centerY = area.y + row * area.cellSize + area.cellSize / 2.0f;
+            float x = area.x + col * area.cellSize;
+            float y = area.y + row * area.cellSize;
             
             // 确定棋子颜色
             SDL_Color color;
@@ -82,21 +82,110 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                         m_colors.P1 : m_colors.P2;
             }
             
-            // 绘制棋子（圆形）
+            
             SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
             
-            // 绘制实心圆（使用多个同心圆来近似）
-            for (float r = pieceRadius; r > 0; r -= 1.0f) {
-                SDL_FRect rect = {
-                    centerX - r,
-                    centerY - r,
-                    r * 2.0f,
-                    r * 2.0f
-                };
-                SDL_RenderFillRect(m_renderer, &rect);
-            }
+            SDL_FRect rect{
+                x + (area.cellSize - pieceRadius * 2) / 2.0f,
+                y + (area.cellSize - pieceRadius * 2) / 2.0f,
+                pieceRadius * 2,
+                pieceRadius * 2
+            };
+            
+            SDL_RenderFillRect(m_renderer, &rect);
+            
         }
     }
+}
+
+void BoardRenderer::updateMovementRange(std::optional<std::pair<int, int>> selectedPiece, ActionType tpye) {
+    // 清空当前范围以便下次更新
+    m_currentDrawRange.clear();
+    if (!m_board || !m_renderer || !selectedPiece) return;
+    if (selectedPiece == std::nullopt) return;
+    auto selectedComponent = m_board->getComponentByPieceID(m_board->getPieceID(selectedPiece->first, selectedPiece->second));
+    
+    auto currentPlayer = m_board->getPieceAt(selectedPiece->first, selectedPiece->second)->getPieceOwner();
+    switch (tpye) {
+        case ActionType::GROW:
+            // 绘制生长范围的逻辑
+            for (auto PieceID : selectedComponent) {
+                auto Neighbors = m_board->getOrthogonalNeighbors(PieceID);
+                for (auto neighborID : Neighbors) {
+                    auto pieceCoord = m_board->getCoordFromID(neighborID);
+                    const Piece* piece = m_board->getPieceAt(pieceCoord.first, pieceCoord.second);
+                    if (piece == nullptr) {
+                        m_currentDrawRange.insert(neighborID);
+                    }
+                }          
+            }
+            break;
+        case ActionType::MOVE:
+            // 绘制移动范围的逻辑 
+            for (auto PieceID : selectedComponent) {
+                auto Neighbors = m_board->getOrthogonalNeighbors(PieceID);
+                for (auto neighborID : Neighbors) {
+                    auto pieceCoord = m_board->getCoordFromID(neighborID);
+                    const Piece* piece = m_board->getPieceAt(pieceCoord.first, pieceCoord.second);
+                    if (piece == nullptr) {
+                        m_currentDrawRange.insert(neighborID);
+                    } else if (piece->getPieceOwner() != currentPlayer) {
+                        m_currentDrawRange.insert(neighborID);
+                    }
+                }          
+            }
+            break;
+        case ActionType::SPORE: {
+            // 绘制孢子范围的逻辑
+            auto SporeRange = m_board->getSporeRange(m_board->getPieceID(selectedPiece->first, selectedPiece->second));
+            for (auto neighborID : SporeRange) {
+                auto pieceCoord = m_board->getCoordFromID(neighborID);
+                const Piece* piece = m_board->getPieceAt(pieceCoord.first, pieceCoord.second);
+                if (piece == nullptr) {
+                    m_currentDrawRange.insert(neighborID);
+                }
+            }          
+        }
+            break;
+        default:
+            break;
+    }
+    
+}
+
+void BoardRenderer::drawMovementRange() {
+
+    if (!m_board || !m_renderer) return;
+
+    // 开启混合模式（重要！）
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+
+    auto area = getBoardArea();
+    float pieceRadius = m_cellSize * m_pieceRadiusRatio / 4.0f;
+    for (auto PieceID : m_currentDrawRange) {
+        auto [row, col] = m_board->getCoordFromID(PieceID);
+
+        // 计算棋子中心位置
+        float x = area.x + col * area.cellSize;
+        float y = area.y + row * area.cellSize;
+
+        SDL_FRect rect{
+                x + (area.cellSize - pieceRadius * 2) / 2.0f,
+                y + (area.cellSize - pieceRadius * 2) / 2.0f,
+                pieceRadius * 2,
+                pieceRadius * 2
+            };
+
+        SDL_SetRenderDrawColor(m_renderer, 
+            0,
+            255,
+            0,
+            100); // 半透明绿色
+
+        SDL_RenderFillRect(m_renderer, &rect);
+    }
+    // 如果需要，绘制完可以恢复原来的混合模式
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
 }
 
 BoardArea BoardRenderer::getBoardArea() const {
