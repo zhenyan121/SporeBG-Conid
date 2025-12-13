@@ -199,3 +199,7 @@ int GameSession::getOldComponentID(int row, int col) {
  const Board* GameSession::getBoard() const {
     return m_board.get();
  }
+
+ ActionType GameSession::getCurrentActionType() const {
+    return m_currentActionType;
+ }
