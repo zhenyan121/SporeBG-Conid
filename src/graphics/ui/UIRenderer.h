@@ -25,10 +25,11 @@ private:
     void renderButtonBorder(const ButtonData& buttonData);
     
     /**
-     * @brief 渲染按钮文本
+     * @brief 渲染文本
      * @param renderer SDL渲染器
      */
-    void renderButtonText(const ButtonData& buttonData);
+    template <typename Type>
+    void renderText(const Type& data);
 public:
 
     UIRenderer(SDL_Renderer* m_renderer, TextRenderer* textRenderer);
@@ -36,5 +37,10 @@ public:
     void renderUI(const UIRenderData& uiRenderData);
     
     void renderButton(const ButtonData& buttonData);
+
+    void renderLabel(const LabelData& buttonData);
+
+    // 允许外部获取内部的 TextRenderer 指针（非拥有）以便在需要时测量文本尺寸
+    TextRenderer* getTextRenderer() const { return m_textRenderer; }
 
 };
