@@ -10,6 +10,13 @@ cd build
 cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 ninja
 ```
+
+## 待添加玩法
+- 生命值
+- 道具（直接消灭一个孢子之类的）
+- 技能（将孢子发射出去，不断碰撞掉血）
+- 随机事件（例如：小于多少的孢子会死亡）
+
 ## 项目结构
 ```bash
 SporeBG-Conid/
