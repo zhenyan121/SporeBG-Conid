@@ -25,6 +25,12 @@ public:
      */
     void setText(const std::string& text, TextStyle style);
 
+    /**
+     * @brief 设置按钮文本（不改变样式）
+     * @param text 按钮文本
+     */
+    void setText(const std::string& text);
+
      /**
      * @brief 设置背景颜色
      * @param normal 正常状态颜色
