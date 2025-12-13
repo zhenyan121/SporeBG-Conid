@@ -106,11 +106,10 @@ bool Rule::canSpore(const Board* board, const int fromRow, const int fromCol, co
       int toPieceID = board->getPieceID(toRow, toCol);
       auto selectedComponent = board->getComponentByPieceID(fromPieceID);
       std::cout << "before action Component size: " << selectedComponent.size() << "\n";
-      for (auto PieceID : selectedComponent) {
-            auto SporeRegion = board->getSporeRange(PieceID);
-            if (SporeRegion.find(toPieceID) != SporeRegion.end()) {
-                  return true;
-            }
+      auto SporeRegion = board->getSporeRange(fromPieceID);
+      if (SporeRegion.find(toPieceID) != SporeRegion.end()) {
+            return true;
+            
       }
       return false;
 
