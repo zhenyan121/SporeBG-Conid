@@ -34,20 +34,25 @@ bool GameApplication::initialize() {
 
     m_uiRenderer = std:: make_unique<UIRenderer>(m_windowManager->GetRenderer(), m_textRenderer.get());
 
-    // 场景管理
-    m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer(), m_uiRenderer.get());
-
+    // 场景管理，传入窗口句柄以便 SceneManager 能获取窗口尺寸
+    m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer(), m_uiRenderer.get(), m_windowManager->GetWindow());
+    if (!m_sceneManager->initialize()) {
+        SDL_Log("SceneManager 初始化失败！");
+        return false;
+    }
     return true;
 }
 
 SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     auto result = m_inputManager->handleInputEvent(event);
      // 只有当事件是鼠标左键按下时，才触发点击逻辑
+    InputState input = m_inputManager->GetInputState();
     if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && 
         event->button.button == SDL_BUTTON_LEFT) {
-        InputState input = m_inputManager->GetInputState();
+        
         m_sceneManager->handleClickCurrent(input.mouseCilckOn);
     }
+    m_sceneManager->handleMousePosition(input.mouseCurrentPosition);
     return result;
 }
 
