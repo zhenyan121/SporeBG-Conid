@@ -43,26 +43,6 @@ void MainMenuScene::handleClick(float x, float y) {
     m_mainMenuUIManager->handleClick(x, y);
 }
 
-void MainMenuScene::beginFrame() {
-    // 开始帧渲染的逻辑
-    if (!m_renderer) {
-        SDL_Log("ERROR: Renderer is NULL!\n");
-        return;
-    }
-    // 清屏为白色色背景
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); 
-    SDL_RenderClear(m_renderer);
-    //std::cout << "begin frame\n";
-    
-
-}
-
-void MainMenuScene::endFrame() {
-    // 结束帧渲染的逻辑
-        // 提交到屏幕
-    //std::cout << "end frame\n";
-    SDL_RenderPresent(m_renderer);
-}
 
 void MainMenuScene::renderMousePosition(float x, float y) {
     m_mainMenuUIManager->UpdateMousePositon(x, y);

@@ -37,10 +37,6 @@ public:
     // 初始化加载纹理
     bool initialize();
 
-    // 帧控制
-    void beginFrame();
-    void endFrame();
-
     // 设置棋盘
     void setBoard(const Board* board);
 

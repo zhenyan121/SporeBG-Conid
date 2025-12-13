@@ -30,13 +30,13 @@ void GameScene::update() {
 }
 
 void GameScene::render() {
-    m_gameRenderer->beginFrame();
+    beginFrame();
     m_gameRenderer->drawBackground();
     m_gameRenderer->drawBoard();
     
     m_gameRenderer->drawPiece(m_gameSession->getSelectedPiece());
     m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
-    m_gameRenderer->endFrame();
+    endFrame();
 }
 
 void GameScene::handleClick(float screenX, float screenY) {
