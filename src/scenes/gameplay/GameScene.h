@@ -16,6 +16,8 @@ public:
     void update() override;
     void render() override;
     void handleClick(float screenX, float screenY) override;
+
+    void renderMousePosition(float x, float y) override;
 private:
     
     std::unique_ptr<GameRenderer> m_gameRenderer;
