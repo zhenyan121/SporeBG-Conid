@@ -1,5 +1,5 @@
 #include "UIRenderer.h"
-
+#include <iostream>
 UIRenderer::UIRenderer(SDL_Renderer* renderer, TextRenderer* textRenderer) :
     m_renderer(renderer), 
     //m_fontManager(fontManager),
@@ -30,7 +30,9 @@ void UIRenderer::renderUI(const UIRenderData& uiRenderData) {
         renderButton(button);
     }
 
-
+    for (auto& label : uiRenderData.labels) {
+        renderLabel(label);
+    }
 
     // 恢复之前的渲染状态
     SDL_SetRenderDrawColor(m_renderer, 
@@ -45,8 +47,15 @@ void UIRenderer::renderButton(const ButtonData& buttonData) {
     renderButtonBackground(buttonData);
     
     renderButtonBorder(buttonData);
-    renderButtonText(buttonData);
+    renderText<ButtonData>(buttonData);
 }
+
+void UIRenderer::renderLabel(const LabelData& labelData) {
+    //SDL_Log("start render label\n");
+    renderText<LabelData>(labelData);
+}
+
+
 
 void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
     // 设置绘制颜色
@@ -58,25 +67,26 @@ void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
     //SDL_Log("start render background\n");
     auto m_backgroundColor = buttonData.backgroundColor;
     auto m_rect = buttonData.rect;
-
+    
     SDL_SetRenderDrawColor(m_renderer, m_backgroundColor.r, m_backgroundColor.g, m_backgroundColor.b, m_backgroundColor.a);
-
+    auto [width, height] = m_textRenderer->getTextSize(buttonData.text, buttonData.textstytle);
     // 绘制普通矩形
     SDL_FRect rect = { static_cast<float>(m_rect.x), 
                         static_cast<float>(m_rect.y), 
-                        static_cast<float>(m_rect.w), 
-                        static_cast<float>(m_rect.h) };
-    SDL_RenderRect(m_renderer, &rect);
+                        static_cast<float>(width), 
+                        static_cast<float>(height) };
+    SDL_RenderFillRect(m_renderer, &rect);
 }
 
 void UIRenderer::renderButtonBorder(const ButtonData& buttonData) {
      
 }
-
-void UIRenderer::renderButtonText(const ButtonData& buttonData) {
-    auto m_text = buttonData.text;
-    auto m_rect = buttonData.rect;
-    auto m_textStyle = buttonData.textstytle;
+template <typename Type>
+void UIRenderer::renderText(const Type& data) {
+    auto m_text = data.text;
+   // std::cout <<  data.text << "\n";
+    auto m_rect = data.rect;
+    auto m_textStyle = data.textstytle;
     if (m_text.empty()) return;
     
     // 计算文本位置（居中）
@@ -85,22 +95,19 @@ void UIRenderer::renderButtonText(const ButtonData& buttonData) {
     // void renderText(SDL_Renderer* renderer, const std::string& text, 
     //                const TextStyle& style, int x, int y);
     
-    // 计算居中位置
-    // 注意：这里需要获取文本的实际大小来计算居中
-    // 由于不知道TextRenderer的具体实现，这里提供基本思路
-    
-    // 假设可以获取文本尺寸
-    // SDL_Point textSize = m_textRenderer.getTextSize(m_text, m_textStyle);
-    
-    // 计算居中位置
-    // int textX = static_cast<int>(m_rect.x + (m_rect.w - textSize.x) / 2);
-    // int textY = static_cast<int>(m_rect.y + (m_rect.h - textSize.y) / 2);
-    
-    // 临时实现：直接在中心位置渲染
-    int centerX = static_cast<int>(m_rect.x + m_rect.w / 2);
-    int centerY = static_cast<int>(m_rect.y + m_rect.h / 2);
-    
-    // 根据你的TextRenderer实际API调整
-    m_textRenderer->renderText(m_text, m_textStyle, 
-                              centerX, centerY); // true表示居中
+    // 获取文本实际尺寸以便正确居中渲染
+    auto [textW, textH] = m_textRenderer->getTextSize(m_text, m_textStyle);
+
+    // 如果组件的宽高为 0，则使用文本尺寸填充（相当于自动调整控件大小）
+    float boxW = m_rect.w;
+    float boxH = m_rect.h;
+    if (boxW <= 0.0f) boxW = static_cast<float>(textW);
+    if (boxH <= 0.0f) boxH = static_cast<float>(textH);
+
+    // 计算文本左上角坐标以实现居中
+    int textX = static_cast<int>(m_rect.x + (boxW - textW) / 2.0f);
+    int textY = static_cast<int>(m_rect.y + (boxH - textH) / 2.0f);
+
+    // 渲染文本（TextRenderer 的 x,y 为左上角）
+    m_textRenderer->renderText(m_text, m_textStyle, textX, textY);
 }
