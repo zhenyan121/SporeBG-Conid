@@ -170,7 +170,7 @@ std::pair<int, int> SceneManager::getWindowDimensions() const {
     // 获取窗口尺寸的辅助方法
     int w = 0, h = 0;
     if (m_window) {
-        SDL_GetWindowSize(m_window, &w, &h);
+        SDL_GetRenderLogicalPresentation(m_renderer, &w, &h, nullptr);
     }
     return {w > 0 ? w : 1600, h > 0 ? h : 900};
 }
