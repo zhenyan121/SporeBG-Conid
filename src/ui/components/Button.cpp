@@ -22,6 +22,18 @@ void Button::setText(const std::string& text, TextStyle style) {
     }
 }
 
+void Button::setText(const std::string& text) {
+    m_buttonData.text = text;
+
+    // 如果提供了 TextRenderer，则立即测量文本并更新控件尺寸
+    if (m_textRenderer) {
+        auto [w, h] = m_textRenderer->getTextSize(text, m_buttonData.textstytle);
+        m_rect.w = static_cast<float>(w);
+        m_rect.h = static_cast<float>(h);
+        m_buttonData.rect = m_rect;
+    }
+}
+
 void Button::setBackgroundColor(SDL_Color normal) {
     m_buttonData.backgroundColor = normal;
 }
