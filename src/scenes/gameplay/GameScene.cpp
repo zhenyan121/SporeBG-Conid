@@ -11,7 +11,7 @@ GameScene::~GameScene() {
 void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;
-    m_gameUIManager = std::make_unique<GameUIManager>();
+    m_gameUIManager = std::make_unique<GameUIManager>(renderer, uiRenderer->getTextRenderer());
     m_gameUIManager->init();
     m_gameRenderer = std::make_unique<GameRenderer>(WIDTH, HEIGHT, renderer);
     m_gameSession = std::make_unique<GameSession>();
@@ -48,4 +48,8 @@ void GameScene::handleClick(float screenX, float screenY) {
         } else {
             SDL_Log("invail cilck aera!");
         }
+}
+
+void GameScene::renderMousePosition(float x, float y) {
+    m_gameUIManager->UpdateMousePositon(x, y);
 }
