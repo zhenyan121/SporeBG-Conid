@@ -1,9 +1,10 @@
 #pragma once
 #include "utils/Config.h"
+#include "game/GameTypes.h"
 #include <SDL3/SDL.h>
 #include <optional>
 #include <utility>
-
+#include <unordered_set>
 
 struct PlayerColors {
     SDL_Color P1 = {255, 0, 0, 255};    // 红色
@@ -29,6 +30,7 @@ private:
     // 棋子绘制相关
     float m_pieceRadiusRatio = 0.8f; // 棋子半径相对于格子大小的比例
     PlayerColors m_colors;
+    std::unordered_set<int> m_currentDrawRange;
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
     
@@ -48,7 +50,9 @@ public:
     // 绘制棋子
     void drawPiece(std::optional<std::pair<int, int>> selectedPiece = std::nullopt);
 
-    
+    void updateMovementRange(std::optional<std::pair<int, int>> selectedPiece = std::nullopt,  ActionType type = ActionType::GROW);
+
+    void drawMovementRange();
     BoardArea getBoardArea() const;
 
   
