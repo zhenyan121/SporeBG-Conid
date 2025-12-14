@@ -11,21 +11,12 @@ GameUIManager::~GameUIManager() {
 }
 
 void GameUIManager::init() {
-    auto button = std::make_unique<Button>(m_textRenderer);
-    button->setBackgroundColor({255, 100, 0, 255});
-    button->setBorder(2, {0, 0, 0, 255});
-    button->setPosition(20, 20);
-    button->setEnabled(true);
-    button->setVisible(true);
-    button->setText("Please Choose", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
-    button->setName("ActionButton");
-    m_buttons.emplace(button->getNameHash(), std::move(button));
+    //m_restartCallback = restartCallback;
+    setupUIComponents();
+}
 
-    auto label = std::make_unique<Label>();
-    label->setPosition(1200, 20);
-    label->setText("0 0", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
-    label->setName("MousePositionLabel");
-    m_labels.emplace(label->getNameHash(), std::move(label));
+void GameUIManager::setCallback(std::function<void()> restartCallback) {
+    m_restartCallback = restartCallback;
 }
 
 
@@ -92,4 +83,100 @@ void GameUIManager::updateActionType(ActionType type) {
                 break;
         }
     }
+}
+
+void GameUIManager::updateGameState(GameState state) {
+    if (m_currentGameState == state) {
+        SDL_Log("State unchanged, returning early\n");
+        return;
+    }
+    // 根据传入的 GameState 更新 UI 组件状态
+    {
+        auto buttonIt = m_buttons.find(makeHash("RestartButton"));
+        if (buttonIt != m_buttons.end()) {
+            auto& button = buttonIt->second;
+            if (state != GameState::GAME_RUNING) {
+                //button->setBackgroundColor({255, 215, 0, 255}); // 金色
+                //button->setText("GAME OVER");
+                button->setVisible(true);
+                button->setEnabled(true);
+            } else {
+                button->setVisible(false);
+                button->setEnabled(false);
+            }
+        }
+    }
+    {
+        auto actionButtonIt = m_buttons.find(makeHash("ActionButton"));
+        if (actionButtonIt != m_buttons.end()) {
+            auto& actionButton = actionButtonIt->second;
+            if (state != GameState::GAME_RUNING) {
+                actionButton->setEnabled(false);
+                actionButton->setVisible(false);
+            } else {
+                actionButton->setEnabled(true);
+                actionButton->setVisible(true);
+            }
+        }
+    }
+    // 保存当前游戏状态，避免后续相同状态更新被误判为无变化
+    m_currentGameState = state;
+}
+
+void GameUIManager::setupUIComponents() {
+    // 这里可以添加更多的UI组件初始化逻辑
+
+    auto button = std::make_unique<Button>(m_textRenderer);
+    button->setBackgroundColor({255, 100, 0, 255});
+    button->setBorder(2, {0, 0, 0, 255});
+    button->setPosition(20, 20);
+    button->setEnabled(true);
+    button->setVisible(true);
+    button->setText("Please Choose", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
+    button->setName("ActionButton");
+    m_buttons.emplace(button->getNameHash(), std::move(button));
+
+    auto label = std::make_unique<Label>();
+    label->setPosition(1200, 20);
+    label->setText("0 0", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
+    label->setName("MousePositionLabel");
+    m_labels.emplace(label->getNameHash(), std::move(label));
+
+    auto restartButton = std::make_unique<Button>(
+        "Restart",
+        (TextStyle){"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}},
+        700, 
+        500, 
+        m_textRenderer,
+        (SDL_Color){100, 255, 100, 255}
+    );
+
+    restartButton->setCallback([this](){
+        if (m_restartCallback) {
+            m_restartCallback();
+        }
+    });
+    restartButton->setName("RestartButton");
+    restartButton->setVisible(false); // 初始时隐藏
+    restartButton->setEnabled(false);
+    m_buttons.emplace(restartButton->getNameHash(), std::move(restartButton));
+    
+
+}
+
+
+bool GameUIManager::handleClick(float x, float y) {
+    auto logicalPos = physicalToLogical(static_cast<float>(x), static_cast<float>(y), m_renderer);
+    int lx = logicalPos.first;
+    int ly = logicalPos.second;
+
+    // 遍历所有按钮，检查点击位置是否在按钮范围内
+    for (auto& [id, button] : m_buttons) {
+        if (button->isEnabled() && button->isVisible()) {
+                if(button->handleCilck(lx, ly)) {
+                    return true;
+                }    
+        }
+    }
+    return false;
 }

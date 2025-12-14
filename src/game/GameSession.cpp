@@ -19,6 +19,15 @@ void GameSession::cleanup() {
 
 
 bool GameSession::initialize() {
+
+    // 重置游戏状态为运行中
+    m_gameState = GameState::GAME_RUNING;
+    
+    // 重置其它必要状态
+    m_currentPlayer = PlayerID::P1;
+    m_currentActionType = ActionType::GROW;
+    m_seletedPiece = std::nullopt;
+
     // 初始化游戏特定资源（棋盘、棋子等）
     if (!m_board->initialize()) {
         return false;
@@ -109,6 +118,14 @@ void GameSession::nextTurn() {
 }
 
 bool GameSession::handleCoordinateInput(int row, int col) {
+    if (!m_board) {
+        std::cout << "board is null\n";
+        return false;
+    }
+    if (m_gameState != GameState::GAME_RUNING) {
+        std::cout << "game is not running\n";
+        return false;
+    }
     // 如果当前没有选择棋子就选择棋子
     if (m_seletedPiece == std::nullopt) {
         if (!Rule::canbeSelect(m_board->getPieceAt(row, col), m_currentPlayer)) {
@@ -162,7 +179,15 @@ bool GameSession::handleCoordinateInput(int row, int col) {
         return false;
     }
     
-    
+    auto opponent = (m_currentPlayer == PlayerID::P1) ? PlayerID::P2 : PlayerID::P1;;
+    //检查胜利条件
+    if (m_board->getAllPlayerComponent(opponent).empty()) {
+        m_gameState = GameState::GAME_WIN;
+        m_actionableComponents.clear();
+        m_seletedPiece = std::nullopt;
+        std::cout << "Player " << ((m_currentPlayer == PlayerID::P1) ? "P1" : "P2") << " wins!\n";
+        return true;
+    }
     // 执行完之后检查是否m_actionableComponents为空，
 
     // m_actionableComponents只保存了ID，但是在执行棋子之后会处理组件的连通性，rule会获取到新的连通性，不过这样更符合逻辑
@@ -193,6 +218,9 @@ int GameSession::getOldComponentID(int row, int col) {
 }
 
  std::optional<std::pair<int, int>> GameSession::getSelectedPiece() const {
+    if (m_gameState != GameState::GAME_RUNING) {
+        return std::nullopt;
+    }
     return m_seletedPiece;
  }
 
@@ -202,4 +230,8 @@ int GameSession::getOldComponentID(int row, int col) {
 
  ActionType GameSession::getCurrentActionType() const {
     return m_currentActionType;
+ }
+
+ GameState GameSession::getGameState() const {
+    return m_gameState;
  }

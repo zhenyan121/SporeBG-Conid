@@ -18,6 +18,8 @@ public:
     void handleClick(float screenX, float screenY) override;
 
     void renderMousePosition(float x, float y) override;
+
+    void restartGame();
 private:
     
     std::unique_ptr<BoardRenderer> m_boardRenderer;

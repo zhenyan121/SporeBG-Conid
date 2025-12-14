@@ -198,3 +198,29 @@ BoardArea BoardRenderer::getBoardArea() const {
     };
 }
 
+void BoardRenderer::setGameState(GameState state) {
+    m_gameState = state;
+}
+
+void BoardRenderer::renderBlackOverlay() {
+    if (!m_renderer) return;
+    if (m_gameState == GameState::GAME_RUNING) return;
+    // 开启混合模式（重要！）
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+
+    // 设置黑色半透明颜色
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 150); // 半透明黑色
+
+    // 绘制覆盖整个屏幕的矩形
+    SDL_FRect rect{
+        0.0f,
+        0.0f,
+        static_cast<float>(m_Width),
+        static_cast<float>(m_Height)
+    };
+
+    SDL_RenderFillRect(m_renderer, &rect);
+
+    // 恢复原来的混合模式
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
+}
