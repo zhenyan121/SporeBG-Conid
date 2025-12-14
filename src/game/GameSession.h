@@ -21,6 +21,7 @@ private:
     // 如果操作执行成功就从
     void markComponentAsUsed(int componentID);
     
+    GameState m_gameState = GameState::GAME_RUNING;
 
 public:
     GameSession();
@@ -54,5 +55,7 @@ public:
     const Board* getBoard() const;
 
     ActionType getCurrentActionType() const;
+
+    GameState getGameState() const;
 
 };

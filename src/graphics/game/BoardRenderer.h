@@ -31,6 +31,9 @@ private:
     float m_pieceRadiusRatio = 0.8f; // 棋子半径相对于格子大小的比例
     PlayerColors m_colors;
     std::unordered_set<int> m_currentDrawRange;
+
+    GameState m_gameState = GameState::GAME_RUNING;
+
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
     
@@ -55,6 +58,9 @@ public:
     void drawMovementRange();
     BoardArea getBoardArea() const;
 
+    void setGameState(GameState state);
+       
+    void renderBlackOverlay();
   
 };
 

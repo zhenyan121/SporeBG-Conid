@@ -12,6 +12,18 @@ public:
     Button();
     // 可以传入 TextRenderer 指针以便在 setText 时立即计算文字尺寸并更新 rect
     explicit Button(TextRenderer* textRenderer);
+
+    explicit Button(
+        const std::string& text,
+        TextStyle style = {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}},
+        int x = 0,
+        int y = 0,
+        TextRenderer* textRenderer = nullptr,
+        SDL_Color backgroundColor = {200, 200, 200, 255},
+        int borderThickness = 0,
+        SDL_Color borderColor = {0, 0, 0, 255}
+
+    );
     ~Button() override = default;
 
     // 实现UIComponent接口
@@ -57,7 +69,7 @@ public:
      * @param x 点击位置的X坐标
      * @param y 点击位置的Y坐标
      */
-    void handleCilck(int x, int y);
+    bool handleCilck(int x, int y);
 
 private:
 

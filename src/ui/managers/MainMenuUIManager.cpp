@@ -72,6 +72,8 @@ void MainMenuUIManager::handleClick(float x, float y) {
     auto logicPos = physicalToLogical(x, y, m_renderer);
     for (auto& buttonPair : m_buttons) {
         SDL_Log("Handling click at logical position (%d, %d)\n", logicPos.first, logicPos.second);
-        buttonPair.second->handleCilck(logicPos.first, logicPos.second);
+        if (buttonPair.second->handleCilck(logicPos.first, logicPos.second)) {
+            return;
+        }
     }
 }

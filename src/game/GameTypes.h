@@ -15,14 +15,9 @@ enum class ActionType {
 };
 
 enum class GameState {
-    MAIN_MENU,        // 主菜单（开始界面）
-    SETTINGS,         // 设置界面（音量、画质等）
-    GAME_SETUP,       // 对局前的设置（选择模式、玩家类型等）
-    IN_GAME,          // 正在对局中（核心逻辑运行）
-    PAUSED,           // 游戏暂停（可返回菜单或继续）
-    GAME_OVER,        // 对局结束（显示胜负/平局）
-    TUTORIAL,         // 教程模式（可选）
-    EXITING           // 退出确认或正在退出
+    GAME_RUNING,    // 游戏进行中
+    GAME_LOSE,  // 游戏失败
+    GAME_WIN,   // 游戏胜利
 };
 
 enum class GameMode {
