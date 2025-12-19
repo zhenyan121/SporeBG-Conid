@@ -53,10 +53,13 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
         m_sceneManager->handleClickCurrent(input.mouseCilckOn);
     }
     m_sceneManager->handleMousePosition(input.mouseCurrentPosition);
+    m_windowManager->setFullscreen(input.isFullscreen);
     return result;
 }
 
 void GameApplication::run() {
+    m_windowManager->Clear();
     m_sceneManager->updateCurrent();
     m_sceneManager->renderCurrent();
+    m_windowManager->Present();
 }

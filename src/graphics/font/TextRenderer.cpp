@@ -91,7 +91,7 @@ TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& 
         SDL_Log("错误：无法创建纹理\n");
         return result;
     }
-    
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     // 保存结果
     result.texture = texture;
     result.width = width;

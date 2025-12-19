@@ -36,7 +36,7 @@ TTF_Font* FontManager::loadFont(const std::string& fontID, int ptSize) {
         // 字体加载失败，抛出异常
         throw std::runtime_error("无法加载字体: " + fontID);
     }
-    
+    TTF_SetFontHinting(font, TTF_HINTING_MONO);  // 单色渲染，不抗锯齿    
     // 将新加载的字体存入缓存
     m_fonts[key] = font;
     return font;

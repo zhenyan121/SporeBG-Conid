@@ -7,6 +7,7 @@ struct GameConfig {
     int windowHeight = 900;
     std::string windowTitle = "孢子棋";
     bool vsync = true;
+    int uiScale = 2;
 } ;
 
 // 获取棋盘渲染区域信息（用于坐标转换）

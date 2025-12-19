@@ -31,11 +31,11 @@ void MainMenuScene::update() {
 }
 
 void MainMenuScene::render() {
-    beginFrame();
+    
     // 渲染场景内容
     const UIRenderData& uiRenderData = m_mainMenuUIManager->getUIRenderData();
     m_uiRenderer->renderUI(uiRenderData);
-    endFrame();
+    
 }
 
 void MainMenuScene::handleClick(float x, float y) {

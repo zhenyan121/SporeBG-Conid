@@ -11,6 +11,10 @@ cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COM
 ninja
 ```
 
+## 目前更新计划
+- 使用位图渲染文字，移除TTF
+
+
 ## 待添加玩法
 - 生命值
 - 道具（直接消灭一个孢子之类的）

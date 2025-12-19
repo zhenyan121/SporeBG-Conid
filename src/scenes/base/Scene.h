@@ -68,7 +68,7 @@ protected:
     SDL_Renderer* m_renderer;   ///< SDL 渲染器指针
     EventCallback m_eventCallback;  ///< 场景事件回调函数
 
-    void beginFrame() {
+    /*void beginFrame() {
         if (!m_renderer) {
             SDL_Log("Renderer is null in beginFrame!");
             return;
@@ -77,12 +77,12 @@ protected:
         SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); 
         SDL_RenderClear(m_renderer);
         //std::cout << "begin frame\n";
-    }
+    }*/
 
-    void endFrame() {
+    /*void endFrame() {
         // 提交到屏幕
         //std::cout << "end frame\n";
         SDL_RenderPresent(m_renderer);
-    }
+    }*/
 };
 
