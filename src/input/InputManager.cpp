@@ -24,6 +24,11 @@ SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
             m_currentInputState.mouseCurrentPosition = {static_cast<float>(event->motion.x), 
                                                         static_cast<float>(event->motion.y)};
             break;
+        case SDL_EVENT_KEY_DOWN:
+            if (event->key.key == SDLK_F11) {
+                m_currentInputState.isFullscreen = !m_currentInputState.isFullscreen;
+            }
+            break;
     }
     return SDL_APP_CONTINUE;
 }
