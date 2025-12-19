@@ -14,7 +14,7 @@ public:
     void Clear();
     //呈现窗口
     void Present();
-
+    bool setFullscreen(bool isFullscreen);
     
     SDL_Renderer* GetRenderer();
     SDL_Window* GetWindow();
@@ -25,5 +25,5 @@ private:
     SDL_Renderer* m_renderer;
     int m_width;
     int m_height;
-
+    bool m_isFullscreen = false;
 };

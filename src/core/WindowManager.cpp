@@ -34,6 +34,7 @@ bool WindowManager::Initialize(GameConfig& config) {
                  "创建渲染器失败: %s", SDL_GetError());
                  return false;
     }
+    // 关键设置：启用像素模式
     
     // 设置逻辑呈现模式，实现分辨率自适应[3](@ref)
     SDL_SetRenderLogicalPresentation(m_renderer,
@@ -66,4 +67,14 @@ SDL_Renderer* WindowManager::GetRenderer() {
 
 SDL_Window* WindowManager::GetWindow() {
     return m_window;
+}
+
+bool WindowManager::setFullscreen(bool isFullscreen) {
+    if (isFullscreen == m_isFullscreen) {
+        return true; // 状态未改变，直接返回
+    }
+    SDL_SetWindowFullscreen(m_window, isFullscreen);
+    m_isFullscreen = isFullscreen;
+    
+    return true;
 }
