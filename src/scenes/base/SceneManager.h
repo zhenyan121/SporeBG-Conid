@@ -125,7 +125,7 @@ private:
     std::stack<std::shared_ptr<Scene>> m_scenes;                                   ///< 场景栈，存储场景层级关系（使用 shared_ptr）    
     std::unordered_map<std::string, std::shared_ptr<Scene>> m_sceneCache;          ///< 场景缓存，按名字缓存场景以便切换时复用
     std::unordered_map<std::string, std::function<std::shared_ptr<Scene>()>> m_sceneFactories; ///< 场景工厂映射，按名字动态创建场景实例
-    
+
     /**
      * @brief   获取窗口尺寸的辅助方法
      * @return  返回 {宽度, 高度}，如果获取失败则返回默认值 {1600, 900}
