@@ -18,7 +18,7 @@ bool WindowManager::Initialize(GameConfig& config) {
     "孢子棋",                          // 窗口标题，显示在标题栏上         
     m_logicalWidth,                    // 窗口的逻辑宽度（例如 800），用于统一布局，不受屏幕 DPI 影响
     m_logicalHeight,                   // 窗口的逻辑高度（例如 600）
-    //SDL_WINDOW_HIGH_PIXEL_DENSITY |   // 启用高像素密度支持（HiDPI/Retina），确保在高分屏上画面清晰
+    SDL_WINDOW_HIGH_PIXEL_DENSITY |   // 启用高像素密度支持（HiDPI/Retina），确保在高分屏上画面清晰
     SDL_WINDOW_RESIZABLE              // 允许用户调整窗口大小（可拉伸）
 );
     if (!m_window) {
@@ -54,7 +54,8 @@ bool WindowManager::Initialize(GameConfig& config) {
         m_logicalWidth,
         m_logicalHeight
     );
-
+    // 设置纹理缩放模式为最近邻
+    SDL_SetTextureScaleMode(m_logicalTexture, SDL_SCALEMODE_NEAREST);
 
     return true;
 }
@@ -74,6 +75,17 @@ void WindowManager::Clear() {
     
 }
 
+/*
+void WindowManager::Clear() {
+    
+    // 设置画笔颜色
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); // 白色背景
+    // 使用画笔颜色填充整个逻辑画布
+    SDL_RenderClear(m_renderer);
+    
+}
+*/
+
 void WindowManager::Present() {
 
     // 4. 切回默认渲染目标（窗口）
@@ -89,6 +101,7 @@ void WindowManager::Present() {
     );
     SDL_RenderPresent(m_renderer);
 }
+
 
 SDL_Renderer* WindowManager::GetRenderer() {
     return m_renderer;
