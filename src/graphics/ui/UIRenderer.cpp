@@ -71,10 +71,11 @@ void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
     SDL_SetRenderDrawColor(m_renderer, m_backgroundColor.r, m_backgroundColor.g, m_backgroundColor.b, m_backgroundColor.a);
     auto [width, height] = m_textRenderer->getTextSize(buttonData.text, buttonData.textstytle);
     // 绘制普通矩形
-    SDL_FRect rect = { static_cast<float>(m_rect.x), 
-                        static_cast<float>(m_rect.y), 
-                        static_cast<float>(width), 
-                        static_cast<float>(height) };
+    SDL_FRect rect = { static_cast<float>(m_rect.x) + 0.375f, 
+                        static_cast<float>(m_rect.y) + 0.375f, 
+                        static_cast<float>(m_rect.w) - 0.75f, 
+                        static_cast<float>(m_rect.h) - 0.75f };
+    //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
     SDL_RenderFillRect(m_renderer, &rect);
 }
 
