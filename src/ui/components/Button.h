@@ -1,6 +1,7 @@
 #pragma once
 #include "ui/base/UIRenderData.h"
 #include "ui/base/UIComponent.h"
+#include "utils/Config.h"
 #include <memory>
 
 // 前向声明，避免在头文件包含过多实现细节
@@ -10,15 +11,15 @@ class Button : public UIComponent{
 public:
     // 默认构造（不进行自动测量）
     Button();
-    // 可以传入 TextRenderer 指针以便在 setText 时立即计算文字尺寸并更新 rect
-    explicit Button(TextRenderer* textRenderer);
 
     explicit Button(
         const std::string& text,
         TextStyle style = {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}},
         int x = 0,
         int y = 0,
-        TextRenderer* textRenderer = nullptr,
+        int w = UI::ButtonSize,
+        int h = UI::ButtonSize,
+        //TextRenderer* textRenderer = nullptr,
         SDL_Color backgroundColor = {200, 200, 200, 255},
         int borderThickness = 0,
         SDL_Color borderColor = {0, 0, 0, 255}
@@ -78,7 +79,7 @@ private:
     std::function<void()> m_callback;
     ButtonData m_buttonData;
     // 用于在 setText 时测量文本尺寸（非拥有）
-    TextRenderer* m_textRenderer = nullptr;
+    //TextRenderer* m_textRenderer = nullptr;
 
     
 };

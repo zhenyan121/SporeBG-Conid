@@ -41,6 +41,7 @@ set(SOURCE_FILES
     src/ui/managers/GameUIManager.cpp
     src/ui/managers/MainMenuUIManager.cpp
     src/graphics/ui/UIRenderer.cpp
+    src/graphics/font/BitmapFont.cpp
 )
 
 
@@ -54,6 +55,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         SDL3::SDL3
         SDL3_ttf::SDL3_ttf
+        SDL3_image::SDL3_image
 )
 
 # ========== Windows: 复制 DLL ==========
@@ -81,6 +83,9 @@ if (WIN32)
                 $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${STDCPP_DLL_PATH}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+             COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:SDL3_image::SDL3_image>
                 $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMENT "Copying MinGW runtime DLLs"
         )

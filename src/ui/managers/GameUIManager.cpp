@@ -126,10 +126,10 @@ void GameUIManager::updateGameState(GameState state) {
 void GameUIManager::setupUIComponents() {
     // 这里可以添加更多的UI组件初始化逻辑
 
-    auto button = std::make_unique<Button>(m_textRenderer);
+    auto button = std::make_unique<Button>();
     button->setBackgroundColor({255, 100, 0, 255});
     button->setBorder(2, {0, 0, 0, 255});
-    button->setPosition(20, 20);
+    button->setRect(20, 20, 200, 100);
     button->setEnabled(true);
     button->setVisible(true);
     button->setText("Please Choose", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
@@ -137,18 +137,16 @@ void GameUIManager::setupUIComponents() {
     m_buttons.emplace(button->getNameHash(), std::move(button));
 
     auto label = std::make_unique<Label>();
-    label->setPosition(1200, 20);
+    label->setRect(1200, 20, 200, 50);
     label->setText("0 0", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
     label->setName("MousePositionLabel");
     m_labels.emplace(label->getNameHash(), std::move(label));
 
     auto restartButton = std::make_unique<Button>(
         "Restart",
-        (TextStyle){"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}},
+        (TextStyle){"unifont.otf", 48, {0, 0, 0, 255}},
         700, 
-        500, 
-        m_textRenderer,
-        (SDL_Color){100, 255, 100, 255}
+        500
     );
 
     restartButton->setCallback([this](){

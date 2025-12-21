@@ -16,7 +16,8 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include "Textstyle.h"
 #include "FontManager.h"
-
+#include "BitmapFont.h"
+#include <memory>
 /**
  * @class   TextRenderer
  * @brief   文本渲染器
@@ -163,5 +164,5 @@ private:
      * @see     CachedText, m_cache
      */
     CachedText createAndCacheTexture(const std::string& text, TextStyle style);
-
+    //std::unique_ptr<BitmapFont> m_bitmapFont;
 };
