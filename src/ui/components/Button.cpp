@@ -1,24 +1,25 @@
 #include "Button.h"
-#include "graphics/font/TextRenderer.h"
+//#include "graphics/font/TextRenderer.h"
 
 Button::Button()
 {
 
 }
 
-Button::Button(TextRenderer* textRenderer) : m_textRenderer(textRenderer) {
-}
+
 
 Button::Button(
     const std::string& text,
     TextStyle style,
     int x,
     int y,
-    TextRenderer* textRenderer,
+    int w,
+    int h,
+    //TextRenderer* textRenderer,
     SDL_Color backgroundColor,
     int borderThickness,
     SDL_Color borderColor
-) : m_textRenderer(textRenderer)
+) //: m_textRenderer(textRenderer)
 {
     m_rect.x = static_cast<float>(x);
     m_rect.y = static_cast<float>(y);
@@ -29,12 +30,14 @@ Button::Button(
     m_buttonData.borderColor = borderColor;
 
     // 如果提供了 TextRenderer，则立即测量文本并更新控件尺寸
-    if (m_textRenderer) {
+    /*if (m_textRenderer) {
         auto [w, h] = m_textRenderer->getTextSize(text, style);
         m_rect.w = static_cast<float>(w);
         m_rect.h = static_cast<float>(h);
         m_buttonData.rect = m_rect;
-    }
+    }*/
+    m_rect.w = static_cast<float>(w);
+    m_rect.h = static_cast<float>(h);
 }
 
 
@@ -43,24 +46,24 @@ void Button::setText(const std::string& text, TextStyle style) {
     m_buttonData.textstytle = style;
 
     // 如果提供了 TextRenderer，则立即测量文本并更新控件尺寸
-    if (m_textRenderer) {
+    /*if (m_textRenderer) {
         auto [w, h] = m_textRenderer->getTextSize(text, style);
         m_rect.w = static_cast<float>(w);
         m_rect.h = static_cast<float>(h);
         m_buttonData.rect = m_rect;
-    }
+    }*/
 }
 
 void Button::setText(const std::string& text) {
     m_buttonData.text = text;
 
     // 如果提供了 TextRenderer，则立即测量文本并更新控件尺寸
-    if (m_textRenderer) {
+    /*if (m_textRenderer) {
         auto [w, h] = m_textRenderer->getTextSize(text, m_buttonData.textstytle);
         m_rect.w = static_cast<float>(w);
         m_rect.h = static_cast<float>(h);
         m_buttonData.rect = m_rect;
-    }
+    }*/
 }
 
 void Button::setBackgroundColor(SDL_Color normal) {

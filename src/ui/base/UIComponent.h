@@ -34,9 +34,13 @@ public:
      * @brief 设置组件位置
      * @param x X坐标（屏幕像素）
      * @param y Y坐标（屏幕像素）
+     * @param w 宽度（屏幕像素）
+     * @param h 高度（屏幕像素）
      */
 
-    virtual void setPosition(int x, int y) { 
+    virtual void setRect(int x, int y, int w, int h) {
+        m_rect.w = static_cast<float>(w); 
+        m_rect.h = static_cast<float>(h);
         m_rect.x = static_cast<float>(x); 
         m_rect.y = static_cast<float>(y); 
     }

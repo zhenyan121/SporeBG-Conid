@@ -5,7 +5,8 @@ TextRenderer::TextRenderer(SDL_Renderer* renderer, FontManager* fontManager) :
                             m_fontManager(fontManager),
                             m_renderer(renderer)
 {
-
+    //m_bitmapFont = std::make_unique<BitmapFont>();
+    //m_bitmapFont->load("assets/fonts/sanhan.fnt", renderer);
 }
 
 TextRenderer::~TextRenderer() {
@@ -62,6 +63,8 @@ void TextRenderer::renderText(const std::string& text, TextStyle style, int x, i
                        static_cast<float>(cached.width), 
                        static_cast<float>(cached.height) };
     SDL_RenderTexture(m_renderer, cached.texture, NULL, &dest);
+    
+   //m_bitmapFont->drawText(text, x, y);
 }
 
 TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& text, TextStyle style) {
@@ -91,6 +94,7 @@ TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& 
         SDL_Log("错误：无法创建纹理\n");
         return result;
     }
+    // 设置纹理缩放模式为最近邻
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     // 保存结果
     result.texture = texture;

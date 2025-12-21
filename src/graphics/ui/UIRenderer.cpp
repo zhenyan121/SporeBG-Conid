@@ -99,14 +99,14 @@ void UIRenderer::renderText(const Type& data) {
     auto [textW, textH] = m_textRenderer->getTextSize(m_text, m_textStyle);
 
     // 如果组件的宽高为 0，则使用文本尺寸填充（相当于自动调整控件大小）
-    float boxW = m_rect.w;
-    float boxH = m_rect.h;
-    if (boxW <= 0.0f) boxW = static_cast<float>(textW);
-    if (boxH <= 0.0f) boxH = static_cast<float>(textH);
+    int boxW = m_rect.w;
+    int boxH = m_rect.h;
+    if (boxW <= 0) boxW = textW;
+    if (boxH <= 0) boxH = textH;
 
     // 计算文本左上角坐标以实现居中
-    int textX = static_cast<int>(m_rect.x + (boxW - textW) / 2.0f);
-    int textY = static_cast<int>(m_rect.y + (boxH - textH) / 2.0f);
+    int textX = m_rect.x + (boxW - textW) / 2;
+    int textY = m_rect.y + (boxH - textH) / 2;
 
     // 渲染文本（TextRenderer 的 x,y 为左上角）
     m_textRenderer->renderText(m_text, m_textStyle, textX, textY);
