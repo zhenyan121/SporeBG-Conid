@@ -6,9 +6,11 @@ struct GameConfig {
     /*
         tileSize: 16x16 每个格子的逻辑大小（像素）
         屏幕 = 20 × 11 tiles = 320x176 逻辑分辨率
+        640x360 逻辑分辨率（窗口大小的1/2）
+        画面更高清晰
     */
-    int logicalWidth = 320;
-    int logicalHeight = 180;
+    int logicalWidth = 640;
+    int logicalHeight = 360;
     std::string windowTitle = "孢子棋";
     bool vsync = true;
     int scale = 2;

@@ -1,5 +1,6 @@
 #include "MainMenuUIManager.h"
 #include "utils/CoordinateTools.h"
+#include "ui/base/UIWidgetFactory.h"
 MainMenuUIManager::MainMenuUIManager(SDL_Renderer* renderer,
     TextRenderer* textRenderer,
     SceneEventCallback eventCallback) {
@@ -13,28 +14,13 @@ MainMenuUIManager::~MainMenuUIManager() {
 }
 
 void MainMenuUIManager::init() {
-    auto button = std::make_unique<Button>();
+    auto startButton = UIWidgetFactory::createStandardButton(
+        "StartButton", "开始游戏", 0, 0,
+        [this]() { m_eventCallback("GameScene"); }
+    );
     
-    button->setBackgroundColor({0, 150, 255, 255});
-
-    button->setBorder(2, {0, 0, 0, 255});
-
-    button->setRect(0, 0, UI::ButtonSize * 4, UI::ButtonSize * 2);
-    
-    button->setName("StartButton");
-    
-    button->setText("Start Game", {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE, {255, 255, 255, 255}});
-    
-    button->setCallback([this](){
-        SDL_Log("Start Game button clicked!");
-        m_eventCallback("GameScene");
-    });
-    
-    m_buttons.emplace(button->getNameHash(), std::move(button));
-    auto label = std::make_unique<Label>();
-    label->setRect(1200, 20, 200, 50);
-    label->setText("0 0", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
-    label->setName("MousePositionLabel");
+    m_buttons.emplace(startButton->getNameHash(), std::move(startButton));
+    auto label = UIWidgetFactory::createStandardLabel("MousePositionLabel", "0 0", 240, 0);
     m_labels.emplace(label->getNameHash(), std::move(label));
 }
 

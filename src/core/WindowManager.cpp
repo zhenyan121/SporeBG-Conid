@@ -35,7 +35,8 @@ bool WindowManager::Initialize(GameConfig& config) {
                  return false;
     }
     
-    // 关键设置：启用像素模式
+     
+
     
    /* // 设置逻辑呈现模式，实现分辨率自适应[3](@ref)
     SDL_SetRenderLogicalPresentation(m_renderer,
