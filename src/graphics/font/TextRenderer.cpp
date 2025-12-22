@@ -69,7 +69,65 @@ void TextRenderer::renderText(const std::string& text, TextStyle style, int x, i
 
 TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& text, TextStyle style) {
     CachedText result = {nullptr, 0, 0, std::time(nullptr)};
+    /*
+    // 获取字体 - 需要大号字体用于高清渲染
+    const int TARGET_SCALE = 4; // 4倍超采样
+    int largeFontSize = style.fontSize * TARGET_SCALE;
+    TTF_Font* largeFont = m_fontManager->getFont(style.fontID, largeFontSize);
+
+    if (!largeFont) {
+        SDL_Log("错误：字体未找到 %s\n", style.fontID.c_str());
+        return result;
+    }
+
+     // 1. 创建高清离屏纹理（大尺寸）
+    int targetWidth = 0, targetHeight = 0;
+
+    // SDL3 使用 TTF_GetTextSize 替代 TTF_SizeText
     
+    if (TTF_GetTextSize(largeFont, text.c_str(), &targetWidth, &targetHeight) < 0) {
+        SDL_Log("错误：无法测量文本尺寸: %s\n", text.c_str());
+        return result;
+    }
+    
+    // 计算高清纹理尺寸
+    int hiResWidth = targetWidth * TARGET_SCALE;
+    int hiResHeight = targetHeight * TARGET_SCALE;
+    
+    // 创建高清渲染目标纹理
+    SDL_Texture* hiResTexture = SDL_CreateTexture(
+        m_renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        hiResWidth,
+        hiResHeight
+    );
+    
+    if (!hiResTexture) {
+        SDL_Log("错误：无法创建高清纹理\n");
+        return result;
+    }
+    
+    // 设置高清纹理属性
+    SDL_SetTextureScaleMode(hiResTexture, SDL_SCALEMODE_NEAREST);
+    SDL_SetTextureBlendMode(hiResTexture, SDL_BLENDMODE_BLEND);
+    
+    // 2. 渲染到大尺寸高清纹理
+    SDL_Texture* prevTarget = SDL_GetRenderTarget(m_renderer);
+    SDL_SetRenderTarget(m_renderer, hiResTexture);
+    
+    // 用透明色清空高清纹理
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+    SDL_RenderClear(m_renderer);
+    
+
+    // 创建文字表面
+    SDL_Surface* surface = TTF_RenderText_Solid(largeFont, text.c_str(),text.length(), style.color);
+    if (!surface) {
+        SDL_Log("错误：无法创建文字表面 '%s'\n", text.c_str());
+        return result;
+    }
+    */
     // 获取字体
     TTF_Font* font = m_fontManager->getFont(style.fontID, style.fontSize);
     if (!font) {
