@@ -1,9 +1,11 @@
 #include "TextRenderer.h"
 #include <algorithm>
 #include <vector>
-TextRenderer::TextRenderer(SDL_Renderer* renderer, FontManager* fontManager) :
+#include <iostream>
+TextRenderer::TextRenderer(SDL_Renderer* renderer, FontManager* fontManager, const Viewport& viewport) :
                             m_fontManager(fontManager),
-                            m_renderer(renderer)
+                            m_renderer(renderer),
+                            m_viewport(viewport)
 {
     //m_bitmapFont = std::make_unique<BitmapFont>();
     //m_bitmapFont->load("assets/fonts/sanhan.fnt", renderer);
@@ -13,7 +15,7 @@ TextRenderer::~TextRenderer() {
     clearCache();
 }
 
-std::pair<int, int> TextRenderer::getTextSize(const std::string& text, TextStyle style) {
+std::pair<int, int> TextRenderer::getLogicalTextSize(const std::string& text, TextStyle style) {
     auto key = makeHash(text, style);
     auto it = m_cache.find(key);
     
@@ -29,46 +31,60 @@ std::pair<int, int> TextRenderer::getTextSize(const std::string& text, TextStyle
     if (!cached.texture) {
         return {0, 0};
     }
-    
-    return {cached.width, cached.height};
+
+    return {cached.width / m_viewport.scale, cached.height / m_viewport.scale};
 }
 
-void TextRenderer::renderText(const std::string& text, TextStyle style, int x, int y) {
-    auto key = makeHash(text, style);
-    auto it = m_cache.find(key);
+void TextRenderer::renderText(const std::string& text, TextStyle style, int logicalX, int logicalY) {
     
-    // 查找缓存
-    if (it != m_cache.end()) {
-        // 更新最后访问时间
-        it->second.lastAccessTime = std::time(nullptr);
-        
-        // 使用缓存的纹理,  SDL_FRect为浮点数矩形
-        SDL_FRect dest = { static_cast<float>(x), static_cast<float>(y), 
-                            static_cast<float>(it->second.width), 
-                            static_cast<float>(it->second.height) };
-
-        // 绘制材质 NULL 的含义：绘制整个纹理（从 (0,0) 到纹理的完整宽高） &dest 目标区域
-        SDL_RenderTexture(m_renderer, it->second.texture, NULL, &dest);
-        return;
-    }
-
-    // 创建并缓存纹理
-    CachedText cached = createAndCacheTexture(text, style);
+    CachedText& cached = createAndCacheTexture(text, style);
     if (!cached.texture) {
         return;
     }
 
+    // ===============================
+    // 1. 逻辑坐标 → 窗口坐标
+    // ===============================
+    SDL_FPoint winPos = {
+        m_viewport.dst.x + logicalX * m_viewport.scale,
+        m_viewport.dst.y + logicalY * m_viewport.scale
+    };
+
+    SDL_FRect dst {
+        winPos.x,
+        winPos.y,
+        static_cast<float>(cached.width),
+        static_cast<float>(cached.height)
+    };
+    //std::cout << "Rendering text at (" << dst.x << ", " << dst.y << ") with size (" << dst.w << ", " << dst.h << ")\n";
+    
     // 渲染
-    SDL_FRect dest = { static_cast<float>(x), static_cast<float>(y), 
-                       static_cast<float>(cached.width), 
-                       static_cast<float>(cached.height) };
-    SDL_RenderTexture(m_renderer, cached.texture, NULL, &dest);
+    SDL_RenderTexture(
+        m_renderer,
+        cached.texture,
+        nullptr,
+        &dst
+    );
     
    //m_bitmapFont->drawText(text, x, y);
 }
 
-TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& text, TextStyle style) {
-    CachedText result = {nullptr, 0, 0, std::time(nullptr)};
+TextRenderer::CachedText& TextRenderer::createAndCacheTexture(const std::string& text, TextStyle style) {
+    auto key = makeHash(text, style);
+    CachedText& slot = m_cache[key];
+    // empty: 用于失败返回的只读哨兵对象（texture == nullptr）
+    static CachedText empty{};
+    // 如果已经存在，直接返回
+    if (slot.texture) {
+        slot.lastAccessTime = std::time(nullptr);
+        return slot;
+    }
+    if (slot.texture) {
+        SDL_DestroyTexture(slot.texture);
+    }
+    // 创建逻辑
+    slot = {}; // reset
+    slot.lastAccessTime = std::time(nullptr);
     /*
     // 获取字体 - 需要大号字体用于高清渲染
     const int TARGET_SCALE = 4; // 4倍超采样
@@ -129,17 +145,19 @@ TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& 
     }
     */
     // 获取字体
-    TTF_Font* font = m_fontManager->getFont(style.fontID, style.fontSize);
+    TTF_Font* font = m_fontManager->getFont(style.fontID, style.fontSize * m_viewport.scale);
     if (!font) {
         SDL_Log("错误：字体未找到 %s\n", style.fontID.c_str());
-        return result;
+        m_cache.erase(key);
+        return empty;
     }
     
     // 创建文字表面
     SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(),text.length(), style.color);
     if (!surface) {
         SDL_Log("错误：无法创建文字表面 '%s'\n", text.c_str());
-        return result;
+        m_cache.erase(key);
+        return empty;
     }
     
     // 创建纹理
@@ -150,26 +168,24 @@ TextRenderer::CachedText TextRenderer::createAndCacheTexture(const std::string& 
     
     if (!texture) {
         SDL_Log("错误：无法创建纹理\n");
-        return result;
+        m_cache.erase(key);
+        return empty;
     }
     // 设置纹理缩放模式为最近邻
-    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+    //SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     // 保存结果
-    result.texture = texture;
-    result.width = width;
-    result.height = height;
-    result.lastAccessTime = std::time(nullptr);
+    slot.texture = texture;
+    slot.width = width;
+    slot.height = height;
+    slot.lastAccessTime = std::time(nullptr);
     
-    // 保存到缓存
-    auto key = makeHash(text, style);
-    m_cache[key] = result;
-    
+   
     // 检查是否需要清理缓存
     if (m_cache.size() > MAX_CACHE_SIZE) {
-        autoCleanCache();
+        autoCleanCache(key);
     }
-    
-    return result;
+
+    return slot;
 }
 
 
@@ -208,7 +224,7 @@ void TextRenderer::clearCache() {
 }
 
 
-void TextRenderer::autoCleanCache() {
+void TextRenderer::autoCleanCache(size_t keepKey) {
     // 如果缓存没有超过最大限制，则不进行清理
     if (m_cache.size() <= MAX_CACHE_SIZE) {
         return;
@@ -219,6 +235,7 @@ void TextRenderer::autoCleanCache() {
     cacheItems.reserve(m_cache.size());
     
     for (const auto& pair : m_cache) {
+        if (pair.first == keepKey) continue;
         cacheItems.emplace_back(pair.first, pair.second.lastAccessTime);
     }
     
@@ -236,8 +253,10 @@ void TextRenderer::autoCleanCache() {
     
     // 删除最旧的缓存项
     for (size_t i = 0; i < itemsToRemove && i < cacheItems.size(); ++i) {
+
         auto it = m_cache.find(cacheItems[i].first);
         if (it != m_cache.end()) {
+           
             SDL_DestroyTexture(it->second.texture);
             m_cache.erase(it);
         }

@@ -69,12 +69,17 @@ void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
     auto m_rect = buttonData.rect;
     
     SDL_SetRenderDrawColor(m_renderer, m_backgroundColor.r, m_backgroundColor.g, m_backgroundColor.b, m_backgroundColor.a);
-    auto [width, height] = m_textRenderer->getTextSize(buttonData.text, buttonData.textstytle);
+    //auto [width, height] = m_textRenderer->getLogicalTextSize(buttonData.text, buttonData.textstytle);
+    auto viewport = m_textRenderer->getViewport();
+    SDL_FPoint winPos = {
+        viewport.dst.x + m_rect.x * viewport.scale,
+        viewport.dst.y + m_rect.y * viewport.scale
+    };
     // 绘制普通矩形
-    SDL_FRect rect = { static_cast<float>(m_rect.x) + 0.375f, 
-                        static_cast<float>(m_rect.y) + 0.375f, 
-                        static_cast<float>(m_rect.w) - 0.75f, 
-                        static_cast<float>(m_rect.h) - 0.75f };
+    SDL_FRect rect = {  winPos.x ,
+                        winPos.y ,
+                        static_cast<float>(m_rect.w * viewport.scale) , 
+                        static_cast<float>(m_rect.h * viewport.scale) };
     //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
     SDL_RenderFillRect(m_renderer, &rect);
 }
@@ -89,7 +94,7 @@ void UIRenderer::renderText(const Type& data) {
     auto m_rect = data.rect;
     auto m_textStyle = data.textstytle;
     if (m_text.empty()) return;
-    
+    // 这个计算公式有问题，导致放大之后文字位置会出现问题，故舍弃
     // 计算文本位置（居中）
     // 这里需要TextRenderer的实际实现
     // 假设TextRenderer有一个renderText方法：
@@ -97,7 +102,7 @@ void UIRenderer::renderText(const Type& data) {
     //                const TextStyle& style, int x, int y);
     
     // 获取文本实际尺寸以便正确居中渲染
-    auto [textW, textH] = m_textRenderer->getTextSize(m_text, m_textStyle);
+    /*auto [textW, textH] = m_textRenderer->getLogicalTextSize(m_text, m_textStyle);
 
     // 如果组件的宽高为 0，则使用文本尺寸填充（相当于自动调整控件大小）
     int boxW = m_rect.w;
@@ -108,7 +113,7 @@ void UIRenderer::renderText(const Type& data) {
     // 计算文本左上角坐标以实现居中
     int textX = m_rect.x + (boxW - textW) / 2;
     int textY = m_rect.y + (boxH - textH) / 2;
-
+*/
     // 渲染文本（TextRenderer 的 x,y 为左上角）
-    m_textRenderer->renderText(m_text, m_textStyle, textX, textY);
+    m_textRenderer->renderText(m_text, m_textStyle, m_rect.x, m_rect.y);
 }

@@ -18,6 +18,7 @@
 #include "FontManager.h"
 #include "BitmapFont.h"
 #include <memory>
+#include "utils/Config.h"
 /**
  * @class   TextRenderer
  * @brief   文本渲染器
@@ -37,7 +38,7 @@ public:
      * @param   fontManager 字体管理器指针，用于获取指定字体 ID 和大小的字体对象。不可为 nullptr
      * @details 初始化文本渲染器，设置必要的 SDL 渲染器和字体管理器引用
      */
-    TextRenderer(SDL_Renderer* renderer, FontManager* fontManager);
+    TextRenderer(SDL_Renderer* renderer, FontManager* fontManager, const Viewport& viewport);
     
     /**
      * @brief   析构函数
@@ -56,7 +57,7 @@ public:
      *          这样可以避免重复渲染相同的文本。
      * @note    返回的尺寸是矩形的宽和高
      */
-    std::pair<int, int> getTextSize(const std::string& text, TextStyle style);
+    std::pair<int, int> getLogicalTextSize(const std::string& text, TextStyle style);
     
     /**
      * @brief   将文本渲染到指定位置
@@ -89,12 +90,17 @@ public:
      */
     void clearCache();
 
+    Viewport getViewport() const {return m_viewport;}
+
 private:
     /** @brief SDL 渲染器指针，用于创建纹理和执行 2D 渲染操作 */
     SDL_Renderer* m_renderer;
     
     /** @brief 字体管理器指针，用于管理和获取字体资源 */
     FontManager* m_fontManager;
+
+    /** @brief 视口信息引用，用于坐标转换和渲染位置计算 */
+    const Viewport& m_viewport;
 
     /**
      * @struct  CachedText
@@ -136,7 +142,7 @@ private:
     static constexpr size_t MIN_CACHE_SIZE = 128;
 
     /** @brief 自动清理缓存（当缓存超过最大限制时调用） */
-    void autoCleanCache();
+    void autoCleanCache(size_t keepKey);
     
     /**
      * @brief   创建文本纹理（暂未使用）
@@ -163,6 +169,6 @@ private:
      *          6. 返回结果
      * @see     CachedText, m_cache
      */
-    CachedText createAndCacheTexture(const std::string& text, TextStyle style);
+    CachedText& createAndCacheTexture(const std::string& text, TextStyle style);
     //std::unique_ptr<BitmapFont> m_bitmapFont;
 };
