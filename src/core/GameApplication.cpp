@@ -30,7 +30,7 @@ bool GameApplication::initialize() {
     // 字体管理
     m_fontManager = std::make_unique<FontManager>();
     // 文字渲染
-    m_textRenderer = std::make_unique<TextRenderer>(m_windowManager->GetRenderer(), m_fontManager.get());
+    m_textRenderer = std::make_unique<TextRenderer>(m_windowManager->GetRenderer(), m_fontManager.get(), m_windowManager->getViewport());
 
     m_uiRenderer = std:: make_unique<UIRenderer>(m_windowManager->GetRenderer(), m_textRenderer.get());
 
@@ -54,12 +54,27 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     }
     m_sceneManager->handleMousePosition(input.mouseCurrentPosition);
     m_windowManager->setFullscreen(input.isFullscreen);
+    // 改变窗口时清理旧的缓存
+    if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+        m_textRenderer->clearCache();
+    }
+
     return result;
+    
 }
 
 void GameApplication::run() {
-    m_windowManager->Clear();
+
     m_sceneManager->updateCurrent();
-    m_sceneManager->renderCurrent();
+
+    m_windowManager->Clear();
+    m_windowManager->beginWorld();
+    m_sceneManager->renderWorld();
+    m_windowManager->endWorld();
+
+    m_windowManager->beginUI();
+    m_sceneManager->renderUI(); 
+    m_windowManager->endUI();
+
     m_windowManager->Present();
 }

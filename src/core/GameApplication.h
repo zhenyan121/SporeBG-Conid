@@ -21,7 +21,7 @@ private:
     std::unique_ptr<TextRenderer> m_textRenderer;
     std::unique_ptr<UIRenderer> m_uiRenderer;
     
-    GameConfig m_config;
+    WindowConfig m_config;
 
 public:
     GameApplication();
