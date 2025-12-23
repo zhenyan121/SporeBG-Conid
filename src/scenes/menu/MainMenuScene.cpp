@@ -30,12 +30,18 @@ void MainMenuScene::update() {
     // 更新场景逻辑
 }
 
-void MainMenuScene::render() {
+void MainMenuScene::renderWorld() {
     
+    SDL_FRect test = {20, 20, 20, 20};
     // 渲染场景内容
+    SDL_SetRenderDrawColor(m_renderer, 20, 20,20, 255);
+    SDL_RenderFillRect(m_renderer, &test);
+    
+}
+
+void MainMenuScene::renderUI() {
     const UIRenderData& uiRenderData = m_mainMenuUIManager->getUIRenderData();
     m_uiRenderer->renderUI(uiRenderData);
-    
 }
 
 void MainMenuScene::handleClick(float x, float y) {

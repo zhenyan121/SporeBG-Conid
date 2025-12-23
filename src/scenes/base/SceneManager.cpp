@@ -162,8 +162,12 @@ void SceneManager::updateCurrent() {
 }
 
 
-void SceneManager::renderCurrent() {
-    if (m_scene) m_scene->render();
+void SceneManager::renderWorld() {
+    if (m_scene) m_scene->renderWorld();
+}
+
+void SceneManager::renderUI() {
+    if (m_scene) m_scene->renderUI();
 }
 
 std::pair<int, int> SceneManager::getWindowDimensions() const {

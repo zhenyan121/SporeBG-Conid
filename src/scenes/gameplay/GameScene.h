@@ -14,7 +14,8 @@ public:
     void onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer) override;
 
     void update() override;
-    void render() override;
+    void renderWorld() override; // 逻辑世界
+    void renderUI() override;    // 屏幕 UI
     void handleClick(float screenX, float screenY) override;
 
     void renderMousePosition(float x, float y) override;

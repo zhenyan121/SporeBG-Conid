@@ -39,10 +39,13 @@ public:
      * @brief   每帧更新
      */
     virtual void update() = 0;
+
+    virtual void renderWorld() = 0; // 逻辑世界
+    virtual void renderUI() = 0;    // 屏幕 UI
     /** 
      * @brief   每帧渲染
      */
-    virtual void render() = 0;
+    //virtual void render() = 0;
     /** 
      * @brief   处理点击事件
      * @param   x 点击位置的 X 坐标
