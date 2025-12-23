@@ -32,7 +32,7 @@ void GameScene::update() {
 
 }
 
-void GameScene::render() {
+void GameScene::renderWorld() {
     
     m_boardRenderer->drawBackground();
     m_boardRenderer->drawBoard();
@@ -40,8 +40,12 @@ void GameScene::render() {
     m_boardRenderer->drawPiece(m_gameSession->getSelectedPiece());
     m_boardRenderer->drawMovementRange();
     m_boardRenderer->renderBlackOverlay();
-    m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
     
+    
+}
+
+void GameScene::renderUI() {
+    m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
 }
 
 void GameScene::handleClick(float screenX, float screenY) {

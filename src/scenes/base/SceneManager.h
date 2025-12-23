@@ -107,10 +107,15 @@ public:
 
     /**
      * @brief   渲染当前场景
-     * @details 调用当前场景的 render() 方法进行每帧渲染
+     * @details 调用当前场景的 renderWorld() 方法进行每帧渲染
      */
-    void renderCurrent();
+    void renderWorld();
 
+    /**
+     * @brief   渲染当前场景的 UI
+     * @details 调用当前场景的 renderUI() 方法进行 UI 渲染
+     */
+    void renderUI();
     /**
      * @brief   处理场景事件的回调函数
      * @param   event 场景事件对象

@@ -11,7 +11,8 @@ public:
     void onExit() override;
 
     void update() override;
-    void render() override;
+    void renderWorld() override; // 逻辑世界
+    void renderUI() override;    // 屏幕 UI
     void handleClick(float x, float y) override;
 
     void renderMousePosition(float x, float y) override;
