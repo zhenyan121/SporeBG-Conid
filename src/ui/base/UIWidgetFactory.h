@@ -10,7 +10,7 @@ public:
         button->setBorder(2, {0, 0, 0, 255});
         button->setRect(x, y, UI::ButtonSize * 6, UI::ButtonSize * 4);
         button->setName(name);
-        button->setText(text, {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE, {255, 255, 255, 255}});
+        button->setText(text, {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE, {0, 0, 0, 255}});
         button->setCallback(callback);
         return button;
     }
