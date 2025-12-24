@@ -67,11 +67,18 @@ void WindowManager::Shutdown() {
 }
 
 void WindowManager::Clear() {
-    
-    // 设置画笔颜色
+    // 只清除窗口背景
+    SDL_SetRenderTarget(m_renderer, nullptr);
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    // 使用画笔颜色填充整个画布
     SDL_RenderClear(m_renderer);
+    
+    // 清除逻辑纹理（世界层）
+    SDL_SetRenderTarget(m_renderer, m_logicalTexture);
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0); // 透明黑色
+    SDL_RenderClear(m_renderer);
+    
+    
+
     onWindowResize();
 }
 
@@ -106,6 +113,7 @@ void WindowManager::Present() {
 void WindowManager::beginWorld() {
     // 设置渲染目标为逻辑纹理
     SDL_SetRenderTarget(m_renderer, m_logicalTexture);
+    
 }
 
 void WindowManager::endWorld() {
