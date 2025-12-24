@@ -40,12 +40,14 @@ namespace UI
     constexpr int SlotSize       = 16;
     constexpr int PanelPadding   = 4;
     constexpr int FontHeight     = 8;
+    constexpr int LogicalWidth = 640;
+    constexpr int LogicalHeight = 360;
     constexpr int StartWindowWidth = 320 * 4;  // 初始窗口宽度（像素）
     constexpr int StartWindowHeight = 180 * 4; // 初始窗口高度（像素）
     // 字体大小（逻辑像素）
     constexpr int DIALOG_FONT_SIZE = 14;
     constexpr int UI_SMALL_FONT_SIZE = 8;
-    constexpr int UI_NORMAL_FONT_SIZE = 12;
+    constexpr int UI_NORMAL_FONT_SIZE = 14;
     constexpr int UI_LARGE_FONT_SIZE = 16;
 
 
