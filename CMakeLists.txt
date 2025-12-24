@@ -42,6 +42,7 @@ set(SOURCE_FILES
     src/ui/managers/MainMenuUIManager.cpp
     src/graphics/ui/UIRenderer.cpp
     src/graphics/font/BitmapFont.cpp
+    src/utils/ConfigLoader.cpp
 )
 
 

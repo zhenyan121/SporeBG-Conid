@@ -18,6 +18,9 @@ bool GameApplication::initialize() {
         SDL_Log("无法初始化 SDL_ttf: %s", SDL_GetError());
         return false;
     }
+    if (!ConfigLoader::load("assets/config.json", m_config)) {
+        SDL_Log("无法加载json");
+    }
     // 输入管理
     m_inputManager = std::make_unique<InputManager>();
     // 窗口管理

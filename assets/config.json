@@ -1,0 +1,20 @@
+{
+  "window": {
+    "width": 1280,
+    "height": 720,
+    "fullscreen": false,
+    "vsync": true,
+    "title": "孢子棋"
+  },
+
+  "render": {
+    "logical_width": 640,
+    "logical_height": 360,
+    "scale_mode": "integer"
+  },
+
+  "ui": {
+    "font": "fonts/SourceHanSansSC-Regular.otf",
+    "font_size": 16
+  }
+}
