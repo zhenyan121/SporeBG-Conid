@@ -6,7 +6,7 @@ public:
     WindowManager();
     ~WindowManager();
     // 初始化
-    bool Initialize(WindowConfig& config);
+    bool Initialize(Config& config);
     //关闭
     void Shutdown();
     //清理上一帧窗口

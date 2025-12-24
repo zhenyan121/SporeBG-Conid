@@ -10,17 +10,18 @@ WindowManager::~WindowManager() {
     Shutdown();
 }
 
-bool WindowManager::Initialize(WindowConfig& config) {
-    m_viewport.logicalWidth = config.logicalWidth;
-    m_viewport.logicalHeight = config.logicalHeight;
+bool WindowManager::Initialize(Config& config) {
+    m_viewport.logicalWidth = config.render.logicalWidth;
+    m_viewport.logicalHeight = config.render.logicalHeight;
     // 创建窗口（支持高DPI和横屏）[3,4](@ref)
     m_window = SDL_CreateWindow(
-    "孢子棋",                          // 窗口标题，显示在标题栏上         
-    m_viewport.logicalWidth,                    // 窗口的逻辑宽度（例如 800），用于统一布局，不受屏幕 DPI 影响
-    m_viewport.logicalHeight,                   // 窗口的逻辑高度（例如 600）
+    config.window.title.c_str(),                          // 窗口标题，显示在标题栏上         
+    config.window.width,                    // 窗口的逻辑宽度（例如 800），用于统一布局，不受屏幕 DPI 影响
+    config.window.height,                   // 窗口的逻辑高度（例如 600）
     SDL_WINDOW_HIGH_PIXEL_DENSITY |   // 启用高像素密度支持（HiDPI/Retina），确保在高分屏上画面清晰
     SDL_WINDOW_RESIZABLE              // 允许用户调整窗口大小（可拉伸）
 );
+    //SDL_Log("window width %d\nwindow height %d\ntitle %s\n", config.window.width, config.window.height, config.window.title);
     if (!m_window) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                  "创建窗口失败: %s", SDL_GetError());
@@ -44,7 +45,7 @@ bool WindowManager::Initialize(WindowConfig& config) {
                                     m_height,
                                     SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
     */
-    SDL_SetWindowSize(m_window, UI::StartWindowWidth, UI::StartWindowHeight);
+    //SDL_SetWindowSize(m_window, UI::StartWindowWidth, UI::StartWindowHeight);
     // 创建逻辑画布
     // RGBA8888: 32位色，8位红绿蓝和透明度
     // TARGET: 纹理可作为渲染目标

@@ -5,7 +5,7 @@
 #include "scenes/base/SceneManager.h"
 #include "input/InputManager.h"
 #include "utils/Config.h"
-
+#include "utils/ConfigLoader.h"
 #include "graphics/font/TextRenderer.h"
 #include "graphics/font/FontManager.h"
 
@@ -21,7 +21,7 @@ private:
     std::unique_ptr<TextRenderer> m_textRenderer;
     std::unique_ptr<UIRenderer> m_uiRenderer;
     
-    WindowConfig m_config;
+    Config m_config;
 
 public:
     GameApplication();

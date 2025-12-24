@@ -9,11 +9,11 @@ struct WindowConfig {
         640x360 逻辑分辨率（窗口大小的1/2）
         画面更高清晰
     */
-    int logicalWidth = 640;
-    int logicalHeight = 360;
-    std::string windowTitle = "孢子棋";
+    int width = 320 * 4;  // 初始窗口宽度（像素）
+    int height = 180 * 4; // 初始窗口高度（像素）
+    std::string title = "孢子棋";
     bool vsync = true;
-    int scale = 2;
+    
     
 
     /*
@@ -23,6 +23,12 @@ struct WindowConfig {
         3840x2160 scale 12
     */
 } ;
+
+struct RenderConfig {
+    int logicalWidth = 640;
+    int logicalHeight = 360;
+    int scale = 2;
+};
 
 // 获取棋盘渲染区域信息（用于坐标转换）
 struct BoardArea {
@@ -42,8 +48,7 @@ namespace UI
     constexpr int FontHeight     = 8;
     constexpr int LogicalWidth = 640;
     constexpr int LogicalHeight = 360;
-    constexpr int StartWindowWidth = 320 * 4;  // 初始窗口宽度（像素）
-    constexpr int StartWindowHeight = 180 * 4; // 初始窗口高度（像素）
+    
     // 字体大小（逻辑像素）
     constexpr int DIALOG_FONT_SIZE = 14;
     constexpr int UI_SMALL_FONT_SIZE = 8;
@@ -73,4 +78,9 @@ struct Viewport {
     // 逻辑画面被放大后，在窗口中的位置和大小
     // 用于 SDL_RenderTexture / 输入坐标转换
     SDL_FRect dst{};
+};
+
+struct Config {
+    WindowConfig window;
+    RenderConfig render;
 };
