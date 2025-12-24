@@ -90,14 +90,14 @@ public:
      * @param   clickOn 点击位置坐标对 {x, y}
      * @details 将点击事件转发给当前场景的 handleClick() 方法进行处理
      */
-    void handleClickCurrent(std::pair<float, float> clickOn);
+    void handleClickCurrent(std::pair<int, int> clickOn);
 
     /**
      * @brief   处理当前场景的鼠标位置事件
      * @param   mousePosition 鼠标位置坐标对 {x, y}
      * @details 将鼠标位置事件转发给当前场景的 renderMousePosition() 方法进行处理
      */
-    void handleMousePosition(std::pair<float, float> mousePosition);
+    void handleMousePosition(std::pair<int, int> mousePosition);
 
     /**
      * @brief   更新当前场景

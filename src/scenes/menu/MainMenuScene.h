@@ -13,9 +13,9 @@ public:
     void update() override;
     void renderWorld() override; // 逻辑世界
     void renderUI() override;    // 屏幕 UI
-    void handleClick(float x, float y) override;
+    void handleClick(int logicalX, int logicalY) override;
 
-    void renderMousePosition(float x, float y) override;
+    void renderMousePosition(int logicalX, int logicalY) override;
 private:
     // 其他私有成员变量和方法
     std::unique_ptr<MainMenuUIManager> m_mainMenuUIManager = nullptr;

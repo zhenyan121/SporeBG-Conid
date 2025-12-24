@@ -51,13 +51,13 @@ public:
      * @param   x 点击位置的 X 坐标
      * @param   y 点击位置的 Y 坐标
      */
-    virtual void handleClick(float x, float y) = 0;
+    virtual void handleClick(int logicalX, int logicalY) = 0;
     /** 
      * @brief   渲染鼠标位置相关内容
      * @param   x 鼠标位置的 X 坐标
      * @param   y 鼠标位置的 Y 坐标
      */
-    virtual void renderMousePosition(float x, float y){};
+    virtual void renderMousePosition(int logicalX, int logicalY){};
     /** 
      * @brief   设置场景事件回调函数
      * @param   callback 场景事件回调函数

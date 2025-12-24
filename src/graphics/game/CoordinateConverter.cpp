@@ -1,5 +1,5 @@
 #include "CoordinateConverter.h"
-#include "utils/CoordinateTools.h"
+
 CoordinateConverter::CoordinateConverter(SDL_Renderer* renderer) : m_renderer(renderer) {
 
 }
@@ -8,8 +8,8 @@ CoordinateConverter::~CoordinateConverter() {
 
 }
 
-std::optional<std::pair<int, int>> CoordinateConverter::ScreenToBoard(float screenX, float screenY, BoardArea area) {
-    auto [mouseX, mouseY] = physicalToLogical(screenX, screenY, m_renderer);
+std::optional<std::pair<int, int>> CoordinateConverter::ScreenToBoard(int mouseX, int mouseY, BoardArea area) {
+    
      // 判断是否点击在棋盘区域内
     if (mouseX < area.x || mouseX >= area.x + area.cellSize * area.cols ||
         mouseY < area.y || mouseY >= area.y + area.cellSize * area.rows) {

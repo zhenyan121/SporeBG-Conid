@@ -1,5 +1,5 @@
 #include "GameApplication.h"
-
+#include "utils/Tools.h"
 GameApplication::GameApplication() {
 
 }
@@ -49,10 +49,11 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     InputState input = m_inputManager->GetInputState();
     if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && 
         event->button.button == SDL_BUTTON_LEFT) {
-        
-        m_sceneManager->handleClickCurrent(input.mouseCilckOn);
+        auto pos = Tools::physicalToLogical(input.mouseCilckOn.first, input.mouseCilckOn.second, m_windowManager->getViewport());
+        m_sceneManager->handleClickCurrent(pos);
     }
-    m_sceneManager->handleMousePosition(input.mouseCurrentPosition);
+    auto pos = Tools::physicalToLogical(input.mouseCurrentPosition.first, input.mouseCurrentPosition.second, m_windowManager->getViewport());
+    m_sceneManager->handleMousePosition(pos);
     m_windowManager->setFullscreen(input.isFullscreen);
     // 改变窗口时清理旧的缓存
     if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {

@@ -44,12 +44,12 @@ void MainMenuScene::renderUI() {
     m_uiRenderer->renderUI(uiRenderData);
 }
 
-void MainMenuScene::handleClick(float x, float y) {
+void MainMenuScene::handleClick(int logicalX, int logicalY) {
     // 处理点击事件
-    m_mainMenuUIManager->handleClick(x, y);
+    m_mainMenuUIManager->handleClick(logicalX, logicalY);
 }
 
 
-void MainMenuScene::renderMousePosition(float x, float y) {
-    m_mainMenuUIManager->UpdateMousePositon(x, y);
+void MainMenuScene::renderMousePosition(int logicalX, int logicalY) {
+    m_mainMenuUIManager->updateMousePositon(logicalX, logicalY);
 }

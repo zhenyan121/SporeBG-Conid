@@ -1,5 +1,5 @@
 #include "MainMenuUIManager.h"
-#include "utils/CoordinateTools.h"
+
 #include "ui/base/UIWidgetFactory.h"
 MainMenuUIManager::MainMenuUIManager(SDL_Renderer* renderer,
     TextRenderer* textRenderer,
@@ -47,11 +47,10 @@ void MainMenuUIManager::CollectRenderData() {
     }
 }
 
-void MainMenuUIManager::UpdateMousePositon(float x, float y) {
-    auto logicalPos = physicalToLogical(static_cast<float>(x), static_cast<float>(y), m_renderer);
-    int lx = logicalPos.first;
-    int ly = logicalPos.second;
-    std::string pos = std::to_string(lx) + " " + std::to_string(ly);
+void MainMenuUIManager::updateMousePositon(int logicalX, int logicalY) {
+    
+    
+    std::string pos = std::to_string(logicalX) + " " + std::to_string(logicalY);
     
     m_labels[makeHash("MousePositionLabel")]->setText(pos);
 }
@@ -61,11 +60,11 @@ const UIRenderData& MainMenuUIManager::getUIRenderData() {
     return m_uiRenderData;
 }
 
-void MainMenuUIManager::handleClick(float x, float y) {
-    auto logicPos = physicalToLogical(x, y, m_renderer);
+void MainMenuUIManager::handleClick(int logicalX, int logicalY) {
+    
     for (auto& buttonPair : m_buttons) {
-        SDL_Log("Handling click at logical position (%d, %d)\n", logicPos.first, logicPos.second);
-        if (buttonPair.second->handleCilck(logicPos.first, logicPos.second)) {
+        SDL_Log("Handling click at logical position (%d, %d)\n", logicalX, logicalY);
+        if (buttonPair.second->handleCilck(logicalX, logicalY)) {
             return;
         }
     }
