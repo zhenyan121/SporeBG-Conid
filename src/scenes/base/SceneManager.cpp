@@ -1,5 +1,5 @@
 #include "SceneManager.h"
-
+#include "utils/Config.h"
 SceneManager::SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window) :
     m_renderer(renderer),
     m_uiRenderer(uiRenderer),
@@ -92,8 +92,8 @@ void SceneManager::pushScene(const std::string& sceneName) {
     m_scene = it->second;
 
     
-    auto [w, h] = getWindowDimensions();
-    m_scene->onEnter(m_renderer, w, h, m_uiRenderer);
+    
+    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer);
 }
 
 
@@ -108,9 +108,9 @@ void SceneManager::popScene() {
     if (!m_scenes.empty()) {
         m_scene = m_scenes.top();
         m_scenes.pop();
-        auto [w, h] = getWindowDimensions();
+        
         if (m_scene) {
-            m_scene->onEnter(m_renderer, w, h, m_uiRenderer);
+            m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer);
         }
     }
 }
@@ -141,8 +141,8 @@ void SceneManager::changeScene(const std::string& sceneName) {
     // 切换到目标场景
     m_scene = target;
 
-    auto [w, h] = getWindowDimensions();
-    m_scene->onEnter(m_renderer, w, h, m_uiRenderer);
+    
+    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer);
 }
 
 
@@ -169,7 +169,7 @@ void SceneManager::renderWorld() {
 void SceneManager::renderUI() {
     if (m_scene) m_scene->renderUI();
 }
-
+/*
 std::pair<int, int> SceneManager::getWindowDimensions() const {
     // 获取窗口尺寸的辅助方法
     int w = 0, h = 0;
@@ -178,7 +178,7 @@ std::pair<int, int> SceneManager::getWindowDimensions() const {
     }
     return {w > 0 ? w : 1600, h > 0 ? h : 900};
 }
-
+*/
 void SceneManager::handleSceneEvent(const SceneEvent& event) {
     // 根据事件类型处理场景事件
     switch (event.type)
