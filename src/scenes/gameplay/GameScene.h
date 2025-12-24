@@ -16,9 +16,9 @@ public:
     void update() override;
     void renderWorld() override; // 逻辑世界
     void renderUI() override;    // 屏幕 UI
-    void handleClick(float screenX, float screenY) override;
+    void handleClick(int logicalX, int logicalYY) override;
 
-    void renderMousePosition(float x, float y) override;
+    void renderMousePosition(int logicalX, int logicalY) override;
 
     void restartGame();
 private:

@@ -19,9 +19,9 @@ public:
     
     void CollectRenderData() override;
 
-    void UpdateMousePositon(float x, float y) override;
+    void updateMousePositon(int logicalX, int logicalY) override;
 
-    void handleClick(float x, float y);
+    void handleClick(int logicalX, int logicalY);
     
 private:
     SceneEventCallback m_eventCallback;

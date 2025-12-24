@@ -48,8 +48,8 @@ void GameScene::renderUI() {
     m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
 }
 
-void GameScene::handleClick(float screenX, float screenY) {
-    if (m_gameUIManager->handleClick(screenX, screenY)) {
+void GameScene::handleClick(int logicalX, int logicalY) {
+    if (m_gameUIManager->handleClick(logicalX, logicalY)) {
         return;
     }
     
@@ -57,7 +57,7 @@ void GameScene::handleClick(float screenX, float screenY) {
         SDL_Log("Game is not running, click ignored.");
         return;
     }
-    auto click = m_CoordinateConverter->ScreenToBoard(screenX, screenY, m_boardRenderer->getBoardArea());
+    auto click = m_CoordinateConverter->ScreenToBoard(logicalX, logicalY, m_boardRenderer->getBoardArea());
         if (click) {
             auto [row, col] = click.value();
             m_gameSession->handleCoordinateInput(row, col);
@@ -75,8 +75,8 @@ void GameScene::handleClick(float screenX, float screenY) {
         }
 }
 
-void GameScene::renderMousePosition(float x, float y) {
-    m_gameUIManager->UpdateMousePositon(x, y);
+void GameScene::renderMousePosition(int logicalX, int logicalY) {
+    m_gameUIManager->updateMousePositon(logicalX, logicalY);
 }
 
 void GameScene::restartGame() {

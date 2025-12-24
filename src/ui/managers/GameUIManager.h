@@ -16,13 +16,13 @@ public:
     // 收集渲染数据
     void CollectRenderData();
 
-    void UpdateMousePositon(float x, float y);
+    void updateMousePositon(int logicalX, int logicalY);
 
     void updateActionType(ActionType type);
 
     void updateGameState(GameState state);
 
-    bool handleClick(float x, float y);
+    bool handleClick(int logicalX, int logicalY);
 private:
     std::function<void()> m_restartCallback;
     void setupUIComponents();

@@ -147,14 +147,14 @@ void SceneManager::changeScene(const std::string& sceneName) {
 
 
 
-void SceneManager::handleClickCurrent(std::pair<float, float> clickOn) {
-    auto [screenX, screenY] = clickOn;
-    if (m_scene) m_scene->handleClick(screenX, screenY);
+void SceneManager::handleClickCurrent(std::pair<int, int> clickOn) {
+    auto [logicalX, logicalY] = clickOn;
+    if (m_scene) m_scene->handleClick(logicalX, logicalY);
 }
 
-void SceneManager::handleMousePosition(std::pair<float, float> mousePosition) {
-    auto [screenX, screenY] = mousePosition;
-    if (m_scene) m_scene->renderMousePosition(screenX, screenY);
+void SceneManager::handleMousePosition(std::pair<int, int> mousePosition) {
+    auto [logicalX, logicalY] = mousePosition;
+    if (m_scene) m_scene->renderMousePosition(logicalX, logicalY);
 }
 
 void SceneManager::updateCurrent() {

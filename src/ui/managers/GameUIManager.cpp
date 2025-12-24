@@ -1,5 +1,5 @@
 #include "GameUIManager.h"
-#include "utils/CoordinateTools.h"
+
 GameUIManager::GameUIManager(SDL_Renderer* renderer, TextRenderer* textRenderer)
 {
     m_renderer = renderer;
@@ -50,12 +50,11 @@ void GameUIManager::CollectRenderData() {
     }
 }
 
-void GameUIManager::UpdateMousePositon(float x, float y) {
+void GameUIManager::updateMousePositon(int logicalX, int logicalY) {
     
-    auto logicalPos = physicalToLogical(static_cast<float>(x), static_cast<float>(y), m_renderer);
-    int lx = logicalPos.first;
-    int ly = logicalPos.second;
-    std::string pos = std::to_string(lx) + " " + std::to_string(ly);
+    
+    
+    std::string pos = std::to_string(logicalX) + " " + std::to_string(logicalY);
     
     m_labels[makeHash("MousePositionLabel")]->setText(pos);
 }
@@ -163,10 +162,9 @@ void GameUIManager::setupUIComponents() {
 }
 
 
-bool GameUIManager::handleClick(float x, float y) {
-    auto logicalPos = physicalToLogical(static_cast<float>(x), static_cast<float>(y), m_renderer);
-    int lx = logicalPos.first;
-    int ly = logicalPos.second;
+bool GameUIManager::handleClick(int lx, int ly) {
+    
+    
 
     // 遍历所有按钮，检查点击位置是否在按钮范围内
     for (auto& [id, button] : m_buttons) {

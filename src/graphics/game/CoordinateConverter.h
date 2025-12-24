@@ -8,7 +8,7 @@ public:
     CoordinateConverter(SDL_Renderer* renderer);
     ~CoordinateConverter();
     // 将物理坐标转化成逻辑坐标
-    std::optional<std::pair<int, int>> ScreenToBoard(float screenX, float screenY, BoardArea aera);
+    std::optional<std::pair<int, int>> ScreenToBoard(int mouseX, int mouseY, BoardArea aera);
 
 private:
     SDL_Renderer* m_renderer;
