@@ -1,5 +1,5 @@
 #include "GameUIManager.h"
-
+#include "ui/base/UIWidgetFactory.h"
 GameUIManager::GameUIManager(SDL_Renderer* renderer, TextRenderer* textRenderer)
 {
     m_renderer = renderer;
@@ -125,35 +125,39 @@ void GameUIManager::updateGameState(GameState state) {
 void GameUIManager::setupUIComponents() {
     // 这里可以添加更多的UI组件初始化逻辑
 
-    auto button = std::make_unique<Button>();
-    button->setBackgroundColor({255, 100, 0, 255});
-    button->setBorder(2, {0, 0, 0, 255});
-    button->setRect(20, 20, 200, 100);
-    button->setEnabled(true);
-    button->setVisible(true);
-    button->setText("Please Choose", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
-    button->setName("ActionButton");
+    auto button = UIWidgetFactory::createStandardButton(
+        "ActionButton",
+        "Please Choose",
+        20,
+        20,
+        [](){
+
+        }
+    );
     m_buttons.emplace(button->getNameHash(), std::move(button));
 
-    auto label = std::make_unique<Label>();
-    label->setRect(1200, 20, 200, 50);
-    label->setText("0 0", {"SourceHanSansSC-Regular.otf", 48, {0, 0, 0, 255}});
-    label->setName("MousePositionLabel");
-    m_labels.emplace(label->getNameHash(), std::move(label));
-
-    auto restartButton = std::make_unique<Button>(
-        "Restart",
-        (TextStyle){"unifont.otf", 48, {0, 0, 0, 255}},
-        700, 
-        500
+    auto label = UIWidgetFactory::createStandardLabel(
+        "MousePositionLabel",
+        "0 0",
+        240,
+        0
     );
 
-    restartButton->setCallback([this](){
-        if (m_restartCallback) {
-            m_restartCallback();
+    m_labels.emplace(label->getNameHash(), std::move(label));
+
+    auto restartButton = UIWidgetFactory::createStandardButton(
+        "RestartButton",
+        "Restart",
+        320,
+        160,
+        [this](){
+            if (m_restartCallback) {
+                m_restartCallback();
+            }
         }
-    });
-    restartButton->setName("RestartButton");
+
+    );
+    
     restartButton->setVisible(false); // 初始时隐藏
     restartButton->setEnabled(false);
     m_buttons.emplace(restartButton->getNameHash(), std::move(restartButton));
