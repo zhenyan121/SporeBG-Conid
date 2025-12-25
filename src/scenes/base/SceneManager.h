@@ -50,7 +50,7 @@ public:
      * @brief 创建场景实例并缓存
      * @param sceneName 场景名称
      */
-    void createScene(const std::string& sceneName);
+    std::shared_ptr<Scene> createScene(const std::string& sceneName);
 
     /**
      * @brief 注册场景工厂函数，用于按名字动态创建场景实例
@@ -92,12 +92,7 @@ public:
      */
     void handleClickCurrent(std::pair<int, int> clickOn);
 
-    /**
-     * @brief   处理当前场景的鼠标位置事件
-     * @param   mousePosition 鼠标位置坐标对 {x, y}
-     * @details 将鼠标位置事件转发给当前场景的 renderMousePosition() 方法进行处理
-     */
-    void handleMousePosition(std::pair<int, int> mousePosition);
+    
 
     /**
      * @brief   更新当前场景

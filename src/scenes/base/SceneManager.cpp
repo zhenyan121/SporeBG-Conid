@@ -40,19 +40,21 @@ void SceneManager::registerAllScene() {
     });
 }
 
-void SceneManager::createScene(const std::string& sceneName) {
+std::shared_ptr<Scene> SceneManager::createScene(const std::string& sceneName) {
     // 使用注册的工厂创建场景实例
     auto it = m_sceneFactories.find(sceneName);
     if (it != m_sceneFactories.end()) {
         auto scene = it->second();
         if (scene) {
-            m_sceneCache[sceneName] = scene;
+            // 并不缓存实例，而是返回给调用者，由调用者决定缓存与否
+            return scene;
         } else {
             SDL_Log("SceneManager::createScene: factory for '%s' returned nullptr\n", sceneName.c_str());
         }
     } else {
         SDL_Log("SceneManager::createScene: no factory registered for '%s'\n", sceneName.c_str());
     }
+    return nullptr;
 }
 
 void SceneManager::registerSceneFactory(const std::string& sceneName, std::function<std::shared_ptr<Scene>()> factory) {
@@ -118,7 +120,7 @@ void SceneManager::popScene() {
 
 void SceneManager::changeScene(const std::string& sceneName) {
     if (sceneName.empty()) return;
-    
+    /*
     // 检查场景是否已在缓存中
     if (m_sceneCache.find(sceneName) == m_sceneCache.end()) {
         // 场景未缓存，尝试创建
@@ -129,6 +131,14 @@ void SceneManager::changeScene(const std::string& sceneName) {
     auto target = m_sceneCache[sceneName];
     if (!target) {
         SDL_Log("SceneManager::changeScene: Scene '%s' not found in cache!\n", sceneName.c_str());
+        return;
+    }
+    */
+   
+    // 不缓存场景，每次都创建新实例，以避免状态残留问题
+    auto target = createScene(sceneName);
+    if (!target) {
+        SDL_Log("SceneManager::changeScene: Scene '%s' could not be created!\n", sceneName.c_str());
         return;
     }
     target->setEventCallback([this](const SceneEvent& event) {
