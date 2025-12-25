@@ -11,7 +11,14 @@ GameScene::~GameScene() {
 void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;
-    m_gameUIManager = std::make_unique<GameUIManager>(renderer, uiRenderer->getTextRenderer());
+    m_gameUIManager = std::make_unique<GameUIManager>(
+        [this](const std::string& sceneName) {
+            if (m_eventCallback) {
+                SceneEvent event{SceneEventType::ChangeScene, sceneName};
+                m_eventCallback(event);
+            }
+        }
+    );
     m_gameUIManager->init();
     m_gameUIManager->setCallback([this]() {
         this->restartGame();

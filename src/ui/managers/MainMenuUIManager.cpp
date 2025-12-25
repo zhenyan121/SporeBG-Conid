@@ -1,11 +1,9 @@
 #include "MainMenuUIManager.h"
 
 #include "ui/base/UIWidgetFactory.h"
-MainMenuUIManager::MainMenuUIManager(SDL_Renderer* renderer,
-    TextRenderer* textRenderer,
+MainMenuUIManager::MainMenuUIManager(
     SceneEventCallback eventCallback) {
-    m_renderer = renderer; 
-    m_textRenderer = textRenderer;
+    
     m_eventCallback = eventCallback;
 }
 

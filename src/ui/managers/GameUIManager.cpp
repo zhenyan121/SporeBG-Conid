@@ -1,9 +1,8 @@
 #include "GameUIManager.h"
 #include "ui/base/UIWidgetFactory.h"
-GameUIManager::GameUIManager(SDL_Renderer* renderer, TextRenderer* textRenderer)
+GameUIManager::GameUIManager(SceneEventCallback eventCallback) 
 {
-    m_renderer = renderer;
-    m_textRenderer = textRenderer;
+    m_eventCallback = eventCallback;
 }
 
 GameUIManager::~GameUIManager() {
@@ -145,6 +144,18 @@ void GameUIManager::setupUIComponents() {
     restartButton->setVisible(false); // 初始时隐藏
     restartButton->setEnabled(false);
     m_buttons.emplace(restartButton->getNameHash(), std::move(restartButton));
+
+    auto QuitButton = UIWidgetFactory::createStandardButton(
+        "QuitButton",
+        "Quit",
+        550,
+        20,
+        [this](){
+            m_eventCallback("MainMenuScene");
+        }
+
+    );
+    m_buttons.emplace(QuitButton->getNameHash(), std::move(QuitButton));
     
 
 }
