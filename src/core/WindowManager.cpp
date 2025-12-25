@@ -58,7 +58,17 @@ bool WindowManager::Initialize(Config& config) {
     );
     // 设置纹理缩放模式为最近邻
     SDL_SetTextureScaleMode(m_logicalTexture, SDL_SCALEMODE_NEAREST);
-
+    
+    
+    // 创建文本渲染层
+    m_textTexture = SDL_CreateTexture(
+        m_renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        m_viewport.windowWidth,
+        m_viewport.windowHeight
+    );
+    
     return true;
 }
 
@@ -73,14 +83,11 @@ void WindowManager::Clear() {
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
     SDL_RenderClear(m_renderer);
     
-    // 清除逻辑纹理（世界层）
-    SDL_SetRenderTarget(m_renderer, m_logicalTexture);
-    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0); // 透明黑色
-    SDL_RenderClear(m_renderer);
+    
     
     
 
-    onWindowResize();
+    
 }
 
 /*
@@ -101,11 +108,24 @@ void WindowManager::Present() {
     //SDL_FRect dstRect;
     //calculateDstRect(dstRect);
     
+    SDL_FRect textDis = {
+        0.0f,
+        0.0f,
+        static_cast<float> (m_viewport.windowWidth),
+        static_cast<float> (m_viewport.windowHeight)
+    };
+
     SDL_RenderTexture (
         m_renderer,
         m_logicalTexture, // 源：你已经画好的逻辑画布
         nullptr,        // srcRect：源区域（nullptr = 整张）
         &m_viewport.dst        // dstRect：贴到哪里 & 贴多大
+    );
+    SDL_RenderTexture (
+        m_renderer,
+        m_textTexture,
+        nullptr,
+        &textDis
     );
     SDL_RenderPresent(m_renderer);
 }
@@ -113,17 +133,22 @@ void WindowManager::Present() {
 
 void WindowManager::beginWorld() {
     // 设置渲染目标为逻辑纹理
+    // 清除逻辑纹理（世界层）
     SDL_SetRenderTarget(m_renderer, m_logicalTexture);
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); 
+    SDL_RenderClear(m_renderer);
     
 }
 
 void WindowManager::endWorld() {
-    
+    SDL_SetRenderTarget(m_renderer, nullptr);
 }
 
 void WindowManager::beginUI() {
     // 设置渲染目标为窗口
-    SDL_SetRenderTarget(m_renderer, nullptr);
+    SDL_SetRenderTarget(m_renderer, m_textTexture);
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
+    SDL_RenderClear(m_renderer);
 }
 
 void WindowManager::endUI() {
@@ -214,6 +239,17 @@ void WindowManager::onWindowResize() {
     // - scale       可供所有系统使用
     // - dst         是渲染 & 输入转换的唯一依据
     // - windowSize  不需要再到处 SDL_GetWindowSize
+
+    // 创建文本渲染层
+    SDL_DestroyTexture(m_textTexture);
+    m_textTexture = SDL_CreateTexture(
+        m_renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        m_viewport.windowWidth,
+        m_viewport.windowHeight
+    );
+
 }
 
 Viewport const& WindowManager::getViewport() const {

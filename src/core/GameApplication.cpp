@@ -60,6 +60,7 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     m_windowManager->setFullscreen(input.isFullscreen);
     // 改变窗口时清理旧的缓存
     if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+        m_windowManager->onWindowResize();
         m_textRenderer->clearCache();
     }
 
