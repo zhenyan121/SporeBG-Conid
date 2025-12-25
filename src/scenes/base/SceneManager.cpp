@@ -186,6 +186,8 @@ void SceneManager::handleSceneEvent(const SceneEvent& event) {
     case SceneEventType::PushScene:
         pushScene(event.sceneName);
         break;
+    case SceneEventType::PopScene:
+        popScene();
     default:
         SDL_Log("SceneManager::handleSceneEvent: Unhandled event type!\n");
         break;
