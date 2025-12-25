@@ -8,7 +8,7 @@
 #include "utils/ConfigLoader.h"
 #include "graphics/font/TextRenderer.h"
 #include "graphics/font/FontManager.h"
-
+#include "core/DebugManager.h"
 
 class GameApplication {
 private:
@@ -20,7 +20,7 @@ private:
     std::unique_ptr<FontManager> m_fontManager;
     std::unique_ptr<TextRenderer> m_textRenderer;
     std::unique_ptr<UIRenderer> m_uiRenderer;
-    
+    std::unique_ptr<DebugManager> m_debugManager;
     Config m_config;
 
 public:
