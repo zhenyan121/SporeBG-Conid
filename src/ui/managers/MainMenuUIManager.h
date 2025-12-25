@@ -6,9 +6,8 @@ class TextRenderer;
 class MainMenuUIManager : public IUIManager {
 public: 
 
-    using SceneEventCallback = std::function<void(const std::string&)>;
-    MainMenuUIManager(SDL_Renderer* renderer,
-        TextRenderer* textRenderer,
+    
+    MainMenuUIManager(
         SceneEventCallback eventCallback
     );
     ~MainMenuUIManager();
@@ -24,7 +23,7 @@ public:
     void handleClick(int logicalX, int logicalY);
     
 private:
-    SceneEventCallback m_eventCallback;
+    
 
     
 };

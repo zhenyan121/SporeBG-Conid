@@ -4,7 +4,7 @@
 #include <functional>
 class GameUIManager : public IUIManager {
 public:
-    GameUIManager(SDL_Renderer* renderer, TextRenderer* textRenderer);
+    GameUIManager(SceneEventCallback eventCallback);
     
     ~GameUIManager();
 

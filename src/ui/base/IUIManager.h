@@ -12,6 +12,7 @@
 
 class IUIManager {
 public:
+    using SceneEventCallback = std::function<void(const std::string&)>;
     virtual ~IUIManager() = default;
 
     virtual void init() = 0;
@@ -26,9 +27,8 @@ protected:
     std::unordered_map<int, std::unique_ptr<Button>> m_buttons;
     std::unordered_map<int, std::unique_ptr<Label>> m_labels;
     UIRenderData m_uiRenderData;
-    SDL_Renderer* m_renderer = nullptr;
-    TextRenderer* m_textRenderer = nullptr;
-
+   
+    SceneEventCallback m_eventCallback;
     size_t makeHash(const std::string& name) {
         return std::hash<std::string>{}(name);
     }
