@@ -36,6 +36,11 @@ bool WindowManager::Initialize(Config& config) {
                  return false;
     }
     
+    if (config.window.vsync) {
+        SDL_SetRenderVSync(m_renderer, true);
+    } else {
+        SDL_SetRenderVSync(m_renderer, false);
+    }
      
 
     
