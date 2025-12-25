@@ -15,7 +15,7 @@ MainMenuUIManager::~MainMenuUIManager() {
 
 void MainMenuUIManager::init() {
     auto startButton = UIWidgetFactory::createStandardButton(
-        "StartButton", "开始游戏", 0, 0,
+        "StartButton", "开始游戏", 275, 180,
         [this]() { m_eventCallback("GameScene"); }
     );
     
