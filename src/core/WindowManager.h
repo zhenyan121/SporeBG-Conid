@@ -29,6 +29,10 @@ public:
     SDL_Renderer* GetRenderer();
     SDL_Window* GetWindow();
 
+    // 计算缩放后的目标矩形
+    //void calculateDstRect(SDL_FRect& dstRect);
+    void onWindowResize();
+
 
 private:
     SDL_Window* m_window;
@@ -40,8 +44,5 @@ private:
     //int m_windowHeight;
     bool m_isFullscreen = false;
     SDL_Texture* m_logicalTexture = nullptr;
-    // 计算缩放后的目标矩形
-    //void calculateDstRect(SDL_FRect& dstRect);
-    void onWindowResize();
-
+    SDL_Texture* m_textTexture = nullptr;
 };
