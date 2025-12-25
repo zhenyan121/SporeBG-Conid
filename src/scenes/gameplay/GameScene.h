@@ -18,7 +18,7 @@ public:
     void renderUI() override;    // 屏幕 UI
     void handleClick(int logicalX, int logicalYY) override;
 
-    void renderMousePosition(int logicalX, int logicalY) override;
+    
 
     void restartGame();
 private:

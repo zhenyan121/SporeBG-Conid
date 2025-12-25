@@ -20,8 +20,7 @@ void MainMenuUIManager::init() {
     );
     
     m_buttons.emplace(startButton->getNameHash(), std::move(startButton));
-    auto label = UIWidgetFactory::createStandardLabel("MousePositionLabel", "0 0", 240, 0);
-    m_labels.emplace(label->getNameHash(), std::move(label));
+    
 }
 
 void MainMenuUIManager::CollectRenderData() {
@@ -47,13 +46,6 @@ void MainMenuUIManager::CollectRenderData() {
     }
 }
 
-void MainMenuUIManager::updateMousePositon(int logicalX, int logicalY) {
-    
-    
-    std::string pos = std::to_string(logicalX) + " " + std::to_string(logicalY);
-    
-    m_labels[makeHash("MousePositionLabel")]->setText(pos);
-}
 
 const UIRenderData& MainMenuUIManager::getUIRenderData() {
     CollectRenderData();

@@ -67,7 +67,7 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     auto pos = Tools::physicalToLogical(input.mouseCurrentPosition.first, input.mouseCurrentPosition.second, m_windowManager->getViewport());
     
     m_debugManager->updateMousePos(pos.first, pos.second, input);
-    m_sceneManager->handleMousePosition(pos);
+    
     m_windowManager->setFullscreen(input.isFullscreen);
     
     // 改变窗口时清理旧的缓存

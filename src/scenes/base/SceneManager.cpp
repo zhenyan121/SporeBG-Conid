@@ -152,10 +152,7 @@ void SceneManager::handleClickCurrent(std::pair<int, int> clickOn) {
     if (m_scene) m_scene->handleClick(logicalX, logicalY);
 }
 
-void SceneManager::handleMousePosition(std::pair<int, int> mousePosition) {
-    auto [logicalX, logicalY] = mousePosition;
-    if (m_scene) m_scene->renderMousePosition(logicalX, logicalY);
-}
+
 
 void SceneManager::updateCurrent() {
     if (m_scene) m_scene->update();

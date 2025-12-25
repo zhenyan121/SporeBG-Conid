@@ -20,7 +20,7 @@ public:
     // 收集渲染数据
     virtual void CollectRenderData() = 0;
 
-    virtual void updateMousePositon(int logicalX, int logicalY) = 0;
+    
 
 protected:
     std::unordered_map<int, std::unique_ptr<Button>> m_buttons;

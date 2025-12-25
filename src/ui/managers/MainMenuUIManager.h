@@ -19,7 +19,7 @@ public:
     
     void CollectRenderData() override;
 
-    void updateMousePositon(int logicalX, int logicalY) override;
+    
 
     void handleClick(int logicalX, int logicalY);
     
