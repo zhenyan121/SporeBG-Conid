@@ -75,9 +75,6 @@ void GameScene::handleClick(int logicalX, int logicalY) {
         }
 }
 
-void GameScene::renderMousePosition(int logicalX, int logicalY) {
-    m_gameUIManager->updateMousePositon(logicalX, logicalY);
-}
 
 void GameScene::restartGame() {
     m_gameSession = std::make_unique<GameSession>();

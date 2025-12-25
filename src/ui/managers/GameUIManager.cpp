@@ -50,14 +50,6 @@ void GameUIManager::CollectRenderData() {
     }
 }
 
-void GameUIManager::updateMousePositon(int logicalX, int logicalY) {
-    
-    
-    
-    std::string pos = std::to_string(logicalX) + " " + std::to_string(logicalY);
-    
-    m_labels[makeHash("MousePositionLabel")]->setText(pos);
-}
 
 void GameUIManager::updateActionType(ActionType type) {
     // 根据传入的 ActionType 更新 UI 组件状态
@@ -136,15 +128,7 @@ void GameUIManager::setupUIComponents() {
     );
     m_buttons.emplace(button->getNameHash(), std::move(button));
 
-    auto label = UIWidgetFactory::createStandardLabel(
-        "MousePositionLabel",
-        "0 0",
-        240,
-        0
-    );
-
-    m_labels.emplace(label->getNameHash(), std::move(label));
-
+    
     auto restartButton = UIWidgetFactory::createStandardButton(
         "RestartButton",
         "Restart",

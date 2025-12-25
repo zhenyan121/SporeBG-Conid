@@ -50,6 +50,3 @@ void MainMenuScene::handleClick(int logicalX, int logicalY) {
 }
 
 
-void MainMenuScene::renderMousePosition(int logicalX, int logicalY) {
-    m_mainMenuUIManager->updateMousePositon(logicalX, logicalY);
-}

@@ -16,7 +16,7 @@ public:
     // 收集渲染数据
     void CollectRenderData();
 
-    void updateMousePositon(int logicalX, int logicalY);
+   
 
     void updateActionType(ActionType type);
 
