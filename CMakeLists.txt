@@ -43,6 +43,9 @@ set(SOURCE_FILES
     src/graphics/ui/UIRenderer.cpp
     src/graphics/font/BitmapFont.cpp
     src/utils/ConfigLoader.cpp
+    src/core/DebugManager.cpp
+    src/ui/managers/debug/DebugOverlay.cpp
+    src/core/Time.cpp
 )
 
 

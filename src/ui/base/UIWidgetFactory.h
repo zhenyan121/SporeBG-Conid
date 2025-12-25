@@ -20,6 +20,7 @@ public:
         label->setRect(x, y, UI::ButtonSize * 4, UI::ButtonSize * 2);
         label->setText(text, {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE, {0, 0, 0, 255}});
         label->setName(name);
+        label->setVisible(true);
         return label;
     }
 

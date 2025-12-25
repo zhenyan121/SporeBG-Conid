@@ -1,5 +1,6 @@
 #include "GameApplication.h"
 #include "utils/Tools.h"
+#include "Time.h"
 GameApplication::GameApplication() {
 
 }
@@ -21,6 +22,7 @@ bool GameApplication::initialize() {
     if (!ConfigLoader::load("assets/config.json", m_config)) {
         SDL_Log("无法加载json");
     }
+    Time::init();
     // 输入管理
     m_inputManager = std::make_unique<InputManager>();
     // 窗口管理
@@ -36,7 +38,14 @@ bool GameApplication::initialize() {
     m_textRenderer = std::make_unique<TextRenderer>(m_windowManager->GetRenderer(), m_fontManager.get(), m_windowManager->getViewport());
 
     m_uiRenderer = std:: make_unique<UIRenderer>(m_windowManager->GetRenderer(), m_textRenderer.get());
-
+    // 调试管理
+    m_debugManager = std::make_unique<DebugManager>(
+        m_windowManager->GetRenderer(),
+        m_windowManager->GetWindow(),
+        //m_inputManager->GetInputState(),
+        m_uiRenderer.get()
+    );
+    m_debugManager->initialize();
     // 场景管理，传入窗口句柄以便 SceneManager 能获取窗口尺寸
     m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer(), m_uiRenderer.get(), m_windowManager->GetWindow());
     if (!m_sceneManager->initialize()) {
@@ -56,8 +65,11 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
         m_sceneManager->handleClickCurrent(pos);
     }
     auto pos = Tools::physicalToLogical(input.mouseCurrentPosition.first, input.mouseCurrentPosition.second, m_windowManager->getViewport());
+    
+    m_debugManager->updateMousePos(pos.first, pos.second, input);
     m_sceneManager->handleMousePosition(pos);
     m_windowManager->setFullscreen(input.isFullscreen);
+    
     // 改变窗口时清理旧的缓存
     if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
         m_windowManager->onWindowResize();
@@ -69,16 +81,17 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
 }
 
 void GameApplication::run() {
-
+    Time::update();
     m_sceneManager->updateCurrent();
-
+    m_debugManager->updateDebugInfo();
     m_windowManager->Clear();
     m_windowManager->beginWorld();
     m_sceneManager->renderWorld();
     m_windowManager->endWorld();
-
+    
     m_windowManager->beginUI();
-    m_sceneManager->renderUI(); 
+    m_sceneManager->renderUI();
+    m_debugManager->showDebugInfo();
     m_windowManager->endUI();
 
     m_windowManager->Present();
