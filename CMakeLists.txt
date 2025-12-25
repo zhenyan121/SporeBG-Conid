@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-# ========== 引入 SDL 构建脚本 ==========
+include(${CMAKE_SOURCE_DIR}/cmake/ThirdParty.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/SDL.cmake)
 
 # ========== 源码 ==========
@@ -51,8 +51,15 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/src
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_SOURCE_DIR}/src
+    ${asio_SOURCE_DIR}/asio/include
+    
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    ASIO_STANDALONE
+
 )
 
 target_link_libraries(${PROJECT_NAME}
