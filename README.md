@@ -2,6 +2,7 @@
 一个棋类游戏，与孢子分裂有关，本为**cpp重构版**，游戏核心主要玩法由**cold1840**制定的，可以看他的[python版本](https://github.com/cold1840/SporeBG)，这个版本旨在用**cpp**完全重写这个游戏，**注意本项目并未使用到里面的代码，核心逻辑实现是不一样的**，且本项目打算加入许多功能，**整体玩法也是完全不一样的**，同时**cold1840**也在一定程度上参与项目的开发与维护  
 
 ## 构建指南
+**mingw老版本有重大问题，导致asio内部状态损坏，引起段错误，如果是mingw请使用最新版本**
 确保电脑安装了`cmake`和`ninja`，使用`gcc`与`g++`：
 ```bash
 git clone https://github.com/zhenyan121/SporeBG-Conid.git
