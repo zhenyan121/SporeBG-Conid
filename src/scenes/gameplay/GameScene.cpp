@@ -56,7 +56,7 @@ void GameScene::renderUI() {
 }
 
 void GameScene::handleClick(int logicalX, int logicalY) {
-    if (m_gameUIManager->handleClick(logicalX, logicalY)) {
+    if (m_gameUIManager && m_gameUIManager->handleClick(logicalX, logicalY)) {
         return;
     }
     

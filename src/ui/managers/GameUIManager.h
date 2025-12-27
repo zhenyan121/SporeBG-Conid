@@ -23,7 +23,7 @@ public:
     void updateGameState(GameState state);
 
     bool handleClick(int logicalX, int logicalY);
-private:
+protected:
     std::function<void()> m_restartCallback;
     void setupUIComponents();
 

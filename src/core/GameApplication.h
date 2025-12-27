@@ -22,6 +22,7 @@ private:
     std::unique_ptr<UIRenderer> m_uiRenderer;
     std::unique_ptr<DebugManager> m_debugManager;
     Config m_config;
+   
 
 public:
     GameApplication();
@@ -29,5 +30,4 @@ public:
     bool initialize();
     SDL_AppResult handleInputEvent(SDL_Event* event);
     void run();
-
 };
