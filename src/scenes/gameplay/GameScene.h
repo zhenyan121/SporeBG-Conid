@@ -21,12 +21,12 @@ public:
     
 
     void restartGame();
-private:
+protected:
     
     std::unique_ptr<BoardRenderer> m_boardRenderer;
     std::unique_ptr<CoordinateConverter> m_CoordinateConverter;
     std::unique_ptr<GameSession> m_gameSession;
-    
+private:
     std::unique_ptr<GameUIManager> m_gameUIManager;
     
     

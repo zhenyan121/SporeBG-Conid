@@ -1,12 +1,16 @@
 #include "GameApplication.h"
 #include "utils/Tools.h"
 #include "Time.h"
-GameApplication::GameApplication() {
+
+
+GameApplication::GameApplication() 
+    
+{
 
 }
 
 GameApplication::~GameApplication() {
-
+  
 }
 
 bool GameApplication::initialize() {
@@ -23,6 +27,9 @@ bool GameApplication::initialize() {
         SDL_Log("无法加载json");
     }
     Time::init();
+    
+   
+    
     // 输入管理
     m_inputManager = std::make_unique<InputManager>();
     // 窗口管理
@@ -96,3 +103,4 @@ void GameApplication::run() {
 
     m_windowManager->Present();
 }
+

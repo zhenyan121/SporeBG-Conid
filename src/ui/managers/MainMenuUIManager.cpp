@@ -18,6 +18,13 @@ void MainMenuUIManager::init() {
     );
     
     m_buttons.emplace(startButton->getNameHash(), std::move(startButton));
+
+    auto onlineStartButton = UIWidgetFactory::createStandardButton(
+        "OnlineStartButton", "联机对战", 275, 250,
+        [this]() {m_eventCallback("OnlineGameScene"); }
+    );
+
+    m_buttons.emplace(onlineStartButton->getNameHash(), std::move(onlineStartButton));
     
 }
 

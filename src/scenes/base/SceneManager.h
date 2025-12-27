@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "scenes/gameplay/GameScene.h"
 #include "scenes/menu/MainMenuScene.h"
+#include "scenes/gameplay/OnlineGameScene.h"
 #include <SDL3/SDL.h>
 #include <string>
 #include <stack>

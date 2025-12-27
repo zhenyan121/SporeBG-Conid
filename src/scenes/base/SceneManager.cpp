@@ -38,6 +38,9 @@ void SceneManager::registerAllScene() {
     registerSceneFactory("GameScene", []() -> std::shared_ptr<Scene> {
         return std::make_shared<GameScene>();
     });
+    registerSceneFactory("OnlineGameScene", []() -> std::shared_ptr<Scene> {
+        return std::make_shared<OnlineGameScene>();
+    });
 }
 
 std::shared_ptr<Scene> SceneManager::createScene(const std::string& sceneName) {
