@@ -46,6 +46,11 @@ set(SOURCE_FILES
     src/core/DebugManager.cpp
     src/ui/managers/debug/DebugOverlay.cpp
     src/core/Time.cpp
+    src/scenes/gameplay/OnlineGameScene.cpp
+    src/ui/managers/OnlineGameUIManager.cpp
+    src/network/client/Client.cpp
+    src/network/server/GameServer.cpp
+    src/network/NetworkManager.cpp
 )
 
 
@@ -56,10 +61,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${asio_SOURCE_DIR}/asio/include
     
 )
-
+# ========== Windows: 定义宏 & 链接库 ==========
+if (WIN32)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     ASIO_STANDALONE
-
+    _WIN32_WINNT=0x0A00
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -68,8 +74,11 @@ target_link_libraries(${PROJECT_NAME}
         SDL3_ttf::SDL3_ttf
         SDL3_image::SDL3_image
         nlohmann_json::nlohmann_json
+        ws2_32
+        mswsock
+        advapi32
 )
-
+endif()
 # ========== Windows: 复制 DLL ==========
 if (WIN32)
 # 查找 MinGW 运行时库
