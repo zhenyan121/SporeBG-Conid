@@ -2,7 +2,7 @@
 
 #include "network/client/Client.h"
 #include "network/server/GameServer.h"
-
+#include "utils/Config.h"
 class NetworkManager {
 public:
     using ClickEventCallback = std::function<void(int logicalX, int logicalY)>;
@@ -40,7 +40,7 @@ private:
     
     ClickEventCallback m_clickEventCallback;
     StartGameCallback m_startGameCallback;
-
+    Config m_config;
     bool m_isMyTurn = false;  // 新增：当前是否是我的回合
     void startServer();
 

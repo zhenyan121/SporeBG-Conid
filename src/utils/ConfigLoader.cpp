@@ -29,6 +29,20 @@ static void loadRender(const json& j, RenderConfig& render) {
     get("logical_height", render.logicalHeight);
 }
 
+static void loadNetwork(const json& j, NetworkConfig& network) {
+    auto get = [&](const char* key, auto& out) {
+        if (j.contains(key))
+            j.at(key).get_to(out);
+        else {
+            std::cout << "Unkonw key " << key << "\n";
+        }
+    };
+    get("port", network.port);
+    get("max_players", network.maxPlayers);
+    get("server_ip", network.serverIP);
+}
+
+
 bool ConfigLoader::load(const std::string& path, Config& config) {
     std::ifstream file(path);
 
@@ -53,7 +67,18 @@ bool ConfigLoader::load(const std::string& path, Config& config) {
     if (j.contains("render")) {
         loadRender(j["render"], config.render);
     }
+    if (j.contains("network")) {
+        loadNetwork(j["network"], config.network);
+    }
     std::cout << "load json success!\n";
     return true;
 
+}
+
+Config ConfigLoader::load(const std::string& path) {
+    Config config;
+    if (!load(path, config)) {
+        std::cerr << "[ConfigLoader] Failed to load config from " << path << "\n";
+    }
+    return config;
 }

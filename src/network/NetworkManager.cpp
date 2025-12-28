@@ -1,10 +1,11 @@
 #include "NetworkManager.h"
+#include "utils/ConfigLoader.h"
 #include <iostream>
 NetworkManager::NetworkManager()
     : m_workguard(asio::make_work_guard(m_ioContext))
 {
     std::cout << "NetworkManager constructor called\n";
-    
+    m_config = ConfigLoader::load("assets/config.json");
 }
 
 NetworkManager::~NetworkManager() {
@@ -63,7 +64,7 @@ void NetworkManager::startServer() {
     if (!m_gameServer) {
         std::cerr << "gameServer is not esist\n";
     }
-    m_gameServer->startServer(52025);
+    m_gameServer->startServer(m_config.network.port);
     
     std::cout << "start server success\n";
     //m_ioContext.run();
@@ -92,10 +93,10 @@ void NetworkManager::startClient() {
         }
     );
     if (m_netType == NetType::HOST) {
-        m_client->connect("127.0.0.1", 52025, true);
+        m_client->connect("127.0.0.1", m_config.network.port, true);
     }
     if (m_netType == NetType::CLIENT) {
-        m_client->connect("127.0.0.1", 52025, false);  
+        m_client->connect(m_config.network.serverIP, m_config.network.port, false);  
         //m_ioContext.run();
     }
     std::cout << "start client success\n";

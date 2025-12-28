@@ -80,7 +80,14 @@ struct Viewport {
     SDL_FRect dst{};
 };
 
+struct NetworkConfig {
+    int port = 12345;
+    int maxPlayers = 2;
+    std::string serverIP = "127.0.0.1";
+};
+
 struct Config {
     WindowConfig window;
     RenderConfig render;
+    NetworkConfig network;
 };
