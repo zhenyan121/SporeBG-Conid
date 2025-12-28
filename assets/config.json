@@ -16,5 +16,10 @@
   "ui": {
     "font": "fonts/SourceHanSansSC-Regular.otf",
     "font_size": 16
+  },
+  "network": {
+    "server_ip": "127.0.0.1",
+    "port": 12345,
+    "max_players": 2
   }
 }

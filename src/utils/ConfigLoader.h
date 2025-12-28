@@ -6,6 +6,6 @@
 class ConfigLoader {
 public:
     static bool load(const std::string& path, Config& config);
-
+    static Config load(const std::string&path);
 
 };
