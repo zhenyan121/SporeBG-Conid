@@ -81,7 +81,8 @@ struct Viewport {
 };
 
 struct NetworkConfig {
-    int port = 12345;
+    int serverPort = 12345;
+    int hostPort = 12345;
     int maxPlayers = 2;
     std::string serverIP = "127.0.0.1";
 };

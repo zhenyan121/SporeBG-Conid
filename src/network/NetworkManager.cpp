@@ -64,7 +64,7 @@ void NetworkManager::startServer() {
     if (!m_gameServer) {
         std::cerr << "gameServer is not esist\n";
     }
-    m_gameServer->startServer(m_config.network.port);
+    m_gameServer->startServer(m_config.network.hostPort);
     
     std::cout << "start server success\n";
     //m_ioContext.run();
@@ -93,10 +93,10 @@ void NetworkManager::startClient() {
         }
     );
     if (m_netType == NetType::HOST) {
-        m_client->connect("127.0.0.1", m_config.network.port, true);
+        m_client->connect("127.0.0.1", m_config.network.hostPort, true);
     }
     if (m_netType == NetType::CLIENT) {
-        m_client->connect(m_config.network.serverIP, m_config.network.port, false);  
+        m_client->connect(m_config.network.serverIP, m_config.network.serverPort, false);  
         //m_ioContext.run();
     }
     std::cout << "start client success\n";
