@@ -16,15 +16,20 @@ std::unique_ptr<GameUIManager> OnlineGameScene::createUIManager() {
         [this](NetType type) {
             if (m_networkManager) {
                 m_networkManager->init(type);
+
+                m_gameUIManager->setButton("OnlineHostButton", false);
+                m_gameUIManager->setButton("OnlineJoinButton", false);
                 if (type == NetType::CLIENT) {
                     m_isMyTurn = false;
-                    
                     m_myPlayerID = PlayerID::P2;
+                    m_gameUIManager->setLabel("OnlineJoinConnectLabel", true);
                 } else if (type == NetType::HOST) {
                     m_isMyTurn = true;
                     m_myPlayerID = PlayerID::P1;
+                    m_gameUIManager->setLabel("OnlineHostConnectLabel", true);
                 }
                 m_networkManager->setIsMyTurn(m_isMyTurn);
+                
             }
         }
     );
@@ -42,15 +47,21 @@ void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIR
     );
     m_networkManager->setStartGameCallback(
         [this]() {
-            auto onlineUIManager = dynamic_cast<OnlineGameUIManager*>(m_gameUIManager.get());
-            if (onlineUIManager) {
-                onlineUIManager->hideOnlineButtons();
+            if (!m_gameUIManager) {
+                std::cerr << "gameUIManager is null!\n";
             }
+            m_gameUIManager->setLabel("OnlineHostConnectLabel", false);
+            m_gameUIManager->setLabel("OnlineJoinConnectLabel", false);
+            m_gameUIManager->setButton("ActionButton", true); 
+            m_gameUIManager->setLabel("PlayerLabel", true); 
             m_currentGameState = GameState::GAME_RUNING;
         }
     );
     // 调用父类的onEnter（会调用我们重写的createUIManager）
     GameScene::onEnter(renderer, WIDTH, HEIGHT, uiRenderer);
+
+    m_gameUIManager->setButton("ActionButton", false); // 初始禁用行动按钮，等待游戏开始
+    m_gameUIManager->setLabel("PlayerLabel", false); // 初始隐藏玩家回合标签
 }
 
 bool OnlineGameScene::preHandleClick(int logicalX, int logicalY) {
