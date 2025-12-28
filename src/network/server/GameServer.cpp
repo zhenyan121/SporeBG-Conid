@@ -81,7 +81,16 @@ void GameServer::waitForPlayers(int playerNum) {
 }
 
 void GameServer::startGame() {
-    std::cout << "Gmae Start player1 is the first\n";
+    std::cout << "Game Start player1 is the first\n";
+    
+    // 检查两个socket的状态
+    std::cout << "DEBUG: Player1 socket open: " << m_player1.is_open() 
+              << ", remote: " << m_player1.remote_endpoint().address().to_string() 
+              << ":" << m_player1.remote_endpoint().port() << std::endl;
+    
+    std::cout << "DEBUG: Player2 socket open: " << m_player2.is_open() 
+              << ", remote: " << m_player2.remote_endpoint().address().to_string() 
+              << ":" << m_player2.remote_endpoint().port() << std::endl;
 
     NetData gameStartMsg;
     gameStartMsg.type = NetDataType::GAME_START;

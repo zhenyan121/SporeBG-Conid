@@ -27,6 +27,7 @@ public:
     
 
 private:
+    asio::io_context& m_ioContext;  // 添加引用
     asio::ip::tcp::resolver m_resolver;
     asio::ip::tcp::socket m_socket;
     std::string m_host;
@@ -47,5 +48,6 @@ private:
     void waitForOpponent();
     void stopWaiting();  // 停止等待
     
-    
+    void closeConnection();
+    void attemptReconnect(); // 尝试重新连接
 };

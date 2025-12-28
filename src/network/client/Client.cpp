@@ -1,6 +1,7 @@
 #include "Client.h"
 #include <iostream>
 Client::Client(asio::io_context& ioContext):
+    m_ioContext(ioContext),
     m_resolver(ioContext),
     m_socket(ioContext)
 {
@@ -90,13 +91,28 @@ void Client::sentClickPosition(const NetData& data, bool isChangeTurn) {
 }
 
 void Client::waitForOpponent() {
-    if (!m_shouldWait || m_isWaiting) {
+    if (!m_shouldWait || m_isWaiting || !m_socket.is_open()) {
         return;
     }
+    m_isWaiting = true;
+
+    // 添加调试信息
+    std::cout << "DEBUG: Starting to wait for data from " 
+              << m_host << ":" << m_port 
+              << ", socket open: " << m_socket.is_open() 
+              << ", shouldWait: " << m_shouldWait << std::endl;
+
     auto self = shared_from_this();
+
+    // 设置读取超时
+    m_socket.set_option(asio::ip::tcp::no_delay(true));
+
     m_socket.async_read_some(
         asio::buffer(m_readBuffer, NetData::size()),
         [this, self](const asio::error_code& ec, std::size_t bytesTransferred) {
+            m_isWaiting = false;  // 重置等待状态
+            std::cout << "DEBUG: Read callback - Bytes received: " 
+                      << bytesTransferred << ", Error: " << ec.message() << std::endl;
             if (!ec) {
 
                 if (bytesTransferred == NetData::size()) {
@@ -145,7 +161,7 @@ void Client::waitForOpponent() {
                                 m_onMyTurn();
                             }
                         } else {
-                            if (m_shouldWait) {
+                            if (m_shouldWait && m_socket.is_open()) {
                                 waitForOpponent();
                             }
                         }
@@ -159,13 +175,47 @@ void Client::waitForOpponent() {
                     }
                 }
             } else {
-                std::cerr << "read failed: " << ec.message() << std::endl;
-                // 发生错误时，可以选择重新等待对手
-                if (m_shouldWait) {
-                    waitForOpponent();
-                }
+               // 关键修复：区分不同类型的错误
+                if (ec == asio::error::eof) {
+                    // 对端正常关闭连接
+                    std::cout << "Connection closed by peer." << std::endl;
+                    // 不要重试，关闭socket
+                    closeConnection();
+                } else if (ec == asio::error::operation_aborted) {
+                    // 操作被取消（正常情况）
+                    std::cout << "Read operation cancelled." << std::endl;
+                } else {
+                    // 其他错误
+                    std::cerr << "Read error: " << ec.message() << std::endl;
+                    // 尝试重新连接
+                    if (m_shouldWait) {
+                        attemptReconnect();
+                    }
             }
         }
+    }
     );
+    
 }
 
+void Client::closeConnection() {
+    asio::error_code ec;
+    if (m_socket.is_open()) {
+        m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+        m_socket.close(ec);
+    }
+    m_isWaiting = false;
+    m_shouldWait = false;
+    std::cout << "Connection closed." << std::endl;
+}
+
+void Client::attemptReconnect() {
+    std::cout << "Attempting to reconnect to " << m_host << ":" << m_port << "...\n";
+    closeConnection();
+    // 等待一段时间后重新连接
+    auto self = shared_from_this();
+    asio::steady_timer timer(m_ioContext, std::chrono::seconds(3));
+    timer.async_wait([this, self](const asio::error_code& /*ec*/) {
+        connect(m_host, m_port, m_isHost);
+    });
+}
