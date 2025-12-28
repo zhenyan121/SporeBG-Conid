@@ -29,6 +29,10 @@ void NetworkManager::init(NetType type) {
     std::cout << "client started\n";
 }
 
+void NetworkManager::setClickEventCallback(ClickEventCallback callback) {
+    m_clickEventCallback = callback;
+}
+
 /*
 void NetworkManager::init(NetType type) {
         // 先启动 io_context 线程
@@ -68,12 +72,23 @@ void NetworkManager::startServer() {
 
 void NetworkManager::startClient() {
     m_client->setCallbackes(
-        [](const NetData& click) {
+        [this](const NetData& click) {
             /* 处理对手棋步 */
+            if (m_clickEventCallback) {
+                std::cout << "Received opponent move: (" 
+                          << click.clickPosition.first << ", " 
+                          << click.clickPosition.second << ")\n";
+                m_clickEventCallback(click.clickPosition.first, click.clickPosition.second);
+            }
         },
         []() {
             /* 提示用户走棋 */
-            std::cout << "It's your turn now!\n";
+            std::cout << "NetworkManager:It's your turn now!\n";
+        },
+        [this]() {
+            /* 游戏开始回调 */
+            m_startGameCallback();
+            std::cout << "Game has started!\n";
         }
     );
     if (m_netType == NetType::HOST) {
@@ -100,4 +115,24 @@ void NetworkManager::startIOContextLoop() {
     });
     std::cout << "IO context loop started on thread: " 
               << m_ioThread.joinable() << std::endl;
+}
+
+void NetworkManager::postClickPosition(int logicalX, int logicalY, bool isChangeTurn) {
+    if (m_client) {
+        NetData data;
+        data.clickPosition = {logicalX, logicalY};
+        // 发送位置并告诉对手是否换回合
+        m_client->sentClickPosition(data, isChangeTurn);
+        std::cout << "Posted click position: ("
+                  << logicalX << ", " << logicalY << ")\n";
+    }
+}
+
+void NetworkManager::setIsMyTurn(bool isMyTurn) {
+    m_isMyTurn = isMyTurn;
+    if (m_client) {
+        // 如果不是我的回合，则客户端应该等待对手
+        m_client->setShouldWait(!isMyTurn);
+    }
+    
 }

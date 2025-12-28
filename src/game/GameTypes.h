@@ -18,6 +18,7 @@ enum class GameState {
     GAME_RUNING,    // 游戏进行中
     GAME_LOSE,  // 游戏失败
     GAME_WIN,   // 游戏胜利
+    GAME_PREGAME  // 游戏未开始
 };
 
 enum class GameMode {

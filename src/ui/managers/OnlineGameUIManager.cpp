@@ -49,3 +49,15 @@ void OnlineGameUIManager::setOnlineTypeCallback(OnlineTypeEvent onlineTypeEvent)
     m_onlineTypeEvent = onlineTypeEvent;
 }
 
+void OnlineGameUIManager::hideOnlineButtons() {
+    auto hostIt = m_buttons.find(makeHash("OnlineHostButton"));
+    if (hostIt != m_buttons.end()) {
+        hostIt->second->setVisible(false);
+        hostIt->second->setEnabled(false);
+    }
+    auto joinIt = m_buttons.find(makeHash("OnlineJoinButton"));
+    if (joinIt != m_buttons.end()) {
+        joinIt->second->setVisible(false);
+        joinIt->second->setEnabled(false);
+    }
+}

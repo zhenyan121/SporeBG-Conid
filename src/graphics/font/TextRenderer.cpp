@@ -247,10 +247,10 @@ void TextRenderer::autoCleanCache(size_t keepKey) {
     
     // 计算需要删除的数量
     size_t itemsToRemove = m_cache.size() - MIN_CACHE_SIZE;
-    
+    /*
     SDL_Log("缓存清理：删除 %zu / %zu 条目(当前缓存大小：%zu)\n", 
             itemsToRemove, m_cache.size(), m_cache.size());
-    
+    */
     // 删除最旧的缓存项
     for (size_t i = 0; i < itemsToRemove && i < cacheItems.size(); ++i) {
 
@@ -262,5 +262,5 @@ void TextRenderer::autoCleanCache(size_t keepKey) {
         }
     }
     
-    SDL_Log("缓存清理完成，当前缓存大小：%zu\n", m_cache.size());
+    //SDL_Log("缓存清理完成，当前缓存大小：%zu\n", m_cache.size());
 }

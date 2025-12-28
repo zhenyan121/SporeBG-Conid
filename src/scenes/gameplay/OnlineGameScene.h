@@ -14,9 +14,15 @@ public:
     void handleNetworkClick(int logicalX, int logicalY);
 
     void renderUI() override;
+protected:
+    std::unique_ptr<GameUIManager> createUIManager() override;
+    bool preHandleClick(int logicalX, int logicalY) override;
+    void postHandleClick() override;
+
+    void handleBoardClick(int row, int col) override;
 private:
-    PlayerID m_myPlayerID;
-    bool m_isMyTurn;
+    PlayerID m_myPlayerID = PlayerID::P1;
+    bool m_isMyTurn = true;
     std::unique_ptr<NetworkManager> m_networkManager;
-    std::unique_ptr<OnlineGameUIManager> m_gameUIManager;
+    GameState m_currentGameState = GameState::GAME_PREGAME;
 };
