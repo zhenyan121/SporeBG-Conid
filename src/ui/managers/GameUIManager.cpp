@@ -113,6 +113,18 @@ void GameUIManager::updateGameState(GameState state) {
     m_currentGameState = state;
 }
 
+void GameUIManager::updatePlayerTurn(PlayerID playerID) {
+    auto labelIt = m_labels.find(makeHash("PlayerLabel"));
+    if (labelIt != m_labels.end()) {
+        auto& label = labelIt->second;
+        if (playerID == PlayerID::P1) {
+            label->setText("Player 1's Turn");
+        } else if (playerID == PlayerID::P2) {
+            label->setText("Player 2's Turn");
+        }
+    }
+}
+
 void GameUIManager::setupUIComponents() {
     // 这里可以添加更多的UI组件初始化逻辑
 
@@ -120,7 +132,7 @@ void GameUIManager::setupUIComponents() {
         "ActionButton",
         "Please Choose",
         20,
-        20,
+        60,
         [](){
 
         }
@@ -156,7 +168,14 @@ void GameUIManager::setupUIComponents() {
 
     );
     m_buttons.emplace(QuitButton->getNameHash(), std::move(QuitButton));
-    
+
+    auto playerLabel = UIWidgetFactory::createStandardLabel(
+        "PlayerLabel",
+        "Player 1's Turn",
+        20,
+        20
+    );
+    m_labels.emplace(playerLabel->getNameHash(), std::move(playerLabel));
 
 }
 
@@ -175,3 +194,4 @@ bool GameUIManager::handleClick(int lx, int ly) {
     }
     return false;
 }
+
