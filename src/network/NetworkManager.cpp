@@ -1,9 +1,17 @@
 #include "NetworkManager.h"
 #include <iostream>
-
+NetworkManager::NetworkManager()
+    : m_workguard(asio::make_work_guard(m_ioContext))
+{
+    std::cout << "NetworkManager constructor called\n";
+    
+}
 
 NetworkManager::~NetworkManager() {
-    
+    m_ioContext.stop();
+    if (m_ioThread.joinable()) {
+        m_ioThread.join();
+    }
 }
 
 void NetworkManager::init(NetType type) {
@@ -12,9 +20,13 @@ void NetworkManager::init(NetType type) {
         m_gameServer = std::make_shared<GameServer>(m_ioContext);
         //std::cout << "try to start server\n";
         startServer();
+
         
     }
+
     m_client = std::make_shared<Client>(m_ioContext);
+    startClient();
+    std::cout << "client started\n";
 }
 
 /*
@@ -50,7 +62,7 @@ void NetworkManager::startServer() {
     m_gameServer->startServer(52025);
     
     std::cout << "start server success\n";
-    m_ioContext.run();
+    //m_ioContext.run();
     
 }
 
@@ -69,6 +81,23 @@ void NetworkManager::startClient() {
     }
     if (m_netType == NetType::CLIENT) {
         m_client->connect("127.0.0.1", 52025, false);  
-        m_ioContext.run();
+        //m_ioContext.run();
     }
+    std::cout << "start client success\n";
+    startIOContextLoop();
+}
+
+void NetworkManager::startIOContextLoop() {
+    
+    m_ioThread = std::thread([this]() {
+        try {
+            size_t handlers_run = m_ioContext.run(); // 记录处理了多少个handler
+            std::cout << "io_context.run() exit, handlers run: " 
+                      << handlers_run << " " << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "io_context.run() exception: " << e.what() << std::endl;
+        }
+    });
+    std::cout << "IO context loop started on thread: " 
+              << m_ioThread.joinable() << std::endl;
 }
