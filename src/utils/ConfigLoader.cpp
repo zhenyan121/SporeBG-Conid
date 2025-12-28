@@ -37,7 +37,8 @@ static void loadNetwork(const json& j, NetworkConfig& network) {
             std::cout << "Unkonw key " << key << "\n";
         }
     };
-    get("port", network.port);
+    get("server_port", network.serverPort);
+    get("host_port", network.hostPort);
     get("max_players", network.maxPlayers);
     get("server_ip", network.serverIP);
 }
