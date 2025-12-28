@@ -43,6 +43,24 @@ void OnlineGameUIManager::init() {
         }
     );
     m_buttons.emplace(onlineJoinButton->getNameHash(), std::move(onlineJoinButton));
+
+    auto onlineHostConnectLabel = UIWidgetFactory::createStandardLabel(
+        "OnlineHostConnectLabel",
+        "Waiting for player to connect...",
+        200,
+        200
+    );
+    onlineHostConnectLabel->setVisible(false);
+    m_labels.emplace(onlineHostConnectLabel->getNameHash(), std::move(onlineHostConnectLabel));
+
+    auto onlineJoinConnectLabel = UIWidgetFactory::createStandardLabel(
+        "OnlineJoinConnectLabel",
+        "Connecting to host...",
+        200,
+        200
+    );
+    onlineJoinConnectLabel->setVisible(false);
+    m_labels.emplace(onlineJoinConnectLabel->getNameHash(), std::move(onlineJoinConnectLabel));
 }
 
 void OnlineGameUIManager::setOnlineTypeCallback(OnlineTypeEvent onlineTypeEvent) {
