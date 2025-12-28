@@ -43,6 +43,8 @@ void GameScene::postHandleClick() {
     m_boardRenderer->updateMovementRange(m_gameSession->getSelectedPiece(), m_gameSession->getCurrentActionType());
     m_gameUIManager->updateGameState(m_gameSession->getGameState());
     m_boardRenderer->setGameState(m_gameSession->getGameState());
+    m_gameUIManager->updatePlayerTurn(m_gameSession->getCurrentPlayer());
+
 }
 
 void GameScene::handleBoardClick(int row, int col) {

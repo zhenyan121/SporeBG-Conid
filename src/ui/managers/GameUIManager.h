@@ -22,6 +22,8 @@ public:
 
     void updateGameState(GameState state);
 
+    void updatePlayerTurn(PlayerID playerID);
+
     bool handleClick(int logicalX, int logicalY);
 protected:
     std::function<void()> m_restartCallback;
