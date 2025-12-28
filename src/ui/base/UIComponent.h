@@ -44,7 +44,10 @@ public:
         m_rect.x = static_cast<float>(x); 
         m_rect.y = static_cast<float>(y); 
     }
-
+    void setPosition(int x, int y) {
+        m_rect.x = static_cast<float>(x); 
+        m_rect.y = static_cast<float>(y); 
+    }
     /**
      * @brief 获取组件边界矩形
      * @return SDL_FRect 浮点矩形
