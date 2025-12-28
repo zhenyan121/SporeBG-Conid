@@ -83,6 +83,37 @@ void GameServer::waitForPlayers(int playerNum) {
 void GameServer::startGame() {
     std::cout << "Gmae Start player1 is the first\n";
 
+    NetData gameStartMsg;
+    gameStartMsg.type = NetDataType::GAME_START;
+    gameStartMsg.firstPlayer = 1;  // 玩家1先手
+    gameStartMsg.clickPosition = {-1, -1};  // 特殊值表示游戏开始
+    
+    char buffer1[NetData::size()];
+    char buffer2[NetData::size()];
+    // player1
+    gameStartMsg.serialize(buffer1);
+    //player2
+    gameStartMsg.serialize(buffer2);
+    // 发送游戏开始消息给两个玩家
+    asio::async_write(m_player1, asio::buffer(buffer1, NetData::size()),
+        [](const asio::error_code& ec, size_t) {
+            if (ec) {
+                std::cerr << "Failed to send start message to player1: " << ec.message() << std::endl;
+            } else {
+                std::cout << "Game start message sent to player1\n";
+            }
+        });
+    
+    asio::async_write(m_player2, asio::buffer(buffer2, NetData::size()),
+        [](const asio::error_code& ec, size_t) {
+            if (ec) {
+                std::cerr << "Failed to send start message to player2: " << ec.message() << std::endl;
+            } else {
+                std::cout << "Game start message sent to player2\n";
+            }
+        });
+
+
     forwardMoves();
 }
 

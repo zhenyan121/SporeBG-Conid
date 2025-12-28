@@ -1,10 +1,9 @@
 #include "OnlineGameScene.h"
 #include "core/GameApplication.h"
 #include <iostream>
-void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer) {
-    m_renderer = renderer;
-    m_uiRenderer = uiRenderer;
-    m_gameUIManager = std::make_unique<OnlineGameUIManager>(
+
+std::unique_ptr<GameUIManager> OnlineGameScene::createUIManager() {
+    auto onlineUIManager = std::make_unique<OnlineGameUIManager>(
         [this](const std::string& sceneName) {
             if (m_eventCallback) {
                 SceneEvent event{SceneEventType::ChangeScene, sceneName};
@@ -12,49 +11,122 @@ void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIR
             }
         }
     );
-    m_networkManager = std::make_unique<NetworkManager>();
-    
-    m_gameUIManager->init();
-    m_gameUIManager->setCallback([this]() {
-        this->restartGame();
-    });
-
-    m_gameUIManager->setOnlineTypeCallback(
-        [this](NetType type){
-            //std::cout << "try to init networkmanager\n";
-            if (!m_networkManager) {
-                std::cerr << "networkmanager is null\n";
-            }
-            m_networkManager->init(type);
-            if (type == NetType::CLIENT) {
-                m_isMyTurn = false;
-                m_myPlayerID = PlayerID::P2;
-            }
-            if (type == NetType::HOST) {
-                m_isMyTurn = true;
-                m_myPlayerID = PlayerID::P1;
+    // 设置网络类型回调
+    onlineUIManager->setOnlineTypeCallback(
+        [this](NetType type) {
+            if (m_networkManager) {
+                m_networkManager->init(type);
+                if (type == NetType::CLIENT) {
+                    m_isMyTurn = false;
+                    
+                    m_myPlayerID = PlayerID::P2;
+                } else if (type == NetType::HOST) {
+                    m_isMyTurn = true;
+                    m_myPlayerID = PlayerID::P1;
+                }
+                m_networkManager->setIsMyTurn(m_isMyTurn);
             }
         }
     );
-    m_boardRenderer = std::make_unique<BoardRenderer>(WIDTH, HEIGHT, renderer);
-    m_gameSession = std::make_unique<GameSession>();
-    m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
-    m_gameSession->initialize();
-
-    m_boardRenderer->setBoard(m_gameSession->getBoard());
-
     
+    return onlineUIManager;
+}
+
+void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer) {
+    // 先创建网络管理器
+    m_networkManager = std::make_unique<NetworkManager>();
+    m_networkManager->setClickEventCallback(
+        [this](int logicalX, int logicalY) {
+            this->handleNetworkClick(logicalX, logicalY);
+        }
+    );
+    m_networkManager->setStartGameCallback(
+        [this]() {
+            auto onlineUIManager = dynamic_cast<OnlineGameUIManager*>(m_gameUIManager.get());
+            if (onlineUIManager) {
+                onlineUIManager->hideOnlineButtons();
+            }
+            m_currentGameState = GameState::GAME_RUNING;
+        }
+    );
+    // 调用父类的onEnter（会调用我们重写的createUIManager）
+    GameScene::onEnter(renderer, WIDTH, HEIGHT, uiRenderer);
+}
+
+bool OnlineGameScene::preHandleClick(int logicalX, int logicalY) {
+    
+    // 1. 先调用父类的UI处理
+    if (GameScene::preHandleClick(logicalX, logicalY)) {
+        return true;
+    }
+    // 2. 检查是否是自己的回合
+    // 网络处理会使用这个函数来决定是否处理点击，但是因为不是自己的回合所以不会调用handleBoardClick，导致bug
+    /*if (!m_isMyTurn) {
+        std::cout << "It is not your turn\n";
+        return true; // 不是自己的回合，阻止处理
+    }*/
+    
+    return false; // 继续处理点击
+}
+
+void OnlineGameScene::postHandleClick() {
+    // 调用父类的后处理
+    GameScene::postHandleClick();
+    
+    // 在线游戏特有的后处理
+    if (m_gameSession->getCurrentPlayer() != m_myPlayerID) {
+        m_isMyTurn = false;
+        // 可以在这里发送网络消息给对手
+        m_networkManager->setIsMyTurn(false);
+    }
     
 }
 
+void OnlineGameScene::handleBoardClick(int row, int col) {
+    if (m_currentGameState != GameState::GAME_RUNING) {
+        std::cout << "Game is not running, board click ignored.\n";
+        return;
+    }
+    // 调用父类的处理逻辑
+    GameScene::handleBoardClick(row, col);
+}
+
+void OnlineGameScene::handleClick(int logicalX, int logicalY) {
+    // 要阻止的是鼠标点击事件，但是网络事件可以处理
+    if (m_currentGameState == GameState::GAME_RUNING && !m_isMyTurn) {
+        std::cout << "It is not your turn, click ignored.\n";
+        return; // 不是自己的回合，忽略点击
+    }
+    
+    // 重用父类的逻辑
+    GameScene::handleClick(logicalX, logicalY);
+    if (m_currentGameState != GameState::GAME_RUNING) {
+        std::cout << "Game has not started yet, not sending click\n";
+        return; // 游戏未开始不发送点击
+    }
+    if (m_gameSession->getCurrentPlayer() != m_myPlayerID) {
+        m_isMyTurn = false;
+        m_networkManager->setIsMyTurn(false);
+        m_networkManager->postClickPosition(logicalX, logicalY, true);
+    } else {
+        m_networkManager->postClickPosition(logicalX, logicalY, false);
+    }
+
+}
+
 void OnlineGameScene::renderWorld() {
+    if (m_currentGameState != GameState::GAME_RUNING) {
+        // 渲染遮罩或提示
+        m_boardRenderer->renderBlackOverlay();
+        return;
+    }
     GameScene::renderWorld();
 }
 
 void OnlineGameScene::renderUI() {
-    m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
+    GameScene::renderUI();
 }
-
+/*
 void OnlineGameScene::handleClick(int logicalX, int logicalY) {
     if (m_gameUIManager && m_gameUIManager->handleClick(logicalX, logicalY)) {
         return;
@@ -70,13 +142,21 @@ void OnlineGameScene::handleClick(int logicalX, int logicalY) {
         m_isMyTurn = false;
     }
 }
-
+*/
 void OnlineGameScene::handleNetworkClick(int logicalX, int logicalY) {
+    std::cout << "Handling network click at (" << logicalX << ", " << logicalY << ")\n";
+     // 处理来自网络的点击
     if (m_isMyTurn) {
-        return;
+        return; // 如果是自己的回合，忽略网络点击
     }
+    // 调用父类的基础点击处理
     GameScene::handleClick(logicalX, logicalY);
+    std::cout << "After handling network click, current player: "
+              << (m_gameSession->getCurrentPlayer() == PlayerID::P1 ? "P1" : "P2") << "\n";
+     // 更新回合状态
     if (m_gameSession->getCurrentPlayer() == m_myPlayerID) {
+        std::cout << "OnlineGameScene: It is now my turn.\n";
         m_isMyTurn = true;
+        m_networkManager->setIsMyTurn(true);
     }
 }

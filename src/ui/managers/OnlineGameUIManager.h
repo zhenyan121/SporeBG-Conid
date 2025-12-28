@@ -8,6 +8,9 @@ public:
     ~OnlineGameUIManager();
     void init() override;
     void setOnlineTypeCallback(OnlineTypeEvent type);
+
+    void hideOnlineButtons();
+
 private:
     OnlineTypeEvent m_onlineTypeEvent;
 };

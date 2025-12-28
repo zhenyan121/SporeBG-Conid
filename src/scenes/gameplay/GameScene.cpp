@@ -8,10 +8,9 @@ GameScene::~GameScene() {
 
 }
 
-void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
-    m_renderer = renderer;
-    m_uiRenderer = uiRenderer;
-    m_gameUIManager = std::make_unique<GameUIManager>(
+std::unique_ptr<GameUIManager> GameScene::createUIManager() {
+    // 默认创建普通的GameUIManager
+    return std::make_unique<GameUIManager>(
         [this](const std::string& sceneName) {
             if (m_eventCallback) {
                 SceneEvent event{SceneEventType::ChangeScene, sceneName};
@@ -19,10 +18,50 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
             }
         }
     );
+}
+
+
+bool GameScene::preHandleClick(int logicalX, int logicalY) {
+    // 默认实现：先处理UI点击
+    if (m_gameUIManager && m_gameUIManager->handleClick(logicalX, logicalY)) {
+        return true; // UI已处理点击
+    }
+    
+    // 检查游戏状态
+    if (m_gameSession->getGameState() != GameState::GAME_RUNING) {
+        SDL_Log("Game is not running, click ignored.");
+        return true; // 游戏未运行，不处理点击
+    }
+    
+    return false; // 继续处理游戏点击
+}
+
+void GameScene::postHandleClick() {
+
+     // 默认实现：更新UI和渲染器状态
+    m_gameUIManager->updateActionType(m_gameSession->getCurrentActionType());
+    m_boardRenderer->updateMovementRange(m_gameSession->getSelectedPiece(), m_gameSession->getCurrentActionType());
+    m_gameUIManager->updateGameState(m_gameSession->getGameState());
+    m_boardRenderer->setGameState(m_gameSession->getGameState());
+}
+
+void GameScene::handleBoardClick(int row, int col) {
+    // 处理棋盘点击逻辑
+    m_gameSession->handleCoordinateInput(row, col);
+    m_gameSession->printBoard();
+}
+
+void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
+    m_renderer = renderer;
+    m_uiRenderer = uiRenderer;
+
+     // 使用工厂方法创建UIManager
+    m_gameUIManager = createUIManager();
     m_gameUIManager->init();
     m_gameUIManager->setCallback([this]() {
         this->restartGame();
     });
+
     m_boardRenderer = std::make_unique<BoardRenderer>(WIDTH, HEIGHT, renderer);
     m_gameSession = std::make_unique<GameSession>();
     m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
@@ -56,7 +95,8 @@ void GameScene::renderUI() {
 }
 
 void GameScene::handleClick(int logicalX, int logicalY) {
-    if (m_gameUIManager && m_gameUIManager->handleClick(logicalX, logicalY)) {
+    // 1. 预处理（UI点击等）
+    if (preHandleClick(logicalX, logicalY)) {
         return;
     }
     
@@ -67,16 +107,18 @@ void GameScene::handleClick(int logicalX, int logicalY) {
     auto click = m_CoordinateConverter->ScreenToBoard(logicalX, logicalY, m_boardRenderer->getBoardArea());
         if (click) {
             auto [row, col] = click.value();
-            m_gameSession->handleCoordinateInput(row, col);
-            m_gameSession->printBoard();
-            SDL_Log("try to updateActionType\n");
+            handleBoardClick(row, col);
+           
+            // 3. 后处理（更新UI状态等）
+            postHandleClick();
+            /*SDL_Log("try to updateActionType\n");
             m_gameUIManager->updateActionType( m_gameSession->getCurrentActionType());
             SDL_Log("tyr to updateMovementRange\n");
             m_boardRenderer->updateMovementRange(m_gameSession->getSelectedPiece(), m_gameSession->getCurrentActionType());
             SDL_Log("tyr to updateGameState\n");
             m_gameUIManager->updateGameState(m_gameSession->getGameState());
             m_boardRenderer->setGameState(m_gameSession->getGameState());
-            
+            */
         } else {
             SDL_Log("invail cilck aera!");
         }

@@ -22,11 +22,19 @@ public:
 
     void restartGame();
 protected:
-    
+    // 创建UIManager的工厂方法，子类可以重写
+    virtual std::unique_ptr<GameUIManager> createUIManager();
+
+    // // 点击处理的钩子方法
+    virtual bool preHandleClick(int logicalX, int logicalY);
+    virtual void postHandleClick();
+
+    virtual void handleBoardClick(int row, int col);
+
+    // 公共成员，子类可以直接访问
     std::unique_ptr<BoardRenderer> m_boardRenderer;
     std::unique_ptr<CoordinateConverter> m_CoordinateConverter;
     std::unique_ptr<GameSession> m_gameSession;
-private:
     std::unique_ptr<GameUIManager> m_gameUIManager;
     
     

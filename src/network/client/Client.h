@@ -15,12 +15,13 @@ public:
 
     Client(asio::io_context& ioContext);
     ~Client() = default;
-    
-    void setCallbackes(MoveCallback onOpponentMove, TurnCallback onMyTurn);
+    // 设置等待状态
+    void setShouldWait(bool shouldWait) { m_shouldWait = shouldWait; }
+    void setCallbackes(MoveCallback onOpponentMove, TurnCallback onMyTurn, TurnCallback onGameStart);
 
     void connect(const std::string& host, int port, bool iAmFirst = true);
 
-    void sentClickPosition(const NetData& data);
+    void sentClickPosition(const NetData& data, bool isChangeTurn = false);
 
     
     
@@ -30,13 +31,21 @@ private:
     asio::ip::tcp::socket m_socket;
     std::string m_host;
     int m_port;
+    bool m_isHost = false;
     MoveCallback m_onOpponentMove;
     TurnCallback m_onMyTurn;
+    TurnCallback m_onGameStart;
     char m_readBuffer[NetData::size()];
     
 
+     // 新增状态控制
+    bool m_shouldWait = false;  // 是否应该等待对手
+    bool m_isWaiting = false;    // 当前是否正在等待
+    bool m_isMyTurn = false;     // 是否是我的回合
+
     void onConnected(bool iAmFirst);
     void waitForOpponent();
+    void stopWaiting();  // 停止等待
     
     
 };
