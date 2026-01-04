@@ -1,4 +1,5 @@
 #include "NetworkManager.h"
+
 #include "utils/ConfigLoader.h"
 #include <iostream>
 NetworkManager::NetworkManager()
@@ -9,10 +10,30 @@ NetworkManager::NetworkManager()
 }
 
 NetworkManager::~NetworkManager() {
+    std::cout << "NetworkManager destructor called\n";
+    
+    // 1. 先取消所有异步操作
+    if (m_gameServer) {
+        m_gameServer->stop();
+    }
+    
+    if (m_client) {
+        m_client->closeConnection();
+    }
+    
+    // 2. 等待一小段时间让异步操作处理完成
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    // 3. 停止 io_context
     m_ioContext.stop();
+    
+    // 4. 等待线程结束
     if (m_ioThread.joinable()) {
         m_ioThread.join();
+        std::cout << "Network thread joined\n";
     }
+    
+    std::cout << "NetworkManager destroyed\n";
 }
 
 void NetworkManager::init(NetType type) {
@@ -101,9 +122,11 @@ void NetworkManager::startClient() {
     }
     std::cout << "start client success\n";
     startIOContextLoop();
+    
 }
 
 void NetworkManager::startIOContextLoop() {
+
     
     m_ioThread = std::thread([this]() {
         try {

@@ -202,6 +202,10 @@ void Client::closeConnection() {
     asio::error_code ec;
     if (m_socket.is_open()) {
         m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+        // 检查错误码
+        if (ec && ec != asio::error::not_connected) {
+            // 处理错误（除了"未连接"之外的错误）
+        }
         m_socket.close(ec);
     }
     m_isWaiting = false;

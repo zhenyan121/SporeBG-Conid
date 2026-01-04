@@ -132,6 +132,10 @@ void GameServer::forwardMoves() {
 }
 
 void GameServer::listenPlayer(asio::ip::tcp::socket& fromPlayer, asio::ip::tcp::socket& toPlayer) {
+    // 检查 socket 是否还开着
+    if (!fromPlayer.is_open() || !toPlayer.is_open()) {
+        return;
+    }
     auto self = shared_from_this();
 
     fromPlayer.async_read_some(
@@ -153,4 +157,30 @@ void GameServer::listenPlayer(asio::ip::tcp::socket& fromPlayer, asio::ip::tcp::
             }
         }    
     );
+}
+
+void GameServer::stop() {
+   std::cout << "GameServer stopping...\n";
+    
+    // 关闭 socket，这会导致所有 async_read_some 立即返回错误
+    asio::error_code ec;
+    
+    if (m_player1.is_open()) {
+        m_player1.cancel(ec);  // 取消所有异步操作
+        m_player1.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+        m_player1.close(ec);
+    }
+    
+    if (m_player2.is_open()) {
+        m_player2.cancel(ec);
+        m_player2.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+        m_player2.close(ec);
+    }
+    
+    if (m_acceptor.is_open()) {
+        m_acceptor.cancel(ec);
+        m_acceptor.close(ec);
+    }
+    
+    std::cout << "GameServer stopped\n"; 
 }
