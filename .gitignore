@@ -57,6 +57,7 @@ cmake-build-*/
 # 其他通用临时文件
 *~
 test/
+.cache/
 # --- 操作系统特定文件 ---
 # macOS
 .DS_Store
