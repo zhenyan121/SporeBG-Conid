@@ -24,6 +24,7 @@ public:
     void sentClickPosition(const NetData& data, bool isChangeTurn = false);
 
     
+    void closeConnection();
     
 
 private:
@@ -48,6 +49,5 @@ private:
     void waitForOpponent();
     void stopWaiting();  // 停止等待
     
-    void closeConnection();
     void attemptReconnect(); // 尝试重新连接
 };

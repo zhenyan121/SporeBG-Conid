@@ -11,7 +11,7 @@ public:
     ~GameServer() = default;
 
     void startServer( int port);
-
+    void stop();
 private:
     asio::io_context& m_ioContext;
     //std::unique_ptr<asio::ip::tcp::acceptor> m_acceptor;
