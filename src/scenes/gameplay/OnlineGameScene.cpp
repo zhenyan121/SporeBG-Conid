@@ -103,6 +103,7 @@ void OnlineGameScene::handleBoardClick(int row, int col) {
 }
 
 void OnlineGameScene::handleClick(int logicalX, int logicalY) {
+    
     // 要阻止的是鼠标点击事件，但是网络事件可以处理
     if (m_currentGameState == GameState::GAME_RUNING && !m_isMyTurn) {
         std::cout << "It is not your turn, click ignored.\n";
@@ -111,6 +112,10 @@ void OnlineGameScene::handleClick(int logicalX, int logicalY) {
     
     // 重用父类的逻辑
     GameScene::handleClick(logicalX, logicalY);
+    // 此时调用changgescene时，没有缓存导致类已经析构为空指针，我服了，使用考虑要不要缓存一下在清理
+    if (!m_gameSession || !m_networkManager) {
+        return;
+    }
     if (m_currentGameState != GameState::GAME_RUNING) {
         std::cout << "Game has not started yet, not sending click\n";
         return; // 游戏未开始不发送点击
