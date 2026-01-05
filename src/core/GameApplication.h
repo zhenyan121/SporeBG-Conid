@@ -22,7 +22,7 @@ private:
     std::unique_ptr<UIRenderer> m_uiRenderer;
     std::unique_ptr<DebugManager> m_debugManager;
     Config m_config;
-   
+    void cleanup();
 
 public:
     GameApplication();
