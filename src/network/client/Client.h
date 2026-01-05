@@ -38,12 +38,14 @@ private:
     TurnCallback m_onMyTurn;
     TurnCallback m_onGameStart;
     char m_readBuffer[NetData::size()];
-    
+    asio::steady_timer m_reconnectTimer;  // 成员变量
 
      // 新增状态控制
     bool m_shouldWait = false;  // 是否应该等待对手
     bool m_isWaiting = false;    // 当前是否正在等待
     bool m_isMyTurn = false;     // 是否是我的回合
+    bool m_isGameStart = false; // 检测游戏是否开始
+
 
     void onConnected(bool iAmFirst);
     void waitForOpponent();
