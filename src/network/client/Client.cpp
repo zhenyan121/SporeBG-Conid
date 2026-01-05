@@ -3,7 +3,8 @@
 Client::Client(asio::io_context& ioContext):
     m_ioContext(ioContext),
     m_resolver(ioContext),
-    m_socket(ioContext)
+    m_socket(ioContext),
+    m_reconnectTimer(ioContext)
 {
     // 构造函数实现
 }
@@ -24,6 +25,8 @@ void Client::connect(const std::string& host, int port, bool iAmFirst) {
     m_port = port;
     m_isHost = iAmFirst;
     m_shouldWait = true;  // 连接后开始等待
+    // 连接前取消之前的重连定时器
+    m_reconnectTimer.cancel();
     //用shared_ptr保持对象存活
     auto self = shared_from_this();
 
@@ -38,7 +41,12 @@ void Client::connect(const std::string& host, int port, bool iAmFirst) {
                             onConnected(iAmFirst);
                         } else {
                             // 处理连接错误
+                            // 包括目标主机拒绝连接等等
                             std::cerr << "connect failed: " << ec.message() << std::endl;
+                            if (!m_isGameStart) {
+                                // 尝试重连，理论来说应该是提示一个窗口，要不要重连，这里暂时不处理
+                                attemptReconnect();
+                            }
                         }
                     });
             } else {
@@ -121,7 +129,7 @@ void Client::waitForOpponent() {
                     // 检查消息类型
                     if (netData.type == NetDataType::GAME_START) {
                         std::cout << "Game started! First player is: " << netData.firstPlayer << std::endl;
-                       
+                        m_isGameStart = true;
                         // 判断自己是否是先手
                         bool iAmFirst = (netData.firstPlayer == 1 && m_isHost) || 
                                         (netData.firstPlayer == 2 && !m_isHost);
@@ -177,10 +185,15 @@ void Client::waitForOpponent() {
             } else {
                // 关键修复：区分不同类型的错误
                 if (ec == asio::error::eof) {
-                    // 对端正常关闭连接
-                    std::cout << "Connection closed by peer." << std::endl;
-                    // 不要重试，关闭socket
-                    closeConnection();
+                    // 如果游戏未开始就尝试重连
+                    if (!m_isGameStart) {
+                        attemptReconnect();
+                    } else {
+                        // 对端正常关闭连接
+                        std::cout << "Connection closed by peer." << std::endl;
+                        // 关闭socket
+                        closeConnection();
+                    }
                 } else if (ec == asio::error::operation_aborted) {
                     // 操作被取消（正常情况）
                     std::cout << "Read operation cancelled." << std::endl;
@@ -210,16 +223,33 @@ void Client::closeConnection() {
     }
     m_isWaiting = false;
     m_shouldWait = false;
+    // 取消重连定时器
+    m_reconnectTimer.cancel();
     std::cout << "Connection closed." << std::endl;
 }
 
 void Client::attemptReconnect() {
     std::cout << "Attempting to reconnect to " << m_host << ":" << m_port << "...\n";
     closeConnection();
-    // 等待一段时间后重新连接
-    auto self = shared_from_this();
-    asio::steady_timer timer(m_ioContext, std::chrono::seconds(3));
-    timer.async_wait([this, self](const asio::error_code& /*ec*/) {
-        connect(m_host, m_port, m_isHost);
-    });
+     // 取消可能存在的之前的定时器
+        m_reconnectTimer.cancel();
+        
+        // 设置新的定时器
+        m_reconnectTimer.expires_after(std::chrono::seconds(3));
+        
+        auto self = shared_from_this();
+        m_reconnectTimer.async_wait([this, self](const asio::error_code& ec) {
+            // 正确检查错误码
+            if (!ec) {
+                // 定时器正常触发
+                std::cout << "Reconnecting after 3 seconds...\n";
+                connect(m_host, m_port, m_isHost);
+            } else if (ec == asio::error::operation_aborted) {
+                // 定时器被取消（可能是我们主动取消的）
+                std::cout << "Reconnect timer cancelled\n";
+            } else {
+                // 其他错误
+                std::cout << "Reconnect timer error: " << ec.message() << "\n";
+            }
+        });
 }

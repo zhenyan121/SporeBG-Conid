@@ -215,5 +215,7 @@ void SceneManager::destoryQuitedScene() {
     const auto info = typeid(*m_quitedScene.get()).name();
     m_quitedScene.reset();
     std::cout << "SceneManager: " << info << " destroyed\n";
-    
+    /*
+        对于onlinegamescene，在点击quit之后，因为对象没销毁，把点击操作传到了对方，一起退出了
+    */
 }
