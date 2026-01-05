@@ -102,5 +102,10 @@ void GameApplication::run() {
     m_windowManager->endUI();
 
     m_windowManager->Present();
+    cleanup();
 }
 
+
+void GameApplication::cleanup() {
+    m_sceneManager->destoryQuitedScene();
+}

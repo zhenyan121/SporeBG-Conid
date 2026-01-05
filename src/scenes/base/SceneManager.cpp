@@ -150,6 +150,7 @@ void SceneManager::changeScene(const std::string& sceneName) {
     // 退出当前场景
     if (m_scene) {
         m_scene->onExit();
+        m_quitedScene = m_scene;
     }
     // 切换到目标场景
     m_scene = target;
@@ -205,4 +206,14 @@ void SceneManager::handleSceneEvent(const SceneEvent& event) {
         SDL_Log("SceneManager::handleSceneEvent: Unhandled event type!\n");
         break;
     }
+}
+
+void SceneManager::destoryQuitedScene() {
+    if (!m_quitedScene) {
+        return;
+    }
+    const auto info = typeid(*m_quitedScene.get()).name();
+    m_quitedScene.reset();
+    std::cout << "SceneManager: " << info << " destroyed\n";
+    
 }
