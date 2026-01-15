@@ -37,7 +37,7 @@ std::unique_ptr<GameUIManager> OnlineGameScene::createUIManager() {
     return onlineUIManager;
 }
 
-void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer) {
+void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager) {
     // 先创建网络管理器
     m_networkManager = std::make_unique<NetworkManager>();
     m_networkManager->setClickEventCallback(
@@ -58,7 +58,7 @@ void OnlineGameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIR
         }
     );
     // 调用父类的onEnter（会调用我们重写的createUIManager）
-    GameScene::onEnter(renderer, WIDTH, HEIGHT, uiRenderer);
+    GameScene::onEnter(renderer, WIDTH, HEIGHT, uiRenderer, textureManager);
 
     m_gameUIManager->setButton("ActionButton", false); // 初始禁用行动按钮，等待游戏开始
     m_gameUIManager->setLabel("PlayerLabel", false); // 初始隐藏玩家回合标签

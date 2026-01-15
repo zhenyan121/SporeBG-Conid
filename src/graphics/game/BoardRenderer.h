@@ -5,7 +5,7 @@
 #include <optional>
 #include <utility>
 #include <unordered_set>
-
+#include "graphics/texture/TextureManager.h"
 struct PlayerColors {
     SDL_Color P1 = {255, 0, 0, 255};    // 红色
     SDL_Color P2 = {0, 0, 255, 255};    // 蓝色
@@ -34,8 +34,10 @@ private:
 
     GameState m_gameState = GameState::GAME_RUNING;
 
+    TextureManager* m_textureManager;
+
 public:
-    BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer);  
+    BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
     
     ~BoardRenderer();
     // 渲染画面

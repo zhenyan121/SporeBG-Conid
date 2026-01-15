@@ -1,13 +1,14 @@
 #pragma once
 #include "scenes/base/Scene.h"
 #include "ui/managers/MainMenuUIManager.h"
+#include "graphics/texture/TextureManager.h"
 class MainMenuScene : public Scene {
 public:
     MainMenuScene();
     ~MainMenuScene() override = default;
 
     // 实现 Scene 接口
-    void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer) override;
+    void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager) override;
     void onExit() override;
 
     void update() override;
