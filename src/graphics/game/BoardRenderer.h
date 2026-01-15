@@ -6,6 +6,7 @@
 #include <utility>
 #include <unordered_set>
 #include "graphics/texture/TextureManager.h"
+#include "game/GameTypes.h"
 struct PlayerColors {
     SDL_Color P1 = {255, 0, 0, 255};    // 红色
     SDL_Color P2 = {0, 0, 255, 255};    // 蓝色
@@ -65,6 +66,8 @@ public:
     void setGameState(GameState state);
        
     void renderBlackOverlay();
+
+    void handleGamePieceEvent(GamePieceEvent event, int row, int col);
   
 };
 

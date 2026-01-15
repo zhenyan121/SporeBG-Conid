@@ -283,3 +283,23 @@ void BoardRenderer::renderBlackOverlay() {
     // 恢复原来的混合模式
     SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
 }
+
+void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int row, int col) {
+    auto area = getBoardArea();
+    float x = area.x + col * area.cellSize;
+    float y = area.y + row * area.cellSize;
+    float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
+    switch (event) {
+        case (GamePieceEvent::REMOVE_PIECE):
+            //SDL_Log("BoardRenderer: try to destory texture\n");
+            m_textureManager->destoryTexture( 
+            x + (area.cellSize - pieceRadius * 2) / 2.0f,
+            y + (area.cellSize - pieceRadius * 2) / 2.0f);
+            break;
+        case (GamePieceEvent::PLACE_PIECE):
+            break;
+        default:
+            break;
+    }
+
+}

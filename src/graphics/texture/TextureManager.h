@@ -16,6 +16,8 @@ public:
 
     SDL_Texture* getTexture(int x, int y);
 
+    bool destoryTexture(int x, int y);
+
 private:
 
     SDL_Renderer* m_renderer = nullptr;
