@@ -35,6 +35,7 @@ SDL_Texture* TextureManager::createTextureFromRect(int x, int y, SDL_FRect& rect
         SDL_Log("TextureManager renderer is null\n");
         return nullptr;
     }
+    
     auto newTexture = SDL_CreateTexture(
         m_renderer,
         SDL_PIXELFORMAT_RGBA8888,
@@ -44,13 +45,14 @@ SDL_Texture* TextureManager::createTextureFromRect(int x, int y, SDL_FRect& rect
     );
     // 保存当前的渲染目标
     auto currentTexture = SDL_GetRenderTarget(m_renderer);
-
+    
     SDL_SetRenderTarget(m_renderer, newTexture);
+    SDL_SetTextureScaleMode(currentTexture, SDL_SCALEMODE_NEAREST);
     SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
     // 因为修改了渲染目标，所以坐标系不一样了
     SDL_FRect renderRect = {0, 0, rect.w, rect.h};
     SDL_RenderFillRect(m_renderer, &renderRect);
-
+    // 缓存
     m_cacheTexture.emplace(makeHash(x, y), newTexture);
 
     // 恢复渲染目标

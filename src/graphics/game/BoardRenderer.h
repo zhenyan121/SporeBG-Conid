@@ -36,6 +36,8 @@ private:
 
     TextureManager* m_textureManager;
 
+    std::optional<std::pair<int, int>> m_lastSelected = std::nullopt;
+
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
     

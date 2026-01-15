@@ -1,5 +1,6 @@
 #include "BoardRenderer.h"
 #include "game/Board.h"
+#include "core/Time.h"
 #include <iostream>
 BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager) :
     m_Width(WIDTH),
@@ -76,12 +77,13 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             // 计算棋子中心位置
             float x = area.x + col * area.cellSize;
             float y = area.y + row * area.cellSize;
-            
+            bool isSelected = false;
             // 确定棋子颜色
             SDL_Color color;
             if (selectedPiece && selectedPiece->first == row && selectedPiece->second == col) {
                 // 选中状态的棋子
                 color = m_colors.selected;
+                isSelected = true;
             } else {
                 // 根据玩家设置颜色
                 color = (piece->getPieceOwner() == PlayerID::P1) ? 
@@ -99,10 +101,57 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             };
             
             //SDL_RenderFillRect(m_renderer, &rect);
-            
+            bool isRenderered = false;
             auto texture = m_textureManager->createTextureFromRect(rect.x, rect.y, rect, color);
-            SDL_FRect srect = {0, 0, rect.w, rect.h};
-            SDL_RenderTexture(m_renderer, texture, &srect, &rect);
+            //SDL_FRect srect = {0, 0, rect.w, rect.h};
+            if (isSelected) {
+                // 如果被选择
+                static float animationDuration = 1.0f;  // 动画总时长（秒）
+                static float currentTime = 0.0f;        // 当前已进行时间
+                //static bool isAnimating = true;         // 动画状态
+                static bool isBigger = true;
+                // 累加时间，限制不超过总时长
+                currentTime += Time::deltaTime();
+                if (currentTime > animationDuration) {
+                    currentTime = 0;
+                    isBigger = !isBigger;
+                   
+                }
+
+                static SDL_FRect renderRect = {
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h
+                };
+                if (m_lastSelected != selectedPiece) {
+                    renderRect = rect;
+                    m_lastSelected = selectedPiece;
+                    currentTime = 0;
+                    isBigger = true;
+                }
+
+                float progess = currentTime / animationDuration;
+                double rotatedAngel = 360 * static_cast<double>(progess);
+                float scale = 0.1 * progess;
+                
+                
+                
+                if (isBigger) {
+                    renderRect.w += scale;
+                    renderRect.h += scale;
+                } else {
+                    renderRect.w -= scale;
+                    renderRect.h -= scale;
+                }
+                
+                SDL_RenderTextureRotated(m_renderer, texture, nullptr, &renderRect, rotatedAngel, nullptr, SDL_FLIP_NONE);
+                isRenderered = true;
+                //return;
+            }
+            if (!isRenderered) {
+                SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+            }
 
         }
     }
