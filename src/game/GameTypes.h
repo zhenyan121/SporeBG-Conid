@@ -27,3 +27,8 @@ enum class GameMode {
     ONLINE_PVP,       // 网络对战
     TUTORIAL_MODE     // 教程（可视为特殊模式）
 };
+
+enum class GamePieceEvent {
+    REMOVE_PIECE,
+    PLACE_PIECE
+};

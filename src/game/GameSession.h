@@ -3,14 +3,16 @@
 #include <optional>
 #include <utility>
 #include <memory>
-
+#include <functional>
 #include "Board.h"
 
 
 
 
 class GameSession {
+
 private:
+    using GamePieceEventCallback = std::function<void(GamePieceEvent, int x, int y)>;
     std::unique_ptr<Board> m_board;
     PlayerID m_currentPlayer = PlayerID::P1;
     ActionType m_currentActionType = ActionType::GROW;
@@ -22,6 +24,8 @@ private:
     void markComponentAsUsed(int componentID);
     
     GameState m_gameState = GameState::GAME_RUNING;
+
+    GamePieceEventCallback m_gamePieceEventCallback;
 
 public:
     GameSession();
@@ -57,5 +61,9 @@ public:
     ActionType getCurrentActionType() const;
 
     GameState getGameState() const;
+
+    void setGamePieceEventCallback(GamePieceEventCallback callback) {
+        m_gamePieceEventCallback = callback;
+    }
 
 };

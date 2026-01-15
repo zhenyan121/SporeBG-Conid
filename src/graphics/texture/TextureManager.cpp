@@ -81,3 +81,17 @@ SDL_Texture* TextureManager::getTexture(int x, int y) {
         return nullptr;
     }
 }
+
+bool TextureManager::destoryTexture(int x, int y) {
+    int key = makeHash(x, y);
+    auto it = m_cacheTexture.find(key);
+    if (it == m_cacheTexture.end()) {
+        SDL_Log("can't find the texture\n");
+        return false;
+        
+    }
+    SDL_DestroyTexture(it->second);
+    m_cacheTexture.erase(key);
+    SDL_Log("TextureManager: destory texture sucessfully\n");
+    return true;
+}
