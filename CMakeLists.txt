@@ -51,6 +51,7 @@ set(SOURCE_FILES
     src/network/client/Client.cpp
     src/network/server/GameServer.cpp
     src/network/NetworkManager.cpp
+    src/graphics/texture/TextureManager.cpp
 )
 
 

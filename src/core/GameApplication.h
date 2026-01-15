@@ -9,7 +9,7 @@
 #include "graphics/font/TextRenderer.h"
 #include "graphics/font/FontManager.h"
 #include "core/DebugManager.h"
-
+#include "graphics/texture/TextureManager.h"
 class GameApplication {
 private:
     
@@ -21,6 +21,8 @@ private:
     std::unique_ptr<TextRenderer> m_textRenderer;
     std::unique_ptr<UIRenderer> m_uiRenderer;
     std::unique_ptr<DebugManager> m_debugManager;
+    std::unique_ptr<TextureManager> m_textureManager;
+    
     Config m_config;
     void cleanup();
 

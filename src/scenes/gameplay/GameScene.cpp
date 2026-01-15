@@ -53,7 +53,7 @@ void GameScene::handleBoardClick(int row, int col) {
     m_gameSession->printBoard();
 }
 
-void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer){
+void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager){
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;
 
@@ -64,7 +64,7 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
         this->restartGame();
     });
 
-    m_boardRenderer = std::make_unique<BoardRenderer>(WIDTH, HEIGHT, renderer);
+    m_boardRenderer = std::make_unique<BoardRenderer>(WIDTH, HEIGHT, renderer, textureManager);
     m_gameSession = std::make_unique<GameSession>();
     m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
     m_gameSession->initialize();

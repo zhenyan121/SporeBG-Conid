@@ -31,7 +31,7 @@ public:
      * @param   uiRenderer UI 渲染器指针，用于传递给场景进行 UI 渲染
      * @param   window SDL 窗口指针，用于获取窗口尺寸
      */
-    SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window);
+    SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager);
     /** 
      * @brief   析构函数
      * @details 清理场景栈和缓存，释放资源
@@ -126,6 +126,7 @@ private:
     SDL_Renderer* m_renderer;                                                      ///< SDL 渲染器指针
     SDL_Window* m_window;                                                          ///< SDL 窗口指针
     UIRenderer* m_uiRenderer;                                                      ///< UI 渲染器指针 
+    TextureManager* m_textureManager;                                                 ///< 材质管理器指针
     std::shared_ptr<Scene> m_scene;                                                ///< 当前场景（使用 shared_ptr 便于在缓存和栈中共享）
     std::stack<std::shared_ptr<Scene>> m_scenes;                                   ///< 场景栈，存储场景层级关系（使用 shared_ptr）    
     std::unordered_map<std::string, std::shared_ptr<Scene>> m_sceneCache;          ///< 场景缓存，按名字缓存场景以便切换时复用

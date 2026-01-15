@@ -1,7 +1,13 @@
 #include "BoardRenderer.h"
 #include "game/Board.h"
 #include <iostream>
-BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer) : m_Width(WIDTH), m_Height(HEIGHT), m_renderer(renderer) {
+BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager) :
+    m_Width(WIDTH),
+    m_Height(HEIGHT),
+    m_renderer(renderer), 
+    m_textureManager(textureManager)
+
+    {
     m_cellSize = HEIGHT / m_boardRow;
 }
 
@@ -83,7 +89,7 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             }
             
             
-            SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+            //SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
             
             SDL_FRect rect{
                 x + (area.cellSize - pieceRadius * 2) / 2.0f,
@@ -92,8 +98,12 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 pieceRadius * 2
             };
             
-            SDL_RenderFillRect(m_renderer, &rect);
+            //SDL_RenderFillRect(m_renderer, &rect);
             
+            auto texture = m_textureManager->createTextureFromRect(rect.x, rect.y, rect, color);
+            SDL_FRect srect = {0, 0, rect.w, rect.h};
+            SDL_RenderTexture(m_renderer, texture, &srect, &rect);
+
         }
     }
 }

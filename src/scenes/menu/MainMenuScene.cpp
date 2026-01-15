@@ -4,7 +4,7 @@ MainMenuScene::MainMenuScene() {
     // 构造函数实现
 }
 
-void MainMenuScene::onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer) {
+void MainMenuScene::onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager) {
     // 进入场景时的初始化逻辑
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;

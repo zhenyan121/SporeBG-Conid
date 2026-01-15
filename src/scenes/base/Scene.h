@@ -8,6 +8,7 @@
 #include <SDL3/SDL.h>
 #include "graphics/ui/UIRenderer.h"
 #include "scenes/base/SceneEvent.h"
+#include "graphics/texture/TextureManager.h"
 #include <functional>
 /**
  * @class   Scene
@@ -30,7 +31,7 @@ public:
      * @param   height 窗口高度
      * @param   uiRenderer UI 渲染器指针
      */
-    virtual void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer){};
+    virtual void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager){};
     /** 
      * @brief   场景退出
      */
@@ -64,6 +65,7 @@ protected:
     // UIRenderer应该由上层管理
     UIRenderer* m_uiRenderer;   ///< UI 渲染器指针
     SDL_Renderer* m_renderer;   ///< SDL 渲染器指针
+    TextureManager* m_textureManager;
     EventCallback m_eventCallback;  ///< 场景事件回调函数
 
     /*void beginFrame() {
