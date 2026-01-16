@@ -140,4 +140,12 @@ void GameScene::restartGame() {
     m_gameUIManager->updateActionType(ActionType::GROW);
     m_gameUIManager->updateGameState(GameState::GAME_RUNING);
     m_boardRenderer->setGameState(GameState::GAME_RUNING);
+
+    m_gameSession->setGamePieceEventCallback(
+        [this](GamePieceEvent evnet, int row, int col) {
+            std::cout << "GameScene: recevie the event piece at " << row << " " << col << "\n";
+            m_boardRenderer->handleGamePieceEvent(evnet, row, col);
+        }
+    );
+
 }
