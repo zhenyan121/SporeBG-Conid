@@ -72,9 +72,9 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
     m_boardRenderer->setBoard(m_gameSession->getBoard());
 
     m_gameSession->setGamePieceEventCallback(
-        [this](GamePieceEvent evnet, int row, int col) {
-            std::cout << "GameScene: recevie the event piece at " << row << " " << col << "\n";
-            m_boardRenderer->handleGamePieceEvent(evnet, row, col);
+        [this](GamePieceEvent evnet, int fromRow, int fromCol, int toRow, int toCol) {
+            std::cout << "GameScene: recevie the event piece at " << fromRow << " " << fromCol << "\n";
+            m_boardRenderer->handleGamePieceEvent(evnet, fromRow, fromCol, toRow, toCol);
         }
     );
     
@@ -142,9 +142,9 @@ void GameScene::restartGame() {
     m_boardRenderer->setGameState(GameState::GAME_RUNING);
 
     m_gameSession->setGamePieceEventCallback(
-        [this](GamePieceEvent evnet, int row, int col) {
-            std::cout << "GameScene: recevie the event piece at " << row << " " << col << "\n";
-            m_boardRenderer->handleGamePieceEvent(evnet, row, col);
+        [this](GamePieceEvent evnet, int fromRow, int fromCol, int toRow, int toCol) {
+            std::cout << "GameScene: recevie the event piece at " << fromRow << " " << fromCol << "\n";
+            m_boardRenderer->handleGamePieceEvent(evnet, fromRow, fromCol, toRow, toCol);
         }
     );
 

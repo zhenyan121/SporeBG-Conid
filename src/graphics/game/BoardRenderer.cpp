@@ -149,9 +149,24 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 isRenderered = true;
                 //return;
             }
-            if (!isRenderered) {
+            //if (!isRenderered) {
+                if (m_pieceMoveStatus.isAnimating && col == m_pieceMoveStatus.toCol && row == m_pieceMoveStatus.toRow) {
+                    //SDL_Log("rendering..\n");
+                    m_pieceMoveStatus.currentTime += Time::deltaTime();
+                    if (m_pieceMoveStatus.currentTime > m_pieceMoveStatus.animationDuration) {
+                        m_pieceMoveStatus.currentTime = m_pieceMoveStatus.animationDuration;
+                        m_pieceMoveStatus.isAnimating = false;
+                    }
+                    float progess = m_pieceMoveStatus.currentTime / m_pieceMoveStatus.animationDuration;
+                    auto renderRect = m_pieceMoveStatus.fromPieceRect;
+                    renderRect.x += m_pieceMoveStatus.distanceCol * progess;
+                    renderRect.y += m_pieceMoveStatus.distanceRow * progess;
+                    SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
+                } else { 
                 SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
-            }
+                }
+            //}
+
 
         }
     }
@@ -284,38 +299,63 @@ void BoardRenderer::renderBlackOverlay() {
     SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
 }
 
-void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int row, int col) {
+void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow, int toCol) {
     auto area = getBoardArea();
 
     // 计算棋子中心位置
-    float x = area.x + col * area.cellSize;
-    float y = area.y + row * area.cellSize;
-
+    float fromX = area.x + fromCol * area.cellSize;
+    float fromY = area.y + fromRow * area.cellSize;
+    float toX = -1;
+    float toY = -1;
+    if (toRow != -1 && toCol != -1) {
+        toX = area.x + toCol * area.cellSize;
+        toY = area.y + toRow * area.cellSize;
+    }
     float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
 
     SDL_FRect rect{
-                x + (area.cellSize - pieceRadius * 2) / 2.0f,
-                y + (area.cellSize - pieceRadius * 2) / 2.0f,
+                fromX + (area.cellSize - pieceRadius * 2) / 2.0f,
+                fromY + (area.cellSize - pieceRadius * 2) / 2.0f,
                 pieceRadius * 2,
                 pieceRadius * 2
             };
 
-    const Piece* piece = m_board->getPieceAt(row, col);
-    if (!piece) {
+    const Piece* piece = m_board->getPieceAt(fromRow, fromCol);
+    // 这里直接return导致的
+    if (!piece && event != GamePieceEvent::MOVE_PIECE) {
         SDL_Log("BoardRenderer: piece is null\n");
         return;
     }
-    SDL_Color color = (piece->getPieceOwner() == PlayerID::P1) ? 
-                        m_colors.P1 : m_colors.P2;
+    
     switch (event) {
         case (GamePieceEvent::REMOVE_PIECE):
+        {
+            SDL_Color color = (piece->getPieceOwner() == PlayerID::P1) ? 
+                        m_colors.P1 : m_colors.P2;
             //SDL_Log("BoardRenderer: try to destory texture\n");
             m_textureManager->destoryTexture(rect, color);
             break;
+        }
         case (GamePieceEvent::PLACE_PIECE):
+            break;
+        case (GamePieceEvent::MOVE_PIECE):
+            //SDL_Log("MovePPPPPP\n");
+            m_pieceMoveStatus = {
+                fromRow, fromCol,
+                toRow, toCol,
+                toY - fromY,
+                toX - fromX,
+                0.0f,
+                true,
+                rect,
+                1.0f
+            };
+            
             break;
         default:
             break;
     }
 
 }
+
+

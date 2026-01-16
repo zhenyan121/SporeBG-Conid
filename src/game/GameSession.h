@@ -12,7 +12,7 @@
 class GameSession {
 
 private:
-    using GamePieceEventCallback = std::function<void(GamePieceEvent, int x, int y)>;
+    using GamePieceEventCallback = std::function<void(GamePieceEvent, int fromRow, int fromCol, int toRow, int toCol)>;
     std::unique_ptr<Board> m_board;
     PlayerID m_currentPlayer = PlayerID::P1;
     ActionType m_currentActionType = ActionType::GROW;

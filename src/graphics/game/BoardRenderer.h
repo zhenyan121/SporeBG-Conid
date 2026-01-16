@@ -13,6 +13,18 @@ struct PlayerColors {
     SDL_Color selected = {255, 255, 0, 255}; // 黄色（选中状态）
 };
 
+struct PieceMoveStatus {
+    int fromRow = -1;
+    int fromCol = -1;
+    int toRow = -1;
+    int toCol = -1;
+    float distanceRow;
+    float distanceCol;
+    float currentTime = 0.0f;        // 当前已进行时间
+    bool isAnimating = false;
+    SDL_FRect fromPieceRect;
+    float animationDuration = 1.0f;  // 动画总时长（秒）
+};
 
 class Board;
 
@@ -38,6 +50,8 @@ private:
     TextureManager* m_textureManager;
 
     std::optional<std::pair<int, int>> m_lastSelected = std::nullopt;
+
+    PieceMoveStatus m_pieceMoveStatus;
 
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
@@ -67,7 +81,7 @@ public:
        
     void renderBlackOverlay();
 
-    void handleGamePieceEvent(GamePieceEvent event, int row, int col);
+    void handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow = -1, int toCol = -1);
   
 };
 
