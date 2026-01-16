@@ -101,7 +101,7 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             };
             
             //SDL_RenderFillRect(m_renderer, &rect);
-            bool isRenderered = false;
+           
             auto texture = m_textureManager->createTextureFromRect(rect, color);
             //SDL_FRect srect = {0, 0, rect.w, rect.h};
             if (isSelected) {
@@ -146,10 +146,10 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 }
                 
                 SDL_RenderTextureRotated(m_renderer, texture, nullptr, &renderRect, rotatedAngel, nullptr, SDL_FLIP_NONE);
-                isRenderered = true;
-                //return;
+                
+                continue;
             }
-            //if (!isRenderered) {
+            
                 if (m_pieceMoveStatus.isAnimating && col == m_pieceMoveStatus.toCol && row == m_pieceMoveStatus.toRow) {
                     //SDL_Log("rendering..\n");
                     m_pieceMoveStatus.currentTime += Time::deltaTime();
@@ -165,7 +165,7 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 } else { 
                 SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
                 }
-            //}
+            
 
 
         }

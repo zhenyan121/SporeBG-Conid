@@ -61,8 +61,9 @@ bool GameSession::executeAction(int toRow, int toCol) {
     auto [fromRow, fromCol] = *m_seletedPiece;
     if (m_currentActionType == ActionType::GROW) {
         if (Rule::canGrow(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
-            m_board->placePieceAt(toRow, toCol, m_currentPlayer);
             m_gamePieceEventCallback(GamePieceEvent::PLACE_PIECE, toRow, toCol, -1, -1);
+            m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+            
             // 如果执行了操作就擦除
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return true;
@@ -70,23 +71,27 @@ bool GameSession::executeAction(int toRow, int toCol) {
     }
     if (m_currentActionType == ActionType::MOVE) {
         if (Rule::canMove(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
-            m_board->removePieceAt(fromRow, fromCol);
             m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
-            m_board->removePieceAt(toRow, toCol);
             m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, toRow, toCol, -1, -1);
+            m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+            m_board->removePieceAt(fromRow, fromCol);
+            
+            m_board->removePieceAt(toRow, toCol);
+            
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
             
-            m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+            
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return true;
         }
     }
     if (m_currentActionType == ActionType::SPORE) {
         if (Rule::canSpore(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
-            m_board->removePieceAt(fromRow, fromCol);
             m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
-            m_board->placePieceAt(toRow, toCol, m_currentPlayer);
             m_gamePieceEventCallback(GamePieceEvent::PLACE_PIECE, toRow, toCol, -1, -1);
+            m_board->removePieceAt(fromRow, fromCol);
+            m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+            
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return true;
         }
