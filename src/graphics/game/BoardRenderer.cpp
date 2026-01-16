@@ -81,7 +81,7 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             // 确定棋子颜色
             SDL_Color color;
             if (selectedPiece && selectedPiece->first == row && selectedPiece->second == col) {
-                // 选中状态的棋子
+                // 选中状态的棋子，暂时不渲染黄色的选中状态
                 color = m_colors.selected;
                 isSelected = true;
             } else {
@@ -102,7 +102,7 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
             
             //SDL_RenderFillRect(m_renderer, &rect);
             bool isRenderered = false;
-            auto texture = m_textureManager->createTextureFromRect(rect.x, rect.y, rect, color);
+            auto texture = m_textureManager->createTextureFromRect(rect, color);
             //SDL_FRect srect = {0, 0, rect.w, rect.h};
             if (isSelected) {
                 // 如果被选择
@@ -286,15 +286,31 @@ void BoardRenderer::renderBlackOverlay() {
 
 void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int row, int col) {
     auto area = getBoardArea();
+
+    // 计算棋子中心位置
     float x = area.x + col * area.cellSize;
     float y = area.y + row * area.cellSize;
+
     float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
+
+    SDL_FRect rect{
+                x + (area.cellSize - pieceRadius * 2) / 2.0f,
+                y + (area.cellSize - pieceRadius * 2) / 2.0f,
+                pieceRadius * 2,
+                pieceRadius * 2
+            };
+
+    const Piece* piece = m_board->getPieceAt(row, col);
+    if (!piece) {
+        SDL_Log("BoardRenderer: piece is null\n");
+        return;
+    }
+    SDL_Color color = (piece->getPieceOwner() == PlayerID::P1) ? 
+                        m_colors.P1 : m_colors.P2;
     switch (event) {
         case (GamePieceEvent::REMOVE_PIECE):
             //SDL_Log("BoardRenderer: try to destory texture\n");
-            m_textureManager->destoryTexture( 
-            x + (area.cellSize - pieceRadius * 2) / 2.0f,
-            y + (area.cellSize - pieceRadius * 2) / 2.0f);
+            m_textureManager->destoryTexture(rect, color);
             break;
         case (GamePieceEvent::PLACE_PIECE):
             break;
