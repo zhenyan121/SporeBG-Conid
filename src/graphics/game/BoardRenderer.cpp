@@ -104,6 +104,23 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
            
             auto texture = m_textureManager->createTextureFromRect(rect, color);
             //SDL_FRect srect = {0, 0, rect.w, rect.h};
+
+            if (m_pieceGrowStatus.isAnimating && m_pieceGrowStatus.row == row && m_pieceGrowStatus.col == col) {
+                m_pieceGrowStatus.currentTime += Time::deltaTime();
+                    if (m_pieceGrowStatus.currentTime > m_pieceGrowStatus.animationDuration) {
+                        m_pieceGrowStatus.currentTime = m_pieceGrowStatus.animationDuration;
+                        m_pieceGrowStatus.isAnimating = false;
+                    }
+                float progess = m_pieceGrowStatus.currentTime / m_pieceGrowStatus.animationDuration;
+                m_textureManager->destoryTexture(rect, color);
+                auto renderColor = color;
+                renderColor.a = 255 * progess;
+                auto texture = m_textureManager->createTextureFromRect(rect, renderColor);
+                SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+                continue;
+                
+            }
+
             if (isSelected) {
                 // 如果被选择
                 static float animationDuration = 1.0f;  // 动画总时长（秒）
@@ -280,7 +297,7 @@ void BoardRenderer::renderBlackOverlay() {
     if (!m_renderer) return;
     if (m_gameState == GameState::GAME_RUNING) return;
     // 开启混合模式（重要！）
-    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+    //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
     // 设置黑色半透明颜色
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 150); // 半透明黑色
@@ -296,7 +313,7 @@ void BoardRenderer::renderBlackOverlay() {
     SDL_RenderFillRect(m_renderer, &rect);
 
     // 恢复原来的混合模式
-    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
+    //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
 }
 
 void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow, int toCol) {
@@ -351,6 +368,15 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
                 1.0f
             };
             
+            break;
+        case (GamePieceEvent::GROW_PIECE):
+            m_pieceGrowStatus = {
+                toRow,
+                toCol,
+                0.0f,
+                true,
+                1.0f
+            };
             break;
         default:
             break;
