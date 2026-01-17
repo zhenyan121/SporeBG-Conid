@@ -31,5 +31,7 @@ enum class GameMode {
 enum class GamePieceEvent {
     REMOVE_PIECE,
     PLACE_PIECE,
-    MOVE_PIECE
+    MOVE_PIECE,
+    GROW_PIECE,
+    SPORE_PIECE
 };

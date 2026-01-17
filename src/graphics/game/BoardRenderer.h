@@ -26,6 +26,15 @@ struct PieceMoveStatus {
     float animationDuration = 1.0f;  // 动画总时长（秒）
 };
 
+struct PieceGrowStatue {
+    int row = -1;
+    int col = -1;
+    float currentTime = 0.0f;
+    bool isAnimating = false;
+    float animationDuration = 1.0f;
+
+};
+
 class Board;
 
 class BoardRenderer
@@ -52,6 +61,8 @@ private:
     std::optional<std::pair<int, int>> m_lastSelected = std::nullopt;
 
     PieceMoveStatus m_pieceMoveStatus;
+
+    PieceGrowStatue m_pieceGrowStatus;
 
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  

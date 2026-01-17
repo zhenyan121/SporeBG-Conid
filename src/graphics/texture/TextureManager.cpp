@@ -43,6 +43,8 @@ SDL_Texture* TextureManager::createTextureFromRect(SDL_FRect& rect, SDL_Color& c
         rect.w,
         rect.h
     );
+    // 开启纹理混合
+    SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND);
     // 保存当前的渲染目标
     auto currentTexture = SDL_GetRenderTarget(m_renderer);
     

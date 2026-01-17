@@ -35,7 +35,8 @@ bool WindowManager::Initialize(Config& config) {
                  "创建渲染器失败: %s", SDL_GetError());
                  return false;
     }
-    
+    // 开启混合模式
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
     if (config.window.vsync) {
         SDL_SetRenderVSync(m_renderer, true);
     } else {
