@@ -10,6 +10,8 @@
 #include "graphics/font/FontManager.h"
 #include "core/DebugManager.h"
 #include "graphics/texture/TextureManager.h"
+#include "CoreData.h"
+
 class GameApplication {
 private:
     
@@ -25,6 +27,8 @@ private:
     
     Config m_config;
     void cleanup();
+
+    CoreData m_coreData;
 
 public:
     GameApplication();

@@ -34,6 +34,14 @@ void DebugOverlay::initialize() {
         80
     );
     m_labels.emplace(mouseLogicalPos->getNameHash(), std::move(mouseLogicalPos));
+
+    auto roundLabel = UIWidgetFactory::createStandardLabel(
+        "RoundLabel",
+        "Round: 0",
+        0,
+        120
+    );
+    m_labels.emplace(roundLabel->getNameHash(), std::move(roundLabel));
 }
 
 
@@ -124,5 +132,13 @@ void DebugOverlay::updateDebugInfo() {
         }
     } else {
         std::cerr << "Mouse LogicalPosition Label not found!\n";
+    }
+
+    const auto roundLabelKey = makeHash("RoundLabel");
+    auto roundLabel = m_labels.find(roundLabelKey);
+    if (roundLabel != m_labels.end()) {
+        roundLabel->second->setText("Round: " + std::to_string(m_debugData.round));
+    } else {
+        std::cerr << "Round Label not found!\n";
     }
 }

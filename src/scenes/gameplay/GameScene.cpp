@@ -53,10 +53,10 @@ void GameScene::handleBoardClick(int row, int col) {
     m_gameSession->printBoard();
 }
 
-void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager){
+void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData){
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;
-
+    m_coreData = coreData;
      // 使用工厂方法创建UIManager
     m_gameUIManager = createUIManager();
     m_gameUIManager->init();
@@ -129,6 +129,7 @@ void GameScene::handleClick(int logicalX, int logicalY) {
         } else {
             SDL_Log("invail cilck aera!");
         }
+    m_coreData->debugData.round = m_gameSession->getRound();
 }
 
 

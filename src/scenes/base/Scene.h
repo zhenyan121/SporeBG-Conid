@@ -9,6 +9,7 @@
 #include "graphics/ui/UIRenderer.h"
 #include "scenes/base/SceneEvent.h"
 #include "graphics/texture/TextureManager.h"
+#include "core/CoreData.h"
 #include <functional>
 /**
  * @class   Scene
@@ -31,7 +32,7 @@ public:
      * @param   height 窗口高度
      * @param   uiRenderer UI 渲染器指针
      */
-    virtual void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager){};
+    virtual void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* CoreData){};
     /** 
      * @brief   场景退出
      */
@@ -67,7 +68,7 @@ protected:
     SDL_Renderer* m_renderer;   ///< SDL 渲染器指针
     TextureManager* m_textureManager;
     EventCallback m_eventCallback;  ///< 场景事件回调函数
-
+    CoreData* m_coreData;
     /*void beginFrame() {
         if (!m_renderer) {
             SDL_Log("Renderer is null in beginFrame!");

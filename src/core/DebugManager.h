@@ -10,7 +10,8 @@ public:
         const SDL_Renderer* renderer,
         const SDL_Window* window,
         //const InputState& inputState,
-        UIRenderer* uiRenderer
+        UIRenderer* uiRenderer,
+        DebugData& debugData
     );
     ~DebugManager();
 
@@ -22,9 +23,13 @@ public:
     void updateMousePos(int logicalX, int logicalY, const InputState& inputState);
     void updateDebugInfo();
     
+    DebugData& getDebugData() {
+        return m_debugData;
+    }
+
 private:
     std::unique_ptr<DebugOverlay> m_debugOverlay;
-    DebugData m_debugData;
+    DebugData& m_debugData;
     const SDL_Renderer* m_renderer = nullptr;
     const SDL_Window* m_window = nullptr;
     //const InputState& m_inputState;

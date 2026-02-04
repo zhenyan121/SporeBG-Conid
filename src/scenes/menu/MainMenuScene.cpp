@@ -4,10 +4,11 @@ MainMenuScene::MainMenuScene() {
     // 构造函数实现
 }
 
-void MainMenuScene::onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager) {
+void MainMenuScene::onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) {
     // 进入场景时的初始化逻辑
     m_renderer = renderer;
     m_uiRenderer = uiRenderer;
+    m_coreData = coreData;
     m_mainMenuUIManager = std::make_unique<MainMenuUIManager>(
         [this](const std::string& sceneName) {
             if (m_eventCallback) {
