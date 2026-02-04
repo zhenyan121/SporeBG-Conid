@@ -1,10 +1,11 @@
 #include "SceneManager.h"
 #include "utils/Config.h"
-SceneManager::SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager) :
+SceneManager::SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager, CoreData& coreData) :
     m_renderer(renderer),
     m_uiRenderer(uiRenderer),
     m_window(window),
-    m_textureManager(textureManager)
+    m_textureManager(textureManager),
+    m_coreData(coreData)
 
 {
     
@@ -99,7 +100,7 @@ void SceneManager::pushScene(const std::string& sceneName) {
 
     
     
-    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager);
+    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
 }
 
 
@@ -116,7 +117,7 @@ void SceneManager::popScene() {
         m_scenes.pop();
         
         if (m_scene) {
-            m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager);
+            m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
         }
     }
 }
@@ -157,7 +158,7 @@ void SceneManager::changeScene(const std::string& sceneName) {
     m_scene = target;
 
     
-    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager);
+    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
 }
 
 

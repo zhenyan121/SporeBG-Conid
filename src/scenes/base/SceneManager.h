@@ -10,6 +10,7 @@
 #include "scenes/gameplay/GameScene.h"
 #include "scenes/menu/MainMenuScene.h"
 #include "scenes/gameplay/OnlineGameScene.h"
+#include "core/CoreData.h"
 #include <SDL3/SDL.h>
 #include <string>
 #include <stack>
@@ -31,7 +32,7 @@ public:
      * @param   uiRenderer UI 渲染器指针，用于传递给场景进行 UI 渲染
      * @param   window SDL 窗口指针，用于获取窗口尺寸
      */
-    SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager);
+    SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager, CoreData& coreData);
     /** 
      * @brief   析构函数
      * @details 清理场景栈和缓存，释放资源
@@ -137,5 +138,7 @@ private:
      * @return  返回 {宽度, 高度}，如果获取失败则返回默认值 {1600, 900}
      */
     //std::pair<int, int> getWindowDimensions() const;
+
+    CoreData& m_coreData;
     
 };

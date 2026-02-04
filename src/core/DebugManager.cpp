@@ -5,12 +5,14 @@ DebugManager::DebugManager(
     const SDL_Renderer* renderer,
     const SDL_Window* window,
     //const InputState& inputState,
-    UIRenderer* uiRenderer
+    UIRenderer* uiRenderer,
+    DebugData& debugData
     ):
     m_renderer(renderer),
     m_window(window),
     //m_inputState(inputState),
-    m_uiRenderer(uiRenderer)
+    m_uiRenderer(uiRenderer),
+    m_debugData(debugData)
 {
 
 }

@@ -27,7 +27,7 @@ private:
 
     GamePieceEventCallback m_gamePieceEventCallback;
 
-    int GameRounds = 1;
+    int m_gameRound = 1;
 
     
 
@@ -70,6 +70,8 @@ public:
         m_gamePieceEventCallback = callback;
     }
 
-    
+    int getRound() {
+        return m_gameRound;
+    }
 
 };

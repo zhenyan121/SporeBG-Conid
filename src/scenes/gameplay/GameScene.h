@@ -11,7 +11,7 @@ public:
     GameScene();
     ~GameScene();
 
-    void onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager) override;
+    void onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) override;
 
     void update() override;
     void renderWorld() override; // 逻辑世界

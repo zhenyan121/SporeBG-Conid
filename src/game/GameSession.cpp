@@ -159,8 +159,8 @@ void GameSession::nextTurn() {
     
     m_currentActionType = ActionType::GROW;
     if (m_currentPlayer == PlayerID::P1) {
-        GameRounds++;
-        std::cout << "GameSession: Current Round is " << GameRounds << "\n";
+        m_gameRound++;
+        std::cout << "GameSession: Current Round is " << m_gameRound << "\n";
     }
     
     // 回合结束增加生命值
