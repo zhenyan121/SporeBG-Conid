@@ -1,7 +1,8 @@
 #pragma once
 // 这里存储游戏的各种状态
 
-
+constexpr int ROWS = 7;
+constexpr int COLS = 7;
 
 enum class PlayerID {
     P1,
@@ -35,3 +36,11 @@ enum class GamePieceEvent {
     GROW_PIECE,
     SPORE_PIECE
 };
+
+
+namespace Stat {
+    constexpr int DefaultHP = 20;
+    constexpr int DefaultATK = 10;
+    constexpr int HealthRegenPerTurn = 2;
+}
+

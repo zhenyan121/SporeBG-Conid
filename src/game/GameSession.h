@@ -27,6 +27,10 @@ private:
 
     GamePieceEventCallback m_gamePieceEventCallback;
 
+    int GameRounds = 1;
+
+    
+
 public:
     GameSession();
     ~GameSession();
@@ -65,5 +69,7 @@ public:
     void setGamePieceEventCallback(GamePieceEventCallback callback) {
         m_gamePieceEventCallback = callback;
     }
+
+    
 
 };
