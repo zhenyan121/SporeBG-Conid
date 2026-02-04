@@ -30,10 +30,10 @@ void MainMenuScene::update() {
 
 void MainMenuScene::renderWorld() {
     
-    SDL_FRect test = {20, 20, 20, 20};
+    //SDL_FRect test = {20, 20, 20, 20};
     // 渲染场景内容
-    SDL_SetRenderDrawColor(m_renderer, 20, 20,20, 255);
-    SDL_RenderFillRect(m_renderer, &test);
+    //SDL_SetRenderDrawColor(m_renderer, 20, 20,20, 255);
+    //SDL_RenderFillRect(m_renderer, &test);
     
 }
 

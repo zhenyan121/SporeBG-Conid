@@ -25,6 +25,13 @@ void MainMenuUIManager::init() {
     );
 
     m_buttons.emplace(onlineStartButton->getNameHash(), std::move(onlineStartButton));
+
+    auto titelLabel = UIWidgetFactory::createStandardLabel(
+        "TitleLabel", "SporeBG-Conid", 275, 20
+    );
+    titelLabel->setRect(225, 20, UI::TitleSize, UI::TitleSize);
+    titelLabel->setText("SporeBG-Conid", {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE * 2, {173, 216, 189, 255}});
+    m_labels.emplace(titelLabel->getNameHash(), std::move(titelLabel));
     
 }
 

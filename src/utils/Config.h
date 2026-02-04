@@ -49,6 +49,7 @@ namespace UI
     constexpr int LogicalWidth = 640;
     constexpr int LogicalHeight = 360;
     
+    constexpr int TitleSize = 16 * 8;
     // 字体大小（逻辑像素）
     constexpr int DIALOG_FONT_SIZE = 14;
     constexpr int UI_SMALL_FONT_SIZE = 8;
