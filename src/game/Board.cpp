@@ -196,3 +196,21 @@ std::unordered_set<int> Board::getSporeRange(int PieceID) const {
 
     return SporeRegion;
 }
+
+bool Board::changeHP(int row, int col, int num) {
+    int pieceID = getPieceID(row, col);
+    if (!m_grid[pieceID]) {
+        return false;
+    }
+    m_grid[pieceID]->changeHP(num);
+    return true;
+}
+
+bool Board::changeATK(int row, int col, int num) {
+    int pieceID = getPieceID(row, col);
+    if (!m_grid[pieceID]) {
+        return false;
+    }
+    m_grid[pieceID]->changeATK(num);
+    return true;
+}

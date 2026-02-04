@@ -53,4 +53,8 @@ public:
     std::unordered_set<int> getOrthogonalNeighbors(int PieceID) const;
     // 获取扩散范围
     std::unordered_set<int> getSporeRange(int PieceID) const;
+
+    bool changeHP(int row, int col, int num);
+
+    bool changeATK(int row, int col, int num);
 };

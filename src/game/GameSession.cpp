@@ -4,7 +4,7 @@
 
 GameSession::GameSession()         
 {
-    m_board = std::make_unique<Board>(7, 7);
+    m_board = std::make_unique<Board>(ROWS, COLS);
     
 }
 
@@ -73,14 +73,43 @@ bool GameSession::executeAction(int toRow, int toCol) {
     }
     if (m_currentActionType == ActionType::MOVE) {
         if (Rule::canMove(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
-            m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
-            m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, toRow, toCol, -1, -1);
-            m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
-            m_board->removePieceAt(fromRow, fromCol);
+            //m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
+            //m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, toRow, toCol, -1, -1);
+            //m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+            auto fromPiece = m_board->getPieceAt(fromRow, fromCol);
+            auto toPiece = m_board->getPieceAt(toRow, toCol);
+
+            if (!fromPiece) {
+                std::cout << "GameSession: fromPiece is null\n";
+                exit(EXIT_FAILURE);
+            }
             
-            m_board->removePieceAt(toRow, toCol);
+            if (!toPiece) {
+                m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+                m_board->removePieceAt(fromRow, fromCol);
+                m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+                markComponentAsUsed(getOldComponentID(fromRow, fromCol));
+                return true;
+            }
+
+            m_board->changeHP(toRow, toCol, -fromPiece->getATK());
+            m_board->changeHP(fromRow, fromCol, -toPiece->getATK() * 0.5);
             
-            m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+            if (fromPiece->getHP() <= 0) {
+                m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
+                m_board->removePieceAt(fromRow, fromCol);
+            }
+            if (toPiece->getHP() <= 0) {
+                m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, toRow, toCol, -1, -1);
+                m_board->removePieceAt(toRow, toCol);
+
+                if (fromPiece->getHP() > 0) {
+                    m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+                    m_board->removePieceAt(fromRow, fromCol);
+                    m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+                }
+            }
+            
             
             
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
@@ -122,13 +151,27 @@ void GameSession::printBoard() const {
 }
 
 void GameSession::nextTurn() {
-    std::cout << "switch to " << ((m_currentPlayer == PlayerID::P1) ? "P2" : "P1") << "\n";
+    std::cout << "GameSession: switch to " << ((m_currentPlayer == PlayerID::P1) ? "P2" : "P1") << "\n";
     m_seletedPiece = std::nullopt;
     m_currentPlayer = (m_currentPlayer == PlayerID::P1) ? PlayerID::P2 : PlayerID::P1;
     resetOldPieceIDtoComponent();
     resetActionableComponents();
     
     m_currentActionType = ActionType::GROW;
+    if (m_currentPlayer == PlayerID::P1) {
+        GameRounds++;
+        std::cout << "GameSession: Current Round is " << GameRounds << "\n";
+    }
+    
+    // 回合结束增加生命值
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            //int pieceID = m_board->getPieceID(i, j);
+            m_board->changeHP(i, j, Stat::HealthRegenPerTurn);
+        }
+    }
+
 }
 
 bool GameSession::handleCoordinateInput(int row, int col) {
