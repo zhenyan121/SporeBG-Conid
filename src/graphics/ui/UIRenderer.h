@@ -13,10 +13,11 @@ private:
 
 
     /**
-     * @brief 渲染按钮背景
+     * @brief 渲染背景
      * @param renderer SDL渲染器
      */
-    void renderButtonBackground(const ButtonData& buttonData);
+    template <typename Type>
+    void renderBackground(const Type& data);
     
     /**
      * @brief 渲染按钮边框
