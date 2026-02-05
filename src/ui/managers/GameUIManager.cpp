@@ -184,7 +184,10 @@ void GameUIManager::setupUIComponents() {
         0
     );
     pieceInfoLabel->setVisible(false);
+    pieceInfoLabel->setBackgroundColor({255, 180, 190, 230});
+    pieceInfoLabel->setRect(120, 0, UI::ButtonSize * 4, UI::ButtonSize * 3);
     m_labels.emplace(pieceInfoLabel->getNameHash(), std::move(pieceInfoLabel));
+
 
 }
 
