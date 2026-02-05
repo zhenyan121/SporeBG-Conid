@@ -1,5 +1,11 @@
 #include "InputManager.h"
 
+InputManager::InputManager(InputState& inputState) :
+    m_currentInputState(inputState) 
+{
+
+}
+
 SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
 
     switch (event->type) {

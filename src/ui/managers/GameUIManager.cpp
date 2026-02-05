@@ -177,6 +177,15 @@ void GameUIManager::setupUIComponents() {
     );
     m_labels.emplace(playerLabel->getNameHash(), std::move(playerLabel));
 
+    auto pieceInfoLabel = UIWidgetFactory::createStandardLabel(
+        "PieceInfoLabel",
+        "HP: 0\nATK: 0",
+        120,
+        0
+    );
+    pieceInfoLabel->setVisible(false);
+    m_labels.emplace(pieceInfoLabel->getNameHash(), std::move(pieceInfoLabel));
+
 }
 
 

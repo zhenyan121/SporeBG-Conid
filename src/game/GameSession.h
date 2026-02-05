@@ -74,4 +74,6 @@ public:
         return m_gameRound;
     }
 
+    PieceInfo getPieceInfo(int row, int col) const;
+
 };

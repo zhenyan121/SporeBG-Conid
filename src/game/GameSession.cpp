@@ -292,3 +292,20 @@ int GameSession::getOldComponentID(int row, int col) {
  GameState GameSession::getGameState() const {
     return m_gameState;
  }
+
+ PieceInfo GameSession::getPieceInfo(int row, int col) const {
+    PieceInfo pieceInfo;
+
+    auto piece = m_board->getPieceAt(row, col);
+    
+    if (!piece) {
+        pieceInfo.hasPiece = false;
+        return pieceInfo;
+    }
+    pieceInfo.hasPiece = true;
+    pieceInfo.HP = piece->getHP();
+    pieceInfo.ATK = piece->getATK();
+
+    return pieceInfo;
+
+ }

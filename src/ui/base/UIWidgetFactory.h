@@ -21,6 +21,7 @@ public:
         label->setText(text, {"SourceHanSansSC-Regular.otf", UI::UI_NORMAL_FONT_SIZE, {0, 0, 0, 255}});
         label->setName(name);
         label->setVisible(true);
+        label->setBackgroundColor({0, 0, 0, 0});
         return label;
     }
 

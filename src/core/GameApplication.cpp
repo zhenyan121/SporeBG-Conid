@@ -31,7 +31,7 @@ bool GameApplication::initialize() {
    
     
     // 输入管理
-    m_inputManager = std::make_unique<InputManager>();
+    m_inputManager = std::make_unique<InputManager>(m_coreData.inputState);
     // 窗口管理
     m_windowManager = std::make_unique<WindowManager>();
     
@@ -79,6 +79,8 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     }
     auto pos = Tools::physicalToLogical(input.mouseCurrentPosition.first, input.mouseCurrentPosition.second, m_windowManager->getViewport());
     
+    m_coreData.inputState.mouseCurrentLogicalPosition = pos;
+
     m_debugManager->updateMousePos(pos.first, pos.second, input);
     
     m_windowManager->setFullscreen(input.isFullscreen);

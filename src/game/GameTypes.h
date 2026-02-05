@@ -37,6 +37,12 @@ enum class GamePieceEvent {
     SPORE_PIECE
 };
 
+struct PieceInfo {
+    bool hasPiece = false;
+    int HP = 0;
+    int ATK = 0;
+};
+
 
 namespace Stat {
     constexpr int DefaultHP = 20;
