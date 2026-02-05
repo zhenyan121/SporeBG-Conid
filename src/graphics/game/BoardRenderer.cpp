@@ -1,6 +1,7 @@
 #include "BoardRenderer.h"
 #include "game/Board.h"
 #include "core/Time.h"
+#include "utils/Tools.h"
 #include <iostream>
 BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager) :
     m_Width(WIDTH),
@@ -114,7 +115,8 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 float progess = m_pieceGrowStatus.currentTime / m_pieceGrowStatus.animationDuration;
                 m_textureManager->destoryTexture(rect, color);
                 auto renderColor = color;
-                renderColor.a = 255 * progess;
+                
+                renderColor.a = Tools::smoothMove(progess, 0, 255);
                 auto texture = m_textureManager->createTextureFromRect(rect, renderColor);
                 SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
                 continue;
@@ -167,21 +169,42 @@ void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) 
                 continue;
             }
             
-                if (m_pieceMoveStatus.isAnimating && col == m_pieceMoveStatus.toCol && row == m_pieceMoveStatus.toRow) {
-                    //SDL_Log("rendering..\n");
-                    m_pieceMoveStatus.currentTime += Time::deltaTime();
-                    if (m_pieceMoveStatus.currentTime > m_pieceMoveStatus.animationDuration) {
-                        m_pieceMoveStatus.currentTime = m_pieceMoveStatus.animationDuration;
-                        m_pieceMoveStatus.isAnimating = false;
-                    }
-                    float progess = m_pieceMoveStatus.currentTime / m_pieceMoveStatus.animationDuration;
-                    auto renderRect = m_pieceMoveStatus.fromPieceRect;
-                    renderRect.x += m_pieceMoveStatus.distanceCol * progess;
-                    renderRect.y += m_pieceMoveStatus.distanceRow * progess;
-                    SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
-                } else { 
-                SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+            if (m_pieceMoveStatus.isAnimating && col == m_pieceMoveStatus.toCol && row == m_pieceMoveStatus.toRow) {
+                //SDL_Log("rendering..\n");
+                m_pieceMoveStatus.currentTime += Time::deltaTime();
+                if (m_pieceMoveStatus.currentTime > m_pieceMoveStatus.animationDuration) {
+                    m_pieceMoveStatus.currentTime = m_pieceMoveStatus.animationDuration;
+                    m_pieceMoveStatus.isAnimating = false;
                 }
+                float progess = m_pieceMoveStatus.currentTime / m_pieceMoveStatus.animationDuration;
+                auto renderRect = m_pieceMoveStatus.fromPieceRect;
+                renderRect.x += Tools::smoothMove(progess, 0, m_pieceMoveStatus.distanceCol);
+                renderRect.y += Tools::smoothMove(progess, 0, m_pieceMoveStatus.distanceRow);
+                SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
+                continue;
+            }
+                
+            if (m_pieceFightStatus.isAnimating && col == m_pieceFightStatus.fromCol && row == m_pieceFightStatus.fromRow) {
+                m_pieceFightStatus.currentTime += Time::deltaTime();
+                if (m_pieceFightStatus.currentTime > m_pieceFightStatus.animationDuration) {
+                    m_pieceFightStatus.currentTime = m_pieceFightStatus.animationDuration;
+                    m_pieceFightStatus.isAnimating = false;
+                }
+                float progess = m_pieceFightStatus.currentTime / m_pieceFightStatus.animationDuration;
+                auto renderRect = m_pieceFightStatus.fromPieceRect;
+                float cX = m_pieceFightStatus.distanceCol * 0.5f;
+                float cY = m_pieceFightStatus.distanceRow * 0.5f;
+                renderRect.x = Tools::pingPongSpring(progess, renderRect.x, cX);
+                renderRect.y = Tools::pingPongSpring(progess, renderRect.y, cY);
+                
+               
+                SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
+                continue;
+
+            } 
+
+            SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+                
             
 
 
@@ -375,6 +398,18 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
                 toCol,
                 0.0f,
                 true,
+                1.0f
+            };
+            break;
+        case (GamePieceEvent::FIGHT_PIECE):
+            m_pieceFightStatus = {
+                fromRow, fromCol,
+                toRow, toCol,
+                toY - fromY,
+                toX - fromX,
+                0.0f,
+                true,
+                rect,
                 1.0f
             };
             break;

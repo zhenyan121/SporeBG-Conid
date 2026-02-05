@@ -34,7 +34,8 @@ enum class GamePieceEvent {
     PLACE_PIECE,
     MOVE_PIECE,
     GROW_PIECE,
-    SPORE_PIECE
+    SPORE_PIECE,
+    FIGHT_PIECE
 };
 
 struct PieceInfo {
