@@ -31,6 +31,8 @@ protected:
 
     virtual void handleBoardClick(int row, int col);
 
+    void updatePieceInfo();
+
     // 公共成员，子类可以直接访问
     std::unique_ptr<BoardRenderer> m_boardRenderer;
     std::unique_ptr<CoordinateConverter> m_CoordinateConverter;

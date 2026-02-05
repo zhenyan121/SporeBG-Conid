@@ -82,7 +82,7 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
 }
 
 void GameScene::update() {
-
+    updatePieceInfo();
 }
 
 void GameScene::renderWorld() {
@@ -148,5 +148,31 @@ void GameScene::restartGame() {
             m_boardRenderer->handleGamePieceEvent(evnet, fromRow, fromCol, toRow, toCol);
         }
     );
+
+}
+
+void GameScene::updatePieceInfo() {
+    auto [mouseX, mouseY] = m_coreData->inputState.mouseCurrentLogicalPosition;
+    auto click = m_CoordinateConverter->ScreenToBoard(mouseX, mouseY, m_boardRenderer->getBoardArea());
+
+    if (click == std::nullopt) {
+        m_gameUIManager->setLabel("PieceInfoLabel", false);
+        return;
+    }
+
+    auto [row, col] = click.value();
+
+    PieceInfo pieceInfo = m_gameSession->getPieceInfo(row, col);
+    if (!pieceInfo.hasPiece) {
+        m_gameUIManager->setLabel("PieceInfoLabel", false);
+        return;
+    }
+    std::string text = "HP: " + std::to_string(pieceInfo.HP) + "\n" + "ATK: " + std::to_string(pieceInfo.ATK);
+    m_gameUIManager->setLabel("PieceInfoLabel", true);
+    m_gameUIManager->setLabel("PieceInfoLabel", text);
+
+    m_gameUIManager->setLabel("PieceInfoLabel", mouseX, mouseY);
+        
+    
 
 }
