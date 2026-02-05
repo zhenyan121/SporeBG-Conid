@@ -30,7 +30,7 @@ enum class GameMode {
 };
 
 enum class GamePieceEvent {
-    REMOVE_PIECE,
+    REMOVE_PIECE, // 用于销毁棋子的材质释放内存的
     PLACE_PIECE,
     MOVE_PIECE,
     GROW_PIECE,
