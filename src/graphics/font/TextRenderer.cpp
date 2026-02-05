@@ -151,26 +151,92 @@ TextRenderer::CachedText& TextRenderer::createAndCacheTexture(const std::string&
         m_cache.erase(key);
         return empty;
     }
-    
+    // 分割行
+    std::vector<std::string> lines;
+    size_t start = 0;
+    size_t end = text.find('\n');
+
+    while (end != std::string::npos) {
+        lines.push_back(text.substr(start, end - start));
+        start = end + 1;
+        end = text.find('\n', start);
+    }
+    lines.push_back(text.substr(start));
+
+
     // 创建文字表面
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(),text.length(), style.color);
-    if (!surface) {
+    std::vector<SDL_Surface*> surface;
+
+    int width = 0;
+    int height = 0;
+
+    for (const auto& line : lines) {
+        auto sur = TTF_RenderText_Solid(font, line.c_str(), line.length(), style.color);
+        if (!sur) {
+            SDL_Log("TextRenderer: fail to create '%s' surface\n", line.c_str());
+            continue;
+        }
+        height += sur->h;
+        width = std::max(width, sur->w);
+        surface.push_back(sur);
+    }
+
+    
+    
+    if (surface.empty()) {
         SDL_Log("错误：无法创建文字表面 '%s'\n", text.c_str());
         m_cache.erase(key);
         return empty;
     }
     
     // 创建纹理
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-    int width = surface->w;
-    int height = surface->h;
-    SDL_DestroySurface(surface);  // 立即释放表面
-    
+    SDL_Texture* texture = SDL_CreateTexture(
+        m_renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        width,
+        height
+    );
+
     if (!texture) {
         SDL_Log("错误：无法创建纹理\n");
         m_cache.erase(key);
         return empty;
     }
+
+    int currentY = 0;
+
+    // 保存当前渲染目标
+    auto currentTexture = SDL_GetRenderTarget(m_renderer);
+
+    // 设置文本渲染目标
+    SDL_SetRenderTarget(m_renderer, texture);
+    SDL_Color color;
+    SDL_GetRenderDrawColor(m_renderer, &color.r, &color.g, &color.b, &color.a);
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0); // 透明黑
+    SDL_RenderClear(m_renderer);                   // 清空为透明
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+    for (auto* sur : surface) {
+        
+        auto textTexture = SDL_CreateTextureFromSurface(m_renderer, sur);
+        if (textTexture) {
+            SDL_FRect rect = {
+                static_cast<float>(0),
+                static_cast<float>(currentY),
+                static_cast<float>(sur->w),
+                static_cast<float>(sur->h)
+            };
+            SDL_RenderTexture(m_renderer, textTexture, nullptr, &rect);
+            SDL_DestroyTexture(textTexture);
+        }
+        
+        currentY += sur->h;
+        SDL_DestroySurface(sur);
+        
+    }
+    
+    SDL_SetRenderTarget(m_renderer, currentTexture);
+    
     // 设置纹理缩放模式为最近邻
     //SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     // 保存结果
