@@ -171,7 +171,7 @@ void GameScene::updatePieceInfo() {
     m_gameUIManager->setLabel("PieceInfoLabel", true);
     m_gameUIManager->setLabel("PieceInfoLabel", text);
 
-    m_gameUIManager->setLabel("PieceInfoLabel", mouseX, mouseY);
+    m_gameUIManager->setLabel("PieceInfoLabel", mouseX + 5, mouseY + 5);
         
     
 
