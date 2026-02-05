@@ -57,4 +57,6 @@ public:
     bool changeHP(int row, int col, int num);
 
     bool changeATK(int row, int col, int num);
+
+    bool setPieceInfo(int row, int col, PieceInfo pieceInfo);
 };

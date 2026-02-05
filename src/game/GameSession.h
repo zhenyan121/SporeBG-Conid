@@ -75,5 +75,5 @@ public:
     }
 
     PieceInfo getPieceInfo(int row, int col) const;
-
+    
 };

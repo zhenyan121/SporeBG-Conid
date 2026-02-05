@@ -214,3 +214,12 @@ bool Board::changeATK(int row, int col, int num) {
     m_grid[pieceID]->changeATK(num);
     return true;
 }
+
+bool Board::setPieceInfo(int row, int col, PieceInfo pieceInfo) {
+    int pieceID = getPieceID(row, col);
+    if (!m_grid[pieceID]) {
+        return false;
+    }
+    m_grid[pieceID]->setInfo(pieceInfo);
+    return true;
+}

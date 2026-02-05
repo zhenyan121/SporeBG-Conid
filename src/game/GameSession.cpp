@@ -61,10 +61,23 @@ bool GameSession::executeAction(int toRow, int toCol) {
     auto [fromRow, fromCol] = *m_seletedPiece;
     if (m_currentActionType == ActionType::GROW) {
         if (Rule::canGrow(m_board.get(), fromRow, fromCol, toRow, toCol, m_currentPlayer)) {
-            
+            auto fromPiece = m_board->getPieceAt(fromRow, fromCol);
+            auto toPiece = m_board->getPieceAt(toRow, toCol);
+            auto fromInfo = fromPiece->getPieceInfo();
+            if (fromInfo.HP / 2 == 0) {
+                // 因为每个玩家结束全部棋子恢复2HP，所以理论来说是不可能GROW死的
+                m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
+                m_board->removePieceAt(fromRow, fromCol);
+                markComponentAsUsed(getOldComponentID(fromRow, fromCol));
+                return true;
+            }
+            fromInfo.HP /= 2;
+            fromInfo.ATK += 2;
             m_gamePieceEventCallback(GamePieceEvent::PLACE_PIECE, toRow, toCol, -1, -1);
             m_gamePieceEventCallback(GamePieceEvent::GROW_PIECE, fromRow, fromCol, toRow, toCol);
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+            m_board->setPieceInfo(fromRow, fromCol, fromInfo);
+            m_board->setPieceInfo(toRow, toCol, fromInfo);
             
             // 如果执行了操作就擦除
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
@@ -86,8 +99,11 @@ bool GameSession::executeAction(int toRow, int toCol) {
             
             if (!toPiece) {
                 m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+                auto fromInfo = fromPiece->getPieceInfo();
                 m_board->removePieceAt(fromRow, fromCol);
                 m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+                m_board->setPieceInfo(toRow, toCol, fromInfo);
+                //m_board->changeHP(toRow, toCol, -5);
                 markComponentAsUsed(getOldComponentID(fromRow, fromCol));
                 return true;
             }
@@ -105,8 +121,11 @@ bool GameSession::executeAction(int toRow, int toCol) {
 
                 if (fromPiece->getHP() > 0) {
                     m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+                    auto fromInfo = fromPiece->getPieceInfo();
                     m_board->removePieceAt(fromRow, fromCol);
+                    
                     m_board->placePieceAt(toRow, toCol, m_currentPlayer);
+                    m_board->setPieceInfo(toRow, toCol, fromInfo);
                 }
             }
             
@@ -121,9 +140,14 @@ bool GameSession::executeAction(int toRow, int toCol) {
             m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
             m_gamePieceEventCallback(GamePieceEvent::PLACE_PIECE, toRow, toCol, -1, -1);
             m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+            
+            auto fromPiece = m_board->getPieceAt(fromRow, fromCol);
+            auto toPiece = m_board->getPieceAt(toRow, toCol);
+            auto fromInfo = fromPiece->getPieceInfo();
             m_board->removePieceAt(fromRow, fromCol);
             m_board->placePieceAt(toRow, toCol, m_currentPlayer);
-            
+            m_board->setPieceInfo(toRow, toCol, fromInfo);
+            m_board->changeHP(toRow, toCol, -2);
             markComponentAsUsed(getOldComponentID(fromRow, fromCol));
             return true;
         }
