@@ -100,6 +100,7 @@ bool GameSession::executeAction(int toRow, int toCol) {
             if (!toPiece) {
                 m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
                 auto fromInfo = fromPiece->getPieceInfo();
+                m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
                 m_board->removePieceAt(fromRow, fromCol);
                 m_board->placePieceAt(toRow, toCol, m_currentPlayer);
                 m_board->setPieceInfo(toRow, toCol, fromInfo);
