@@ -44,7 +44,7 @@ void UIRenderer::renderUI(const UIRenderData& uiRenderData) {
 
 void UIRenderer::renderButton(const ButtonData& buttonData) {
     //SDL_Log("render button\n");
-    renderButtonBackground(buttonData);
+    renderBackground<ButtonData>(buttonData);
     
     renderButtonBorder(buttonData);
     renderText<ButtonData>(buttonData);
@@ -52,12 +52,13 @@ void UIRenderer::renderButton(const ButtonData& buttonData) {
 
 void UIRenderer::renderLabel(const LabelData& labelData) {
     //SDL_Log("start render label\n");
+    renderBackground<LabelData>(labelData);
     renderText<LabelData>(labelData);
 }
 
 
-
-void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
+template <typename Type>
+void UIRenderer::renderBackground(const Type& data) {
     // 设置绘制颜色
     if (!m_renderer) {
         SDL_Log("renderer is null\n");
@@ -65,9 +66,11 @@ void UIRenderer::renderButtonBackground(const ButtonData& buttonData) {
    // SDL_Log("renderButtonBackground called for rect (%d,%d,%d,%d)",
    //         buttonData.rect.x, buttonData.rect.y, buttonData.rect.w, buttonData.rect.h);
     //SDL_Log("start render background\n");
-    auto m_backgroundColor = buttonData.backgroundColor;
-    auto m_rect = buttonData.rect;
-    
+    auto m_backgroundColor = data.backgroundColor;
+    auto m_rect = data.rect;
+    if (data.backgroundColor.a == 0) {
+        return;
+    }
     SDL_SetRenderDrawColor(m_renderer, m_backgroundColor.r, m_backgroundColor.g, m_backgroundColor.b, m_backgroundColor.a);
     //auto [width, height] = m_textRenderer->getLogicalTextSize(buttonData.text, buttonData.textstytle);
     auto viewport = m_textRenderer->getViewport();
