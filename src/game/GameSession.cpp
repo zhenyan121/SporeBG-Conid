@@ -110,7 +110,9 @@ bool GameSession::executeAction(int toRow, int toCol) {
 
             m_board->changeHP(toRow, toCol, -fromPiece->getATK());
             m_board->changeHP(fromRow, fromCol, -toPiece->getATK() * 0.5);
-            
+            if (fromPiece->getHP() > 0 && toPiece->getHP() > 0) {
+                m_gamePieceEventCallback(GamePieceEvent::FIGHT_PIECE, fromRow, fromCol, toRow, toCol);
+            }
             if (fromPiece->getHP() <= 0) {
                 m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
                 m_board->removePieceAt(fromRow, fromCol);
@@ -121,6 +123,7 @@ bool GameSession::executeAction(int toRow, int toCol) {
 
                 if (fromPiece->getHP() > 0) {
                     m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
+                    
                     auto fromInfo = fromPiece->getPieceInfo();
                     m_board->removePieceAt(fromRow, fromCol);
                     

@@ -35,6 +35,19 @@ struct PieceGrowStatue {
 
 };
 
+struct PieceFightStatue {
+    int fromRow = -1;
+    int fromCol = -1;
+    int toRow = -1;
+    int toCol = -1;
+    float distanceRow;
+    float distanceCol;
+    float currentTime = 0.0f;        // 当前已进行时间
+    bool isAnimating = false;
+    SDL_FRect fromPieceRect;
+    float animationDuration = 1.0f;  // 动画总时长（秒）
+};
+
 class Board;
 
 class BoardRenderer
@@ -63,6 +76,8 @@ private:
     PieceMoveStatus m_pieceMoveStatus;
 
     PieceGrowStatue m_pieceGrowStatus;
+
+    PieceFightStatue m_pieceFightStatus;
 
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
