@@ -76,6 +76,7 @@ if (WIN32)
             SDL3_ttf::SDL3_ttf
             SDL3_image::SDL3_image
             nlohmann_json::nlohmann_json
+            glm::glm
             ws2_32
             mswsock
             advapi32
@@ -107,6 +108,7 @@ else()  # Linux/macOS 等 Unix-like 系统
             SDL3_ttf::SDL3_ttf
             SDL3_image::SDL3_image
             nlohmann_json::nlohmann_json
+            glm::glm
             pthread  # Linux 需要 pthread
             ${CMAKE_DL_LIBS}  # 动态链接库
     )
