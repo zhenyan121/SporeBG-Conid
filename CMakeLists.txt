@@ -58,10 +58,29 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+
+
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_SOURCE_DIR}/src
     ${asio_SOURCE_DIR}/asio/include
 )
+
+# ========== 启用 AddressSanitizer (仅 Debug 模式) ==========
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Building with AddressSanitizer enabled for target: ${PROJECT_NAME}")
+
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -fsanitize=address
+        -fno-omit-frame-pointer   # 👈 帮助生成更完整的调用栈
+        -g                        # 👈 必须加调试符号，否则行号不准
+    )
+
+    target_link_options(${PROJECT_NAME} PRIVATE
+        -fsanitize=address
+    )
+endif()
 
 # ========== 平台特定设置 ==========
 if (WIN32)
