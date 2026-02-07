@@ -42,68 +42,111 @@ void BoardRenderer::update(float deltaTime) {
 }
 
 void BoardRenderer::updateGrowAnimation(float deltaTime) {
-    m_growAnimation.currentTime += deltaTime;
-    if (m_growAnimation.currentTime > m_growAnimation.animationDuration) {
-        m_growAnimation.currentTime = m_growAnimation.animationDuration;
-        m_growAnimation.isAnimating = false;
+
+    for (auto growAnimation = m_pieceAnimation.grow.begin(); growAnimation != m_pieceAnimation.grow.end(); ) {
+        
+        if (!growAnimation->isAnimating) {
+
+            std::cout << "BoardRenderer: grow animation play finished\n";
+            growAnimation = m_pieceAnimation.grow.erase(growAnimation);
+            
+            continue;
+        }
+
+        growAnimation->currentTime += deltaTime;
+        if (growAnimation->currentTime > growAnimation->animationDuration) {
+            growAnimation->currentTime = growAnimation->animationDuration;
+            growAnimation->isAnimating = false;
+        }
+        growAnimation->renderColor = growAnimation->baseColor;
+        growAnimation->progress = growAnimation->currentTime / growAnimation->animationDuration;
+        growAnimation->renderColor.a = Tools::smoothMove(growAnimation->progress, 0, 255);
+        ++growAnimation;
     }
-    m_growAnimation.renderColor = m_growAnimation.baseColor;
-    m_growAnimation.progress = m_growAnimation.currentTime / m_growAnimation.animationDuration;
-    m_growAnimation.renderColor.a = Tools::smoothMove(m_growAnimation.progress, 0, 255);
+
+    
 }
 
 void BoardRenderer::updateMoveAnimation(float deltaTime) {
-    m_moveAnimation.currentTime += deltaTime;
-        if (m_moveAnimation.currentTime > m_moveAnimation.animationDuration) {
-            m_moveAnimation.currentTime = m_moveAnimation.animationDuration;
-            m_moveAnimation.isAnimating = false;
-        }
-    m_moveAnimation.progress = m_moveAnimation.currentTime / m_moveAnimation.animationDuration;
 
-    auto renderRect = m_moveAnimation.fromPieceRect;
-    renderRect.x += Tools::smoothMove(m_moveAnimation.progress, 0, m_moveAnimation.distanceCol);
-    renderRect.y += Tools::smoothMove(m_moveAnimation.progress, 0, m_moveAnimation.distanceRow);
-    m_moveAnimation.renderRect = renderRect;
+    for (auto moveAnimation = m_pieceAnimation.move.begin(); moveAnimation != m_pieceAnimation.move.end(); ) {
+        
+        if (!moveAnimation->isAnimating) {
+
+            std::cout << "BoardRenderer: move animation play finished\n";
+            moveAnimation = m_pieceAnimation.move.erase(moveAnimation);
+            
+            continue;
+        }
+        
+        moveAnimation->currentTime += deltaTime;
+        if (moveAnimation->currentTime > moveAnimation->animationDuration) {
+            moveAnimation->currentTime = moveAnimation->animationDuration;
+            moveAnimation->isAnimating = false;
+        }
+        moveAnimation->progress = moveAnimation->currentTime / moveAnimation->animationDuration;
+
+        auto renderRect = moveAnimation->fromPieceRect;
+        renderRect.x += Tools::smoothMove(moveAnimation->progress, 0, moveAnimation->distanceCol);
+        renderRect.y += Tools::smoothMove(moveAnimation->progress, 0, moveAnimation->distanceRow);
+        moveAnimation->renderRect = renderRect;
+        ++moveAnimation;
+    }
+
+    
 }
 
 void BoardRenderer::updateFightAnimation(float deltaTime) {
-    m_fightAnimation.currentTime += deltaTime;
-        if (m_fightAnimation.currentTime > m_fightAnimation.animationDuration) {
-            m_fightAnimation.currentTime = m_fightAnimation.animationDuration;
-            m_fightAnimation.isAnimating = false;
+    for (auto fightAnimation = m_pieceAnimation.fight.begin(); fightAnimation != m_pieceAnimation.fight.end(); ) {
+        if (!fightAnimation->isAnimating) {
+
+            std::cout << "BoardRenderer: fight animation play finished\n";
+            fightAnimation = m_pieceAnimation.fight.erase(fightAnimation);
+            
+            continue;
         }
-    m_fightAnimation.progress = m_fightAnimation.currentTime / m_fightAnimation.animationDuration;
-    auto renderRect = m_fightAnimation.fromPieceRect;
-    float cX = m_fightAnimation.distanceCol * 0.5f;
-    float cY = m_fightAnimation.distanceRow * 0.5f;
-    renderRect.x = Tools::pingPongSpring(m_fightAnimation.progress, renderRect.x, cX);
-    renderRect.y = Tools::pingPongSpring(m_fightAnimation.progress, renderRect.y, cY);
-    m_fightAnimation.renderRect = renderRect;
+        
+        fightAnimation->currentTime += deltaTime;
+        if (fightAnimation->currentTime > fightAnimation->animationDuration) {
+            fightAnimation->currentTime = fightAnimation->animationDuration;
+            fightAnimation->isAnimating = false;
+        }
+        fightAnimation->progress = fightAnimation->currentTime / fightAnimation->animationDuration;
+        auto renderRect = fightAnimation->fromPieceRect;
+        float cX = fightAnimation->distanceCol * 0.5f;
+        float cY = fightAnimation->distanceRow * 0.5f;
+        renderRect.x = Tools::pingPongSpring(fightAnimation->progress, renderRect.x, cX);
+        renderRect.y = Tools::pingPongSpring(fightAnimation->progress, renderRect.y, cY);
+        fightAnimation->renderRect = renderRect;
+        ++fightAnimation;
+    }
+    
 }
 
 void BoardRenderer::updateSelectedAnimation(float deltaTime) {
     // 累加时间，限制不超过总时长
-    m_selectAnimation.currentTime += deltaTime;
-    if (m_selectAnimation.currentTime > m_selectAnimation.duration) {
-        m_selectAnimation.currentTime = 0;
-        m_selectAnimation.isBigger = !m_selectAnimation.isBigger;
+    auto selectAnimation = m_pieceAnimation.select.begin();
+    selectAnimation->currentTime += deltaTime;
+    if (selectAnimation->currentTime > selectAnimation->duration) {
+        selectAnimation->currentTime = 0;
+        selectAnimation->isBigger = !selectAnimation->isBigger;
         
     }
 
     SDL_FRect renderRect = {
-        m_selectAnimation.baseRect.x,
-        m_selectAnimation.baseRect.y,
-        m_selectAnimation.baseRect.w,
-        m_selectAnimation.baseRect.h
+        selectAnimation->baseRect.x,
+        selectAnimation->baseRect.y,
+        selectAnimation->baseRect.w,
+        selectAnimation->baseRect.h
     };
 
-    float progess = m_selectAnimation.currentTime / m_selectAnimation.duration;
-    m_selectAnimation.rotatedAngel = 360 * static_cast<double>(progess);
+    float progess = selectAnimation->currentTime / selectAnimation->duration;
+    selectAnimation->rotatedAngel = 360 * static_cast<double>(progess);
     float scale = 0.2 * progess;
     
-    float baseW = m_selectAnimation.baseRect.w;
-    float baseH = m_selectAnimation.baseRect.h;
-    if (m_selectAnimation.isBigger) {
+    float baseW = selectAnimation->baseRect.w;
+    float baseH = selectAnimation->baseRect.h;
+    if (selectAnimation->isBigger) {
         renderRect.w = baseW * (1.0f + scale);
         renderRect.h = baseH * (1.0f + scale);
     } else {
@@ -111,10 +154,10 @@ void BoardRenderer::updateSelectedAnimation(float deltaTime) {
         renderRect.h = baseH * (1.2f - scale);
     }
     // 居中缩放：重新计算 x, y 使中心点不变
-    renderRect.x = m_selectAnimation.baseRect.x + (baseW - renderRect.w) / 2.0f;
-    renderRect.y = m_selectAnimation.baseRect.y + (baseH - renderRect.h) / 2.0f;
+    renderRect.x = selectAnimation->baseRect.x + (baseW - renderRect.w) / 2.0f;
+    renderRect.y = selectAnimation->baseRect.y + (baseH - renderRect.h) / 2.0f;
     
-    m_selectAnimation.renderRect = renderRect;
+    selectAnimation->renderRect = renderRect;
 }
 
 void BoardRenderer::drawBackground() {
@@ -200,37 +243,45 @@ void BoardRenderer::drawPieceAt(int row, int col, std::optional<std::pair<int, i
         auto texture = m_textureManager->createTextureFromRect(rect, color);
         //SDL_FRect srect = {0, 0, rect.w, rect.h};
 
-        if (m_growAnimation.isAnimating && m_growAnimation.row == row && m_growAnimation.col == col) {
+        for (const auto& growAnimation : m_pieceAnimation.grow) {
+            if (growAnimation.isAnimating && growAnimation.row == row && growAnimation.col == col) {
             
-            m_textureManager->destoryTexture(rect, color);
-            m_growAnimation.baseColor = color;
+                m_textureManager->destoryTexture(rect, color);
+                
+                auto texture = m_textureManager->createTextureFromRect(rect, growAnimation.renderColor);
+                SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+                return;
             
-            auto texture = m_textureManager->createTextureFromRect(rect, m_growAnimation.renderColor);
-            SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
-            return;
-            
+            }
         }
+        
 
         if (isSelected) {
-            
-            SDL_RenderTextureRotated(m_renderer, texture, nullptr, &m_selectAnimation.renderRect, m_selectAnimation.rotatedAngel, nullptr, SDL_FLIP_NONE);
+            auto selectAnimation = m_pieceAnimation.select.begin();
+            SDL_RenderTextureRotated(m_renderer, texture, nullptr, &selectAnimation->renderRect, selectAnimation->rotatedAngel, nullptr, SDL_FLIP_NONE);
             
             return;
         }
         
-        if (m_moveAnimation.isAnimating && col == m_moveAnimation.toCol && row == m_moveAnimation.toRow) {
-            //SDL_Log("rendering..\n");
-            
-            SDL_RenderTexture(m_renderer, texture, nullptr, &m_moveAnimation.renderRect);
-            return;
+        for (const auto& moveAnimation : m_pieceAnimation.move) {
+            if (moveAnimation.isAnimating && col == moveAnimation.toCol && row == moveAnimation.toRow) {
+                //SDL_Log("rendering..\n");
+                
+                SDL_RenderTexture(m_renderer, texture, nullptr, &moveAnimation.renderRect);
+                return;
+            }
         }
-            
-        if (m_fightAnimation.isAnimating && col == m_fightAnimation.fromCol && row == m_fightAnimation.fromRow) {
-            
-            SDL_RenderTexture(m_renderer, texture, nullptr, &m_fightAnimation.renderRect);
-            return;
+        
+        for (const auto& fightAnimation : m_pieceAnimation.fight) {
+            if (fightAnimation.isAnimating && col == fightAnimation.fromCol && row == fightAnimation.fromRow) {
 
-        } 
+                SDL_RenderTexture(m_renderer, texture, nullptr, &fightAnimation.renderRect);
+                return;
+
+            } 
+        }
+        
+        
         SDL_RenderTexture(m_renderer, texture, nullptr, &rect);   
 }
 
@@ -249,7 +300,7 @@ void BoardRenderer::updateSelectedPiece(std::optional<std::pair<int, int>> selec
             pieceRadius * 2,
             pieceRadius * 2
         };
-    m_selectAnimation = {
+    SelectAnimation selectAnimation = {
         true,
         1.0f,
         0.0f,
@@ -259,6 +310,10 @@ void BoardRenderer::updateSelectedPiece(std::optional<std::pair<int, int>> selec
         baseRect,
         0.0f
     };
+    // 选择棋子的动画只需要一个
+    m_pieceAnimation.select.clear();
+
+    m_pieceAnimation.select.push_back(selectAnimation);
 
 }
 
@@ -428,8 +483,9 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
         case (GamePieceEvent::PLACE_PIECE):
             break;
         case (GamePieceEvent::MOVE_PIECE):
+        {
             //SDL_Log("MovePPPPPP\n");
-            m_moveAnimation = {
+            MoveAnimation moveAnimation = {
                 fromRow, fromCol,
                 toRow, toCol,
                 toY - fromY,
@@ -440,18 +496,31 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
                 1.0f
             };
             
+            m_pieceAnimation.move.push_back(moveAnimation);
+
             break;
+        }
         case (GamePieceEvent::GROW_PIECE):
-            m_growAnimation = {
+        {
+            GrowAnimation growAnimation = {
                 toRow,
                 toCol,
                 0.0f,
                 true,
                 1.0f
             };
+
+            SDL_Color color = (piece->getPieceOwner() == PlayerID::P1) ? 
+                        m_colors.P1 : m_colors.P2;
+            growAnimation.baseColor = color;
+
+            m_pieceAnimation.grow.push_back(growAnimation);
+
             break;
+        }
         case (GamePieceEvent::FIGHT_PIECE):
-            m_fightAnimation = {
+        {
+            FightAnimation fightAnimation = {
                 fromRow, fromCol,
                 toRow, toCol,
                 toY - fromY,
@@ -461,7 +530,11 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
                 rect,
                 1.0f
             };
+
+            m_pieceAnimation.fight.push_back(fightAnimation);
+
             break;
+        }
         default:
             break;
     }

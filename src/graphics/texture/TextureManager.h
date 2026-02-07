@@ -10,11 +10,11 @@ public:
     ~TextureManager();
 
 
-    SDL_Texture* createTextureFromRect(SDL_FRect& rect, SDL_Color& coler);
+    SDL_Texture* createTextureFromRect(const SDL_FRect& rect, const SDL_Color& coler);
 
     void cleanupAllTexture();
 
-    SDL_Texture* getTexture(SDL_FRect& rect, SDL_Color& color);
+    SDL_Texture* getTexture(const SDL_FRect& rect, const SDL_Color& color);
 
     bool destoryTexture(SDL_FRect& rect, SDL_Color& color);
 
@@ -24,6 +24,6 @@ private:
 
     std::unordered_map<size_t, SDL_Texture*> m_cacheTexture;
 
-    size_t makeHash(SDL_FRect& rect, SDL_Color& color);
+    size_t makeHash(const SDL_FRect& rect, const SDL_Color& color);
 
 };

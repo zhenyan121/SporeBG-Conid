@@ -8,27 +8,22 @@
 #include "graphics/texture/TextureManager.h"
 #include "game/GameTypes.h"
 #include <glm/glm.hpp>
+#include <list>
 struct PlayerColors {
     SDL_Color P1 = {255, 0, 0, 255};    // 红色
     SDL_Color P2 = {0, 0, 255, 255};    // 蓝色
     SDL_Color selected = {255, 255, 0, 255}; // 黄色（选中状态）
 };
-
+/*
 enum class AnimationType {
     GROW,
     MOVE,
     FIGHT,
     SELECT
 };
-/*
-struct PieceAnimation {
-    bool active = false;
-    float duration = 0.0f;
-    float currentTime = 0.0f;
-    SDL_FRect startRect, targetRect; // 或其他参数
-    AnimationType type;
-};
 */
+
+
 
 struct MoveAnimation {
     int fromRow = -1;
@@ -82,6 +77,13 @@ struct SelectAnimation {
     double rotatedAngel = 0.0f;
 };
 
+struct PieceAnimation {
+    std::list<GrowAnimation> grow;
+    std::list<MoveAnimation> move;
+    std::list<FightAnimation> fight;
+    std::list<SelectAnimation> select;
+};
+
 
 class Board;
 
@@ -110,13 +112,7 @@ private:
 
     std::optional<std::pair<int, int>> m_lastSelected = std::nullopt;
 
-    MoveAnimation m_moveAnimation;
-
-    GrowAnimation m_growAnimation;
-
-    FightAnimation m_fightAnimation;
-
-    SelectAnimation m_selectAnimation;
+    PieceAnimation m_pieceAnimation;
 
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
