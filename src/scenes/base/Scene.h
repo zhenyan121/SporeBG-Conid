@@ -11,6 +11,7 @@
 #include "graphics/texture/TextureManager.h"
 #include "core/CoreData.h"
 #include <functional>
+#include <glm/glm.hpp>
 /**
  * @class   Scene
  * @brief   场景基类

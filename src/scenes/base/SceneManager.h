@@ -92,7 +92,7 @@ public:
      * @param   clickOn 点击位置坐标对 {x, y}
      * @details 将点击事件转发给当前场景的 handleClick() 方法进行处理
      */
-    void handleClickCurrent(std::pair<int, int> clickOn);
+    void handleClickCurrent(glm::ivec2 clickOn);
 
     
 

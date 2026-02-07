@@ -108,6 +108,8 @@ public:
     void renderBlackOverlay();
 
     void handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow = -1, int toCol = -1);
+
+    void update();
   
 };
 

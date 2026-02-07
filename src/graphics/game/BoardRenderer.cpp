@@ -29,6 +29,15 @@ void BoardRenderer::setBoard(const Board* board) {
     m_board = board;
 }
 
+
+void BoardRenderer::update() {
+
+
+    
+}
+
+
+
 void BoardRenderer::drawBackground() {
 
 }

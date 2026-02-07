@@ -96,8 +96,8 @@ void DebugOverlay::updateDebugInfo() {
             }
             mousePosLabel->setText(
                 "PhyscialPos: " + 
-                std::to_string(m_debugData.mousePosition.first) + ", " +
-                std::to_string(m_debugData.mousePosition.second)
+                std::to_string(m_debugData.mousePosition.x) + ", " +
+                std::to_string(m_debugData.mousePosition.y)
             );
             
             mousePosLabel->setVisible(true);
@@ -121,8 +121,8 @@ void DebugOverlay::updateDebugInfo() {
             }
             mouseLogicalPosLabel->setText(
                 "LogicalPos: " + 
-                std::to_string(m_debugData.mouseLogicalPostion.first) + ", " +
-                std::to_string(m_debugData.mouseLogicalPostion.second)
+                std::to_string(m_debugData.mouseLogicalPostion.x) + ", " +
+                std::to_string(m_debugData.mouseLogicalPostion.y)
             );
             
             mouseLogicalPosLabel->setVisible(true);

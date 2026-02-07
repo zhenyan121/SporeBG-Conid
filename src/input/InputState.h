@@ -1,10 +1,11 @@
 #pragma once
 #include <utility>
+#include <glm/glm.hpp>
 struct InputState
 {
-    std::pair<float, float> mouseCilckOn;
+    glm::vec2 mouseCilckOn;
     bool leftMouseDown = false;
-    std::pair<float, float> mouseCurrentPosition;
-    std::pair<int, int> mouseCurrentLogicalPosition;
+    glm::vec2 mouseCurrentPosition;
+    glm::ivec2 mouseCurrentLogicalPosition;
     bool isFullscreen = false;
 };

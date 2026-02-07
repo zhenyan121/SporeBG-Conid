@@ -20,7 +20,7 @@ public:
 
     void showDebugInfo();
 
-    void updateMousePos(int logicalX, int logicalY, const InputState& inputState);
+    void updateMousePos(glm::ivec2 logicalPos, const InputState& inputState);
     void updateDebugInfo();
     
     DebugData& getDebugData() {

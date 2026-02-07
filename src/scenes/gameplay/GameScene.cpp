@@ -152,7 +152,8 @@ void GameScene::restartGame() {
 }
 
 void GameScene::updatePieceInfo() {
-    auto [mouseX, mouseY] = m_coreData->inputState.mouseCurrentLogicalPosition;
+    int mouseX = m_coreData->inputState.mouseCurrentLogicalPosition.x;
+    int mouseY = m_coreData->inputState.mouseCurrentLogicalPosition.y;
     auto click = m_CoordinateConverter->ScreenToBoard(mouseX, mouseY, m_boardRenderer->getBoardArea());
 
     if (click == std::nullopt) {
