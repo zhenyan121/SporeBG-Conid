@@ -1,5 +1,5 @@
 #include "GameScene.h"
-
+#include "core/Time.h"
 GameScene::GameScene() {
     
 }
@@ -41,6 +41,7 @@ void GameScene::postHandleClick() {
      // 默认实现：更新UI和渲染器状态
     m_gameUIManager->updateActionType(m_gameSession->getCurrentActionType());
     m_boardRenderer->updateMovementRange(m_gameSession->getSelectedPiece(), m_gameSession->getCurrentActionType());
+    m_boardRenderer->updateSelectedPiece(m_gameSession->getSelectedPiece());
     m_gameUIManager->updateGameState(m_gameSession->getGameState());
     m_boardRenderer->setGameState(m_gameSession->getGameState());
     m_gameUIManager->updatePlayerTurn(m_gameSession->getCurrentPlayer());
@@ -83,6 +84,7 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
 
 void GameScene::update() {
     updatePieceInfo();
+    m_boardRenderer->update(Time::deltaTime());
 }
 
 void GameScene::renderWorld() {
@@ -138,6 +140,7 @@ void GameScene::restartGame() {
     m_gameSession->initialize();
     m_boardRenderer->setBoard(m_gameSession->getBoard());
     m_boardRenderer->updateMovementRange(std::nullopt, ActionType::GROW);
+    m_boardRenderer->updateSelectedPiece(std::nullopt);
     m_gameUIManager->updateActionType(ActionType::GROW);
     m_gameUIManager->updateGameState(GameState::GAME_RUNING);
     m_boardRenderer->setGameState(GameState::GAME_RUNING);
