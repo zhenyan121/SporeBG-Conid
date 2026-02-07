@@ -18,7 +18,11 @@ BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, Text
 
 
 BoardRenderer::~BoardRenderer() {
-    
+    m_pieceAnimation.grow.clear();
+    m_pieceAnimation.move.clear();
+    m_pieceAnimation.fight.clear();
+    m_pieceAnimation.select.clear();
+    std::cout << "BoardRenderer destory\n";
 }
 
 bool BoardRenderer::initialize() { 
@@ -125,6 +129,11 @@ void BoardRenderer::updateFightAnimation(float deltaTime) {
 
 void BoardRenderer::updateSelectedAnimation(float deltaTime) {
     // 累加时间，限制不超过总时长
+
+    if (m_pieceAnimation.select.empty()) {
+        return; // 没有选中动画，直接退出
+    }
+
     auto selectAnimation = m_pieceAnimation.select.begin();
     selectAnimation->currentTime += deltaTime;
     if (selectAnimation->currentTime > selectAnimation->duration) {

@@ -1,4 +1,5 @@
 #include "TextureManager.h"
+#include <cmath>
 
 TextureManager::TextureManager(SDL_Renderer* renderer) :
     m_renderer(renderer)
@@ -27,9 +28,9 @@ void TextureManager::cleanupAllTexture() {
 SDL_Texture* TextureManager::createTextureFromRect(const SDL_FRect& rect, const SDL_Color& color) {
     
     // 先在缓存中查找是否存在
-    auto it = getTexture(rect, color);
-    if(it) {
-        return it;
+    SDL_Texture* existing = getTexture(rect, color);
+    if(existing != nullptr) {
+        return existing;
     }
     if (!m_renderer) {
         SDL_Log("TextureManager renderer is null\n");
@@ -63,11 +64,18 @@ SDL_Texture* TextureManager::createTextureFromRect(const SDL_FRect& rect, const 
 }
 
 size_t TextureManager::makeHash(const SDL_FRect& rect, const SDL_Color& color) {
+    
+    // 转为整数，避免浮点误差
+    int ix = static_cast<int>(std::round(rect.x));
+    int iy = static_cast<int>(std::round(rect.y));
+    int iw = static_cast<int>(std::round(rect.w));
+    int ih = static_cast<int>(std::round(rect.h));
+    
     // 分别计算字体名称和大小的哈希值
-    size_t h1 = std::hash<float>{}(rect.x);
-    size_t h2 = std::hash<float>{}(rect.y);
-    size_t h3 = std::hash<float>{}(rect.w);
-    size_t h4 = std::hash<float>{}(rect.h);
+    size_t h1 = std::hash<int>{}(ix);
+    size_t h2 = std::hash<int>{}(iy);
+    size_t h3 = std::hash<int>{}(iw);
+    size_t h4 = std::hash<int>{}(ih);
 
     size_t h5 = std::hash<Uint8>{}(color.r);
     size_t h6 = std::hash<Uint8>{}(color.g);
@@ -91,8 +99,8 @@ SDL_Texture* TextureManager::getTexture(const SDL_FRect& rect, const SDL_Color& 
     }
 }
 
-bool TextureManager::destoryTexture(SDL_FRect& rect, SDL_Color& color) {
-    int key = makeHash(rect, color);
+bool TextureManager::destoryTexture(const SDL_FRect& rect, const SDL_Color& color) {
+    size_t key = makeHash(rect, color);
     auto it = m_cacheTexture.find(key);
     if (it == m_cacheTexture.end()) {
         SDL_Log("can't find the texture\n");
@@ -100,7 +108,7 @@ bool TextureManager::destoryTexture(SDL_FRect& rect, SDL_Color& color) {
         
     }
     SDL_DestroyTexture(it->second);
-    m_cacheTexture.erase(key);
+    m_cacheTexture.erase(it);
     SDL_Log("TextureManager: destory texture sucessfully\n");
     return true;
 }

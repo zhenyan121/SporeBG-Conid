@@ -16,7 +16,7 @@ public:
 
     SDL_Texture* getTexture(const SDL_FRect& rect, const SDL_Color& color);
 
-    bool destoryTexture(SDL_FRect& rect, SDL_Color& color);
+    bool destoryTexture(const SDL_FRect& rect, const SDL_Color& color);
 
 private:
 
