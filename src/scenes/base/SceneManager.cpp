@@ -163,8 +163,9 @@ void SceneManager::changeScene(const std::string& sceneName) {
 
 
 
-void SceneManager::handleClickCurrent(std::pair<int, int> clickOn) {
-    auto [logicalX, logicalY] = clickOn;
+void SceneManager::handleClickCurrent(glm::ivec2 clickOn) {
+    int logicalX = clickOn.x;
+    int logicalY = clickOn.y;
     if (m_scene) m_scene->handleClick(logicalX, logicalY);
 }
 

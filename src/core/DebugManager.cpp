@@ -27,12 +27,12 @@ void DebugManager::initialize() {
     m_isDebugInfoVisible = true;
 }
 
-void DebugManager::updateMousePos(int logicalX, int logicalY, const InputState& inputState) {
+void DebugManager::updateMousePos(glm::ivec2 logicalPos, const InputState& inputState) {
     m_debugData.mousePosition = {
-        static_cast<int>(inputState.mouseCurrentPosition.first),
-        static_cast<int>(inputState.mouseCurrentPosition.second)
+        static_cast<int>(inputState.mouseCurrentPosition.x),
+        static_cast<int>(inputState.mouseCurrentPosition.y)
     };
-    m_debugData.mouseLogicalPostion = {logicalX, logicalY};
+    m_debugData.mouseLogicalPostion = logicalPos;
     
 }
 

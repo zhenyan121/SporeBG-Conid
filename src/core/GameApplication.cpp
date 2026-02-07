@@ -74,14 +74,14 @@ SDL_AppResult GameApplication::handleInputEvent(SDL_Event* event) {
     InputState input = m_inputManager->GetInputState();
     if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && 
         event->button.button == SDL_BUTTON_LEFT) {
-        auto pos = Tools::physicalToLogical(input.mouseCilckOn.first, input.mouseCilckOn.second, m_windowManager->getViewport());
+        auto pos = Tools::physicalToLogical(input.mouseCilckOn, m_windowManager->getViewport());
         m_sceneManager->handleClickCurrent(pos);
     }
-    auto pos = Tools::physicalToLogical(input.mouseCurrentPosition.first, input.mouseCurrentPosition.second, m_windowManager->getViewport());
+    auto pos = Tools::physicalToLogical(input.mouseCurrentPosition, m_windowManager->getViewport());
     
     m_coreData.inputState.mouseCurrentLogicalPosition = pos;
 
-    m_debugManager->updateMousePos(pos.first, pos.second, input);
+    m_debugManager->updateMousePos(pos, input);
     
     m_windowManager->setFullscreen(input.isFullscreen);
     
