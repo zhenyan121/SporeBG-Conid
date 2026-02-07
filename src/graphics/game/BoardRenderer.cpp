@@ -11,6 +11,8 @@ BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, Text
 
     {
     m_cellSize = HEIGHT / m_boardRow;
+    
+    m_area = getBoardArea();
 }
 
 
@@ -30,195 +32,234 @@ void BoardRenderer::setBoard(const Board* board) {
 }
 
 
-void BoardRenderer::update() {
+void BoardRenderer::update(float deltaTime) {
 
+    updateGrowAnimation(deltaTime);
+    updateMoveAnimation(deltaTime);
+    updateFightAnimation(deltaTime);
+    updateSelectedAnimation(deltaTime);
 
-    
 }
 
+void BoardRenderer::updateGrowAnimation(float deltaTime) {
+    m_growAnimation.currentTime += deltaTime;
+    if (m_growAnimation.currentTime > m_growAnimation.animationDuration) {
+        m_growAnimation.currentTime = m_growAnimation.animationDuration;
+        m_growAnimation.isAnimating = false;
+    }
+    m_growAnimation.renderColor = m_growAnimation.baseColor;
+    m_growAnimation.progress = m_growAnimation.currentTime / m_growAnimation.animationDuration;
+    m_growAnimation.renderColor.a = Tools::smoothMove(m_growAnimation.progress, 0, 255);
+}
 
+void BoardRenderer::updateMoveAnimation(float deltaTime) {
+    m_moveAnimation.currentTime += deltaTime;
+        if (m_moveAnimation.currentTime > m_moveAnimation.animationDuration) {
+            m_moveAnimation.currentTime = m_moveAnimation.animationDuration;
+            m_moveAnimation.isAnimating = false;
+        }
+    m_moveAnimation.progress = m_moveAnimation.currentTime / m_moveAnimation.animationDuration;
+
+    auto renderRect = m_moveAnimation.fromPieceRect;
+    renderRect.x += Tools::smoothMove(m_moveAnimation.progress, 0, m_moveAnimation.distanceCol);
+    renderRect.y += Tools::smoothMove(m_moveAnimation.progress, 0, m_moveAnimation.distanceRow);
+    m_moveAnimation.renderRect = renderRect;
+}
+
+void BoardRenderer::updateFightAnimation(float deltaTime) {
+    m_fightAnimation.currentTime += deltaTime;
+        if (m_fightAnimation.currentTime > m_fightAnimation.animationDuration) {
+            m_fightAnimation.currentTime = m_fightAnimation.animationDuration;
+            m_fightAnimation.isAnimating = false;
+        }
+    m_fightAnimation.progress = m_fightAnimation.currentTime / m_fightAnimation.animationDuration;
+    auto renderRect = m_fightAnimation.fromPieceRect;
+    float cX = m_fightAnimation.distanceCol * 0.5f;
+    float cY = m_fightAnimation.distanceRow * 0.5f;
+    renderRect.x = Tools::pingPongSpring(m_fightAnimation.progress, renderRect.x, cX);
+    renderRect.y = Tools::pingPongSpring(m_fightAnimation.progress, renderRect.y, cY);
+    m_fightAnimation.renderRect = renderRect;
+}
+
+void BoardRenderer::updateSelectedAnimation(float deltaTime) {
+    // 累加时间，限制不超过总时长
+    m_selectAnimation.currentTime += deltaTime;
+    if (m_selectAnimation.currentTime > m_selectAnimation.duration) {
+        m_selectAnimation.currentTime = 0;
+        m_selectAnimation.isBigger = !m_selectAnimation.isBigger;
+        
+    }
+
+    SDL_FRect renderRect = {
+        m_selectAnimation.baseRect.x,
+        m_selectAnimation.baseRect.y,
+        m_selectAnimation.baseRect.w,
+        m_selectAnimation.baseRect.h
+    };
+
+    float progess = m_selectAnimation.currentTime / m_selectAnimation.duration;
+    m_selectAnimation.rotatedAngel = 360 * static_cast<double>(progess);
+    float scale = 0.2 * progess;
+    
+    float baseW = m_selectAnimation.baseRect.w;
+    float baseH = m_selectAnimation.baseRect.h;
+    if (m_selectAnimation.isBigger) {
+        renderRect.w = baseW * (1.0f + scale);
+        renderRect.h = baseH * (1.0f + scale);
+    } else {
+        renderRect.w = baseW * (1.2f - scale); // 从 1.2 缩回到 1.0
+        renderRect.h = baseH * (1.2f - scale);
+    }
+    // 居中缩放：重新计算 x, y 使中心点不变
+    renderRect.x = m_selectAnimation.baseRect.x + (baseW - renderRect.w) / 2.0f;
+    renderRect.y = m_selectAnimation.baseRect.y + (baseH - renderRect.h) / 2.0f;
+    
+    m_selectAnimation.renderRect = renderRect;
+}
 
 void BoardRenderer::drawBackground() {
 
+
+    
 }
 
 
 void BoardRenderer::drawBoard() {
-    auto area = getBoardArea();
-    
+    // 绘制棋盘格子
+    for (int row = 0; row < m_area.rows; ++row) {
+        for (int col = 0; col < m_area.cols; ++col) {
+            // 使用 SDL_FRect（浮点数）
+            SDL_FRect rect{
+                static_cast<float>(m_area.x + col * m_area.cellSize),
+                static_cast<float>(m_area.y + row * m_area.cellSize),
+                static_cast<float>(m_area.cellSize),
+                static_cast<float>(m_area.cellSize)
+            };
 
-// 绘制棋盘格子
-for (int row = 0; row < area.rows; ++row) {
-    for (int col = 0; col < area.cols; ++col) {
-        // 使用 SDL_FRect（浮点数）
-        SDL_FRect rect{
-            static_cast<float>(area.x + col * area.cellSize),
-            static_cast<float>(area.y + row * area.cellSize),
-            static_cast<float>(area.cellSize),
-            static_cast<float>(area.cellSize)
-        };
+            //bool isLight = (row + col) % 2 == 0;
+            SDL_SetRenderDrawColor(m_renderer, 
+                0,
+                0,
+                0,
+                255);
 
-        //bool isLight = (row + col) % 2 == 0;
-        SDL_SetRenderDrawColor(m_renderer, 
-            0,
-            0,
-            0,
-            255);
-
-        // SDL3: RenderFillRect 接受 const SDL_FRect*
-        SDL_RenderRect(m_renderer, &rect);
-    }
+            // SDL3: RenderFillRect 接受 const SDL_FRect*
+            SDL_RenderRect(m_renderer, &rect);
+        }
 }
 
 
 }
 
 void BoardRenderer::drawPiece(std::optional<std::pair<int, int>> selectedPiece) {
-    if (!m_board || !m_renderer) return;
+    if (!m_board || !m_renderer) {
+        return;
+    }
 
-    auto area = getBoardArea();
-    float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
     // 遍历所有格子
     for (int row = 0; row < m_boardRow; ++row) {
         for (int col = 0; col < m_boardCOL; ++col) {
-            const Piece* piece = m_board->getPieceAt(row, col);
-            if (!piece) continue; // 没有棋子则跳过
-            
-            // 计算棋子中心位置
-            float x = area.x + col * area.cellSize;
-            float y = area.y + row * area.cellSize;
-            bool isSelected = false;
-            // 确定棋子颜色
-            SDL_Color color;
-            if (selectedPiece && selectedPiece->first == row && selectedPiece->second == col) {
-                // 选中状态的棋子，暂时不渲染黄色的选中状态
-                color = m_colors.selected;
-                isSelected = true;
-            } else {
-                // 根据玩家设置颜色
-                color = (piece->getPieceOwner() == PlayerID::P1) ? 
-                        m_colors.P1 : m_colors.P2;
-            }
-            
-            
-            //SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-            
-            SDL_FRect rect{
-                x + (area.cellSize - pieceRadius * 2) / 2.0f,
-                y + (area.cellSize - pieceRadius * 2) / 2.0f,
-                pieceRadius * 2,
-                pieceRadius * 2
-            };
-            
-            //SDL_RenderFillRect(m_renderer, &rect);
-           
-            auto texture = m_textureManager->createTextureFromRect(rect, color);
-            //SDL_FRect srect = {0, 0, rect.w, rect.h};
-
-            if (m_pieceGrowStatus.isAnimating && m_pieceGrowStatus.row == row && m_pieceGrowStatus.col == col) {
-                m_pieceGrowStatus.currentTime += Time::deltaTime();
-                    if (m_pieceGrowStatus.currentTime > m_pieceGrowStatus.animationDuration) {
-                        m_pieceGrowStatus.currentTime = m_pieceGrowStatus.animationDuration;
-                        m_pieceGrowStatus.isAnimating = false;
-                    }
-                float progess = m_pieceGrowStatus.currentTime / m_pieceGrowStatus.animationDuration;
-                m_textureManager->destoryTexture(rect, color);
-                auto renderColor = color;
-                
-                renderColor.a = Tools::smoothMove(progess, 0, 255);
-                auto texture = m_textureManager->createTextureFromRect(rect, renderColor);
-                SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
-                continue;
-                
-            }
-
-            if (isSelected) {
-                // 如果被选择
-                static float animationDuration = 1.0f;  // 动画总时长（秒）
-                static float currentTime = 0.0f;        // 当前已进行时间
-                //static bool isAnimating = true;         // 动画状态
-                static bool isBigger = true;
-                // 累加时间，限制不超过总时长
-                currentTime += Time::deltaTime();
-                if (currentTime > animationDuration) {
-                    currentTime = 0;
-                    isBigger = !isBigger;
-                   
-                }
-
-                static SDL_FRect renderRect = {
-                    rect.x,
-                    rect.y,
-                    rect.w,
-                    rect.h
-                };
-                if (m_lastSelected != selectedPiece) {
-                    renderRect = rect;
-                    m_lastSelected = selectedPiece;
-                    currentTime = 0;
-                    isBigger = true;
-                }
-
-                float progess = currentTime / animationDuration;
-                double rotatedAngel = 360 * static_cast<double>(progess);
-                float scale = 0.1 * progess;
-                
-                
-                
-                if (isBigger) {
-                    renderRect.w += scale;
-                    renderRect.h += scale;
-                } else {
-                    renderRect.w -= scale;
-                    renderRect.h -= scale;
-                }
-                
-                SDL_RenderTextureRotated(m_renderer, texture, nullptr, &renderRect, rotatedAngel, nullptr, SDL_FLIP_NONE);
-                
-                continue;
-            }
-            
-            if (m_pieceMoveStatus.isAnimating && col == m_pieceMoveStatus.toCol && row == m_pieceMoveStatus.toRow) {
-                //SDL_Log("rendering..\n");
-                m_pieceMoveStatus.currentTime += Time::deltaTime();
-                if (m_pieceMoveStatus.currentTime > m_pieceMoveStatus.animationDuration) {
-                    m_pieceMoveStatus.currentTime = m_pieceMoveStatus.animationDuration;
-                    m_pieceMoveStatus.isAnimating = false;
-                }
-                float progess = m_pieceMoveStatus.currentTime / m_pieceMoveStatus.animationDuration;
-                auto renderRect = m_pieceMoveStatus.fromPieceRect;
-                renderRect.x += Tools::smoothMove(progess, 0, m_pieceMoveStatus.distanceCol);
-                renderRect.y += Tools::smoothMove(progess, 0, m_pieceMoveStatus.distanceRow);
-                SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
-                continue;
-            }
-                
-            if (m_pieceFightStatus.isAnimating && col == m_pieceFightStatus.fromCol && row == m_pieceFightStatus.fromRow) {
-                m_pieceFightStatus.currentTime += Time::deltaTime();
-                if (m_pieceFightStatus.currentTime > m_pieceFightStatus.animationDuration) {
-                    m_pieceFightStatus.currentTime = m_pieceFightStatus.animationDuration;
-                    m_pieceFightStatus.isAnimating = false;
-                }
-                float progess = m_pieceFightStatus.currentTime / m_pieceFightStatus.animationDuration;
-                auto renderRect = m_pieceFightStatus.fromPieceRect;
-                float cX = m_pieceFightStatus.distanceCol * 0.5f;
-                float cY = m_pieceFightStatus.distanceRow * 0.5f;
-                renderRect.x = Tools::pingPongSpring(progess, renderRect.x, cX);
-                renderRect.y = Tools::pingPongSpring(progess, renderRect.y, cY);
-                
-               
-                SDL_RenderTexture(m_renderer, texture, nullptr, &renderRect);
-                continue;
-
-            } 
-
-            SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
-                
-            
-
+            drawPieceAt(row, col, selectedPiece);
 
         }
     }
+}
+
+void BoardRenderer::drawPieceAt(int row, int col, std::optional<std::pair<int, int>> selectedPiece) {
+    float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
+    const Piece* piece = m_board->getPieceAt(row, col);
+        if (!piece) {
+            return; // 没有棋子则跳过
+        } 
+        // 计算棋子中心位置
+        float x = m_area.x + col * m_area.cellSize;
+        float y = m_area.y + row * m_area.cellSize;
+        bool isSelected = false;
+        // 确定棋子颜色
+        SDL_Color color;
+        if (selectedPiece && selectedPiece->first == row && selectedPiece->second == col) {
+            // 选中状态的棋子，暂时不渲染黄色的选中状态
+            color = m_colors.selected;
+            isSelected = true;
+        } else {
+            // 根据玩家设置颜色
+            color = (piece->getPieceOwner() == PlayerID::P1) ? 
+                    m_colors.P1 : m_colors.P2;
+        }
+        //SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+        
+        SDL_FRect rect{
+            x + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+            y + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+            pieceRadius * 2,
+            pieceRadius * 2
+        };
+        
+        //SDL_RenderFillRect(m_renderer, &rect);
+        
+        auto texture = m_textureManager->createTextureFromRect(rect, color);
+        //SDL_FRect srect = {0, 0, rect.w, rect.h};
+
+        if (m_growAnimation.isAnimating && m_growAnimation.row == row && m_growAnimation.col == col) {
+            
+            m_textureManager->destoryTexture(rect, color);
+            m_growAnimation.baseColor = color;
+            
+            auto texture = m_textureManager->createTextureFromRect(rect, m_growAnimation.renderColor);
+            SDL_RenderTexture(m_renderer, texture, nullptr, &rect);
+            return;
+            
+        }
+
+        if (isSelected) {
+            
+            SDL_RenderTextureRotated(m_renderer, texture, nullptr, &m_selectAnimation.renderRect, m_selectAnimation.rotatedAngel, nullptr, SDL_FLIP_NONE);
+            
+            return;
+        }
+        
+        if (m_moveAnimation.isAnimating && col == m_moveAnimation.toCol && row == m_moveAnimation.toRow) {
+            //SDL_Log("rendering..\n");
+            
+            SDL_RenderTexture(m_renderer, texture, nullptr, &m_moveAnimation.renderRect);
+            return;
+        }
+            
+        if (m_fightAnimation.isAnimating && col == m_fightAnimation.fromCol && row == m_fightAnimation.fromRow) {
+            
+            SDL_RenderTexture(m_renderer, texture, nullptr, &m_fightAnimation.renderRect);
+            return;
+
+        } 
+        SDL_RenderTexture(m_renderer, texture, nullptr, &rect);   
+}
+
+void BoardRenderer::updateSelectedPiece(std::optional<std::pair<int, int>> selectedPiece) {
+    if (!selectedPiece) {
+        return;
+    }
+
+    float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
+    // 计算棋子中心位置
+    float x = m_area.x + selectedPiece->second * m_area.cellSize;
+    float y = m_area.y + selectedPiece->first * m_area.cellSize;
+    SDL_FRect baseRect{
+            x + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+            y + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+            pieceRadius * 2,
+            pieceRadius * 2
+        };
+    m_selectAnimation = {
+        true,
+        1.0f,
+        0.0f,
+        true,
+        baseRect,
+        selectedPiece,
+        baseRect,
+        0.0f
+    };
+
 }
 
 void BoardRenderer::updateMovementRange(std::optional<std::pair<int, int>> selectedPiece, ActionType tpye) {
@@ -227,8 +268,8 @@ void BoardRenderer::updateMovementRange(std::optional<std::pair<int, int>> selec
     if (!m_board || !m_renderer || !selectedPiece) return;
     if (selectedPiece == std::nullopt) return;
     auto selectedComponent = m_board->getComponentByPieceID(m_board->getPieceID(selectedPiece->first, selectedPiece->second));
-    
     auto currentPlayer = m_board->getPieceAt(selectedPiece->first, selectedPiece->second)->getPieceOwner();
+    
     switch (tpye) {
         case ActionType::GROW:
             // 绘制生长范围的逻辑
@@ -283,18 +324,18 @@ void BoardRenderer::drawMovementRange() {
     // 开启混合模式（重要！）
     SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
-    auto area = getBoardArea();
+    
     float pieceRadius = m_cellSize * m_pieceRadiusRatio / 4.0f;
     for (auto PieceID : m_currentDrawRange) {
         auto [row, col] = m_board->getCoordFromID(PieceID);
 
         // 计算棋子中心位置
-        float x = area.x + col * area.cellSize;
-        float y = area.y + row * area.cellSize;
+        float x = m_area.x + col * m_area.cellSize;
+        float y = m_area.y + row * m_area.cellSize;
 
         SDL_FRect rect{
-                x + (area.cellSize - pieceRadius * 2) / 2.0f,
-                y + (area.cellSize - pieceRadius * 2) / 2.0f,
+                x + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+                y + (m_area.cellSize - pieceRadius * 2) / 2.0f,
                 pieceRadius * 2,
                 pieceRadius * 2
             };
@@ -349,22 +390,21 @@ void BoardRenderer::renderBlackOverlay() {
 }
 
 void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow, int toCol) {
-    auto area = getBoardArea();
 
     // 计算棋子中心位置
-    float fromX = area.x + fromCol * area.cellSize;
-    float fromY = area.y + fromRow * area.cellSize;
+    float fromX = m_area.x + fromCol * m_area.cellSize;
+    float fromY = m_area.y + fromRow * m_area.cellSize;
     float toX = -1;
     float toY = -1;
     if (toRow != -1 && toCol != -1) {
-        toX = area.x + toCol * area.cellSize;
-        toY = area.y + toRow * area.cellSize;
+        toX = m_area.x + toCol * m_area.cellSize;
+        toY = m_area.y + toRow * m_area.cellSize;
     }
     float pieceRadius = m_cellSize * m_pieceRadiusRatio / 2.0f;
 
     SDL_FRect rect{
-                fromX + (area.cellSize - pieceRadius * 2) / 2.0f,
-                fromY + (area.cellSize - pieceRadius * 2) / 2.0f,
+                fromX + (m_area.cellSize - pieceRadius * 2) / 2.0f,
+                fromY + (m_area.cellSize - pieceRadius * 2) / 2.0f,
                 pieceRadius * 2,
                 pieceRadius * 2
             };
@@ -389,7 +429,7 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
             break;
         case (GamePieceEvent::MOVE_PIECE):
             //SDL_Log("MovePPPPPP\n");
-            m_pieceMoveStatus = {
+            m_moveAnimation = {
                 fromRow, fromCol,
                 toRow, toCol,
                 toY - fromY,
@@ -402,7 +442,7 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
             
             break;
         case (GamePieceEvent::GROW_PIECE):
-            m_pieceGrowStatus = {
+            m_growAnimation = {
                 toRow,
                 toCol,
                 0.0f,
@@ -411,7 +451,7 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
             };
             break;
         case (GamePieceEvent::FIGHT_PIECE):
-            m_pieceFightStatus = {
+            m_fightAnimation = {
                 fromRow, fromCol,
                 toRow, toCol,
                 toY - fromY,
