@@ -24,7 +24,7 @@ void TextureManager::cleanupAllTexture() {
 
 
 
-SDL_Texture* TextureManager::createTextureFromRect(SDL_FRect& rect, SDL_Color& color) {
+SDL_Texture* TextureManager::createTextureFromRect(const SDL_FRect& rect, const SDL_Color& color) {
     
     // 先在缓存中查找是否存在
     auto it = getTexture(rect, color);
@@ -62,7 +62,7 @@ SDL_Texture* TextureManager::createTextureFromRect(SDL_FRect& rect, SDL_Color& c
     return newTexture;
 }
 
-size_t TextureManager::makeHash(SDL_FRect& rect, SDL_Color& color) {
+size_t TextureManager::makeHash(const SDL_FRect& rect, const SDL_Color& color) {
     // 分别计算字体名称和大小的哈希值
     size_t h1 = std::hash<float>{}(rect.x);
     size_t h2 = std::hash<float>{}(rect.y);
@@ -79,7 +79,7 @@ size_t TextureManager::makeHash(SDL_FRect& rect, SDL_Color& color) {
     return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3) ^ (h5 << 4) ^ (h6 << 5) ^ (h7 << 6) ^ (h8 << 7);
 }
 
-SDL_Texture* TextureManager::getTexture(SDL_FRect& rect, SDL_Color& color) {
+SDL_Texture* TextureManager::getTexture(const SDL_FRect& rect, const SDL_Color& color) {
     auto key = makeHash(rect, color);
     auto it = m_cacheTexture.find(key);
 
