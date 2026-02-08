@@ -1,7 +1,8 @@
 #include "InputManager.h"
 
-InputManager::InputManager(InputState& inputState) :
-    m_currentInputState(inputState) 
+InputManager::InputManager(CoreData& coreData) :
+    m_currentInputState(coreData.inputState),
+    m_coreData(coreData) 
 {
 
 }
@@ -31,10 +32,49 @@ SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
                                                         static_cast<float>(event->motion.y)};
             break;
         case SDL_EVENT_KEY_DOWN:
-            if (event->key.key == SDLK_F11) {
-                m_currentInputState.isFullscreen = !m_currentInputState.isFullscreen;
+            switch(event->key.key) {
+                case SDLK_F11:
+                    m_currentInputState.isFullscreen = !m_currentInputState.isFullscreen;
+                    break;
+                case SDLK_B:
+                    if (m_coreData.sceneType == SceneType::MainMenuScene) {
+                        m_isStartBadApple = true;
+                        m_badapple.push_back('b');
+                    }
+                    
+                    break;
+                case SDLK_A:
+                    if (m_isStartBadApple) {
+                        m_badapple.push_back('a');
+                    }
+                    break;
+                case SDLK_D:
+                    if (m_isStartBadApple) {
+                        m_badapple.push_back('d');
+                    }
+                    break;
+                case SDLK_P:
+                    if (m_isStartBadApple) {
+                        m_badapple.push_back('p');
+                    }
+                    break;
+                case SDLK_L:
+                    if (m_isStartBadApple) {
+                        m_badapple.push_back('l');
+                    }
+                    break;
+                case SDLK_E:
+                    if (m_isStartBadApple) {
+                        m_badapple.push_back('e');
+                        if (m_badapple == "badapple") {
+                            m_currentInputState.isBadApplePress = true;
+                        }
+                        m_badapple.clear();
+                    }
+                    break;
             }
             break;
+        
     }
     return SDL_APP_CONTINUE;
 }
