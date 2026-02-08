@@ -14,14 +14,14 @@ MainMenuUIManager::~MainMenuUIManager() {
 void MainMenuUIManager::init() {
     auto startButton = UIWidgetFactory::createStandardButton(
         "StartButton", "开始游戏", 275, 180,
-        [this]() { m_eventCallback("GameScene"); }
+        [this]() { m_eventCallback(SceneType::GameScene); }
     );
     
     m_buttons.emplace(startButton->getNameHash(), std::move(startButton));
 
     auto onlineStartButton = UIWidgetFactory::createStandardButton(
         "OnlineStartButton", "联机对战", 275, 250,
-        [this]() {m_eventCallback("OnlineGameScene"); }
+        [this]() {m_eventCallback(SceneType::OnlineGameScene); }
     );
 
     m_buttons.emplace(onlineStartButton->getNameHash(), std::move(onlineStartButton));

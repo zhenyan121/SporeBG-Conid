@@ -27,64 +27,65 @@ SceneManager::~SceneManager() {
 bool SceneManager::initialize() {
     // 注册所有场景工厂
     registerAllScene();
-    changeScene("MainMenuScene");
+    changeScene(SceneType::MainMenuScene);
     return true;
 }
 
 void SceneManager::registerAllScene() {
     // 注册所有默认场景工厂（可以由外部覆盖/新增）
     
-    registerSceneFactory("MainMenuScene", []() -> std::shared_ptr<Scene> {
+    registerSceneFactory(SceneType::MainMenuScene, []() -> std::shared_ptr<Scene> {
         return std::make_shared<MainMenuScene>();
     });
-    registerSceneFactory("GameScene", []() -> std::shared_ptr<Scene> {
+    registerSceneFactory(SceneType::GameScene, []() -> std::shared_ptr<Scene> {
         return std::make_shared<GameScene>();
     });
-    registerSceneFactory("OnlineGameScene", []() -> std::shared_ptr<Scene> {
+    registerSceneFactory(SceneType::OnlineGameScene, []() -> std::shared_ptr<Scene> {
         return std::make_shared<OnlineGameScene>();
     });
 }
 
-std::shared_ptr<Scene> SceneManager::createScene(const std::string& sceneName) {
+std::shared_ptr<Scene> SceneManager::createScene(SceneType sceneType) {
     // 使用注册的工厂创建场景实例
-    auto it = m_sceneFactories.find(sceneName);
+    auto it = m_sceneFactories.find(sceneType);
     if (it != m_sceneFactories.end()) {
         auto scene = it->second();
         if (scene) {
             // 并不缓存实例，而是返回给调用者，由调用者决定缓存与否
             return scene;
         } else {
-            SDL_Log("SceneManager::createScene: factory for '%s' returned nullptr\n", sceneName.c_str());
+            SDL_Log("SceneManager::createScene: factory  returned nullptr\n");
         }
     } else {
-        SDL_Log("SceneManager::createScene: no factory registered for '%s'\n", sceneName.c_str());
+        SDL_Log("SceneManager::createScene: no factory registered \n");
     }
     return nullptr;
 }
 
-void SceneManager::registerSceneFactory(const std::string& sceneName, std::function<std::shared_ptr<Scene>()> factory) {
-    if (sceneName.empty()) return;
-    m_sceneFactories[sceneName] = std::move(factory);
+void SceneManager::registerSceneFactory(SceneType sceneType, std::function<std::shared_ptr<Scene>()> factory) {
+    //if (sceneName.empty()) return;
+    m_sceneFactories[sceneType] = std::move(factory);
 }
 
-void SceneManager::unregisterSceneFactory(const std::string& sceneName) {
-    m_sceneFactories.erase(sceneName);
+void SceneManager::unregisterSceneFactory(SceneType sceneType) {
+    m_sceneFactories.erase(sceneType);
 }
 
-void SceneManager::pushScene(const std::string& sceneName) {
+void SceneManager::pushScene(SceneType sceneType) {
+    /*
     if (sceneName.empty()) {
         SDL_Log("SceneManager::pushScene: sceneName is empty!\n");
         return;
     }
-    
+    */
     // 检查场景是否已在缓存中
-    auto it = m_sceneCache.find(sceneName);
+    auto it = m_sceneCache.find(sceneType);
     if (it == m_sceneCache.end()) {
         // 场景未缓存，尝试创建
-        createScene(sceneName);
-        it = m_sceneCache.find(sceneName);
+        createScene(sceneType);
+        it = m_sceneCache.find(sceneType);
         if (it == m_sceneCache.end()) {
-            SDL_Log("SceneManager::pushScene: Scene '%s' not found in cache after creation!\n", sceneName.c_str());
+            SDL_Log("SceneManager::pushScene: Scene not found in cache after creation!\n");
             return;
         }
     }
@@ -123,8 +124,8 @@ void SceneManager::popScene() {
 }
 
 
-void SceneManager::changeScene(const std::string& sceneName) {
-    if (sceneName.empty()) return;
+void SceneManager::changeScene(SceneType sceneType) {
+    //if (sceneName.empty()) return;
     /*
     // 检查场景是否已在缓存中
     if (m_sceneCache.find(sceneName) == m_sceneCache.end()) {
@@ -141,9 +142,9 @@ void SceneManager::changeScene(const std::string& sceneName) {
     */
    
     // 不缓存场景，每次都创建新实例，以避免状态残留问题
-    auto target = createScene(sceneName);
+    auto target = createScene(sceneType);
     if (!target) {
-        SDL_Log("SceneManager::changeScene: Scene '%s' could not be created!\n", sceneName.c_str());
+        SDL_Log("SceneManager::changeScene: Scene could not be created!\n");
         return;
     }
     target->setEventCallback([this](const SceneEvent& event) {
@@ -156,7 +157,8 @@ void SceneManager::changeScene(const std::string& sceneName) {
     }
     // 切换到目标场景
     m_scene = target;
-
+    
+    m_coreData.sceneType = sceneType;
     
     m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
 }
@@ -173,6 +175,10 @@ void SceneManager::handleClickCurrent(glm::ivec2 clickOn) {
 
 void SceneManager::updateCurrent() {
     if (m_scene) m_scene->update();
+    if (m_coreData.inputState.isBadApplePress) {
+        m_coreData.inputState.isBadApplePress = false;
+        std::cout << "SceneManager: badapple pressed\n";
+    }
 }
 
 
@@ -198,10 +204,10 @@ void SceneManager::handleSceneEvent(const SceneEvent& event) {
     switch (event.type)
     {
     case SceneEventType::ChangeScene:
-        changeScene(event.sceneName);
+        changeScene(event.sceneType);
         break;
     case SceneEventType::PushScene:
-        pushScene(event.sceneName);
+        pushScene(event.sceneType);
         break;
     case SceneEventType::PopScene:
         popScene();
