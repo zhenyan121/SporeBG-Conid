@@ -4,9 +4,9 @@
 
 std::unique_ptr<GameUIManager> OnlineGameScene::createUIManager() {
     auto onlineUIManager = std::make_unique<OnlineGameUIManager>(
-        [this](const std::string& sceneName) {
+        [this](SceneType sceneType) {
             if (m_eventCallback) {
-                SceneEvent event{SceneEventType::ChangeScene, sceneName};
+                SceneEvent event{SceneEventType::ChangeScene, sceneType};
                 m_eventCallback(event);
             }
         }

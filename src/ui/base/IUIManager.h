@@ -5,14 +5,14 @@
 #include "ui/components/Button.h"
 #include "ui/components/Label.h"
 #include "ui/base/UIRenderData.h"
-
+#include "scenes/base/SceneEvent.h"
 #include <memory>
 #include <vector>
 #include <unordered_map>
 
 class IUIManager {
 public:
-    using SceneEventCallback = std::function<void(const std::string&)>;
+    using SceneEventCallback = std::function<void(SceneType sceneType)>;
     virtual ~IUIManager() = default;
 
     virtual void init() = 0;

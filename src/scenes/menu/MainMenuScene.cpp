@@ -10,9 +10,9 @@ void MainMenuScene::onEnter(SDL_Renderer* renderer, int width, int height, UIRen
     m_uiRenderer = uiRenderer;
     m_coreData = coreData;
     m_mainMenuUIManager = std::make_unique<MainMenuUIManager>(
-        [this](const std::string& sceneName) {
+        [this](SceneType sceneType) {
             if (m_eventCallback) {
-                SceneEvent event{SceneEventType::ChangeScene, sceneName};
+                SceneEvent event{SceneEventType::ChangeScene, sceneType};
                 m_eventCallback(event);
             }
         }

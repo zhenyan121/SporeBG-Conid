@@ -163,7 +163,7 @@ void GameUIManager::setupUIComponents() {
         550,
         20,
         [this](){
-            m_eventCallback("MainMenuScene");
+            m_eventCallback(SceneType::MainMenuScene);
         }
 
     );

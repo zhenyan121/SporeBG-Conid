@@ -11,9 +11,9 @@ GameScene::~GameScene() {
 std::unique_ptr<GameUIManager> GameScene::createUIManager() {
     // 默认创建普通的GameUIManager
     return std::make_unique<GameUIManager>(
-        [this](const std::string& sceneName) {
+        [this](SceneType sceneType) {
             if (m_eventCallback) {
-                SceneEvent event{SceneEventType::ChangeScene, sceneName};
+                SceneEvent event{SceneEventType::ChangeScene, sceneType};
                 m_eventCallback(event);
             }
         }
