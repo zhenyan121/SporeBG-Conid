@@ -31,7 +31,7 @@ bool GameApplication::initialize() {
    
     
     // 输入管理
-    m_inputManager = std::make_unique<InputManager>(m_coreData.inputState);
+    m_inputManager = std::make_unique<InputManager>(m_coreData);
     // 窗口管理
     m_windowManager = std::make_unique<WindowManager>();
     
