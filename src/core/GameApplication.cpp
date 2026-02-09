@@ -116,4 +116,5 @@ void GameApplication::run() {
 
 void GameApplication::cleanup() {
     m_sceneManager->destoryQuitedScene();
+    m_inputManager->clearInput();
 }

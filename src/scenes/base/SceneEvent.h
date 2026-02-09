@@ -21,7 +21,8 @@ enum class SceneType {
 
     MainMenuScene,
     GameScene,
-    OnlineGameScene
+    OnlineGameScene,
+    BadAppleScene
 };
 
 // 自定义哈希器

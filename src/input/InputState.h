@@ -10,4 +10,6 @@ struct InputState
     glm::ivec2 mouseCurrentLogicalPosition;
     bool isFullscreen = false;
     bool isBadApplePress = false;
+    bool isQ = false;
+    bool isR = false;
 };

@@ -52,6 +52,7 @@ set(SOURCE_FILES
     src/network/server/GameServer.cpp
     src/network/NetworkManager.cpp
     src/graphics/texture/TextureManager.cpp
+    src/scenes/other/BadAppleScene.cpp
 )
 
 

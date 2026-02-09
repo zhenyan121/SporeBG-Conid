@@ -9,6 +9,8 @@ public:
     SDL_AppResult handleInputEvent(const SDL_Event* event);
     
     InputState GetInputState() const;
+
+    void clearInput();
 private:
     InputState& m_currentInputState;
     CoreData& m_coreData;

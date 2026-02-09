@@ -72,6 +72,11 @@ SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
                         m_badapple.clear();
                     }
                     break;
+                case SDLK_Q:
+                    m_currentInputState.isQ = true;
+                    break;
+                case SDLK_R:
+                    m_currentInputState.isR = true;
             }
             break;
         
@@ -81,4 +86,9 @@ SDL_AppResult InputManager::handleInputEvent(const SDL_Event* event) {
 
 InputState InputManager::GetInputState() const {
     return m_currentInputState;
+}
+
+void InputManager::clearInput() {
+    m_currentInputState.isQ = false;
+    m_currentInputState.isR = false;
 }
