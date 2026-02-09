@@ -3,14 +3,16 @@
 #include "core/Time.h"
 #include "utils/Tools.h"
 #include <iostream>
+
 BoardRenderer::BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager) :
     m_Width(WIDTH),
     m_Height(HEIGHT),
     m_renderer(renderer), 
     m_textureManager(textureManager)
 
-    {
-    m_cellSize = HEIGHT / m_boardRow;
+{
+    
+    m_cellSize = std::min(WIDTH, HEIGHT) / std::min(m_boardRow, m_boardCOL);
     
     m_area = getBoardArea();
 }

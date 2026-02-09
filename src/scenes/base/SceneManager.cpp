@@ -43,6 +43,9 @@ void SceneManager::registerAllScene() {
     registerSceneFactory(SceneType::OnlineGameScene, []() -> std::shared_ptr<Scene> {
         return std::make_shared<OnlineGameScene>();
     });
+    registerSceneFactory(SceneType::BadAppleScene, []() -> std::shared_ptr<Scene> {
+        return std::make_shared<BadAppleScene>();
+    });
 }
 
 std::shared_ptr<Scene> SceneManager::createScene(SceneType sceneType) {
@@ -178,6 +181,7 @@ void SceneManager::updateCurrent() {
     if (m_coreData.inputState.isBadApplePress) {
         m_coreData.inputState.isBadApplePress = false;
         std::cout << "SceneManager: badapple pressed\n";
+        changeScene(SceneType::BadAppleScene);
     }
 }
 
