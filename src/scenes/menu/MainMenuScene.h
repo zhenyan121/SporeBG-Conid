@@ -8,7 +8,7 @@ public:
     ~MainMenuScene() override = default;
 
     // 实现 Scene 接口
-    void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) override;
+    void onEnter(CoreData* coreData) override;
     void onExit() override;
 
     void update() override;

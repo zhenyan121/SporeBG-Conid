@@ -7,7 +7,7 @@ public:
     BadAppleScene();
     ~BadAppleScene();
 
-    void onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) override;
+    void onEnter(CoreData* coreData) override;
     void handleClick(int logicalX, int logicalYY) override;
     void update() override;
     void renderWorld() override; // 逻辑世界
@@ -22,6 +22,7 @@ private:
 
     float m_currentTime = 0.0f;
 
+    SDL_Renderer* m_renderer;
     
 
     std::vector<std::string> m_frame;

@@ -54,9 +54,9 @@ void GameScene::handleBoardClick(int row, int col) {
     m_gameSession->printBoard();
 }
 
-void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData){
-    m_renderer = renderer;
-    m_uiRenderer = uiRenderer;
+void GameScene::onEnter(CoreData* coreData){
+    coreData->renderer;
+    coreData->uiRenderer;
     m_coreData = coreData;
      // 使用工厂方法创建UIManager
     m_gameUIManager = createUIManager();
@@ -65,9 +65,9 @@ void GameScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRendere
         this->restartGame();
     });
 
-    m_boardRenderer = std::make_unique<BoardRenderer>(WIDTH, HEIGHT, renderer, textureManager);
+    m_boardRenderer = std::make_unique<BoardRenderer>(UI::LogicalWidth, UI::LogicalHeight, coreData->renderer, coreData->textureManager);
     m_gameSession = std::make_unique<GameSession>();
-    m_CoordinateConverter = std::make_unique<CoordinateConverter>(renderer);
+    m_CoordinateConverter = std::make_unique<CoordinateConverter>(coreData->renderer);
     m_gameSession->initialize();
 
     m_boardRenderer->setBoard(m_gameSession->getBoard());
@@ -100,7 +100,7 @@ void GameScene::renderWorld() {
 }
 
 void GameScene::renderUI() {
-    m_uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
+    m_coreData->uiRenderer->renderUI(m_gameUIManager->getUIRenderData());
 }
 
 void GameScene::handleClick(int logicalX, int logicalY) {

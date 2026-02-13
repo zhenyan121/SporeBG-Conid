@@ -1,10 +1,6 @@
 #include "SceneManager.h"
 #include "utils/Config.h"
-SceneManager::SceneManager(SDL_Renderer* renderer, UIRenderer* uiRenderer, SDL_Window* window, TextureManager* textureManager, CoreData& coreData) :
-    m_renderer(renderer),
-    m_uiRenderer(uiRenderer),
-    m_window(window),
-    m_textureManager(textureManager),
+SceneManager::SceneManager(CoreData& coreData) :
     m_coreData(coreData)
 
 {
@@ -104,7 +100,7 @@ void SceneManager::pushScene(SceneType sceneType) {
 
     
     
-    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
+    m_scene->onEnter(&m_coreData);
 }
 
 
@@ -121,7 +117,7 @@ void SceneManager::popScene() {
         m_scenes.pop();
         
         if (m_scene) {
-            m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
+            m_scene->onEnter(&m_coreData);
         }
     }
 }
@@ -163,7 +159,7 @@ void SceneManager::changeScene(SceneType sceneType) {
     
     m_coreData.sceneType = sceneType;
     
-    m_scene->onEnter(m_renderer, UI::LogicalWidth, UI::LogicalHeight, m_uiRenderer, m_textureManager, &m_coreData);
+    m_scene->onEnter(&m_coreData);
 }
 
 
