@@ -13,13 +13,12 @@ BadAppleScene::~BadAppleScene() {
 
 }
 
-void BadAppleScene::onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) {
-    m_renderer = renderer;
-    m_uiRenderer = uiRenderer;
+void BadAppleScene::onEnter(CoreData* coreData) {
     m_coreData = coreData;
-    m_Width = WIDTH;
-    m_Height = HEIGHT;
-    m_cellSize = std::min(WIDTH, HEIGHT) / std::min(ROW, COL);
+    m_renderer = coreData->renderer;
+    m_Width = UI::LogicalWidth;
+    m_Height = UI::LogicalHeight;
+    m_cellSize = std::min(m_Width, m_Height) / std::min(ROW, COL);
     m_area = {
         (m_Width - m_cellSize * COL) / 2,
         (m_Height - m_cellSize * ROW) / 2,

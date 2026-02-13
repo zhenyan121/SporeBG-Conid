@@ -5,7 +5,7 @@
 class OnlineGameScene : public GameScene {
 public:
 
-    void onEnter(SDL_Renderer* renderer, int WIDTH, int HEIGHT, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* coreData) override;
+    void onEnter(CoreData* coreData) override;
 
     void renderWorld() override;
 

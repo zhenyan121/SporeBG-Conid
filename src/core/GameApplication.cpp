@@ -57,8 +57,13 @@ bool GameApplication::initialize() {
     // 材质管理
     m_textureManager = std::make_unique<TextureManager>(m_windowManager->GetRenderer());
 
+    m_coreData.renderer = m_windowManager->GetRenderer();
+    m_coreData.uiRenderer = m_uiRenderer.get();
+    m_coreData.window = m_windowManager->GetWindow();
+    m_coreData.textureManager = m_textureManager.get(); 
+
     // 场景管理，传入窗口句柄以便 SceneManager 能获取窗口尺寸
-    m_sceneManager = std::make_unique<SceneManager>(m_windowManager->GetRenderer(), m_uiRenderer.get(), m_windowManager->GetWindow(), m_textureManager.get(), m_coreData);
+    m_sceneManager = std::make_unique<SceneManager>(m_coreData);
     if (!m_sceneManager->initialize()) {
         SDL_Log("SceneManager 初始化失败！");
         return false;

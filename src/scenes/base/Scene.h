@@ -33,7 +33,7 @@ public:
      * @param   height 窗口高度
      * @param   uiRenderer UI 渲染器指针
      */
-    virtual void onEnter(SDL_Renderer* renderer, int width, int height, UIRenderer* uiRenderer, TextureManager* textureManager, CoreData* CoreData){};
+    virtual void onEnter(CoreData* CoreData){};
     /** 
      * @brief   场景退出
      */
@@ -64,10 +64,6 @@ public:
         m_eventCallback = std::move(callback);
     }
 protected:
-    // UIRenderer应该由上层管理
-    UIRenderer* m_uiRenderer;   ///< UI 渲染器指针
-    SDL_Renderer* m_renderer;   ///< SDL 渲染器指针
-    TextureManager* m_textureManager;
     EventCallback m_eventCallback;  ///< 场景事件回调函数
     CoreData* m_coreData;
     /*void beginFrame() {
