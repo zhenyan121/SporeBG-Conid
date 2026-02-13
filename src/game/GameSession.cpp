@@ -117,12 +117,13 @@ bool GameSession::executeAction(int toRow, int toCol) {
             if (fromPiece->getHP() <= 0) {
                 m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, fromRow, fromCol, -1, -1);
                 m_board->removePieceAt(fromRow, fromCol);
+                fromPiece = nullptr;
             }
             if (toPiece->getHP() <= 0) {
                 m_gamePieceEventCallback(GamePieceEvent::REMOVE_PIECE, toRow, toCol, -1, -1);
                 m_board->removePieceAt(toRow, toCol);
-
-                if (fromPiece->getHP() > 0) {
+                toPiece = nullptr;
+                if (fromPiece && fromPiece->getHP() > 0) {
                     m_gamePieceEventCallback(GamePieceEvent::MOVE_PIECE, fromRow, fromCol, toRow, toCol);
                     
                     auto fromInfo = fromPiece->getPieceInfo();
