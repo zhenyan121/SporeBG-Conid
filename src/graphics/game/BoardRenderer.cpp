@@ -35,6 +35,7 @@ bool BoardRenderer::initialize() {
 
 void BoardRenderer::setBoard(const Board* board) {
     m_board = board;
+    m_cachedComponment = m_board->getAllComponents();
 }
 
 
@@ -388,7 +389,7 @@ void BoardRenderer::drawMovementRange() {
     if (!m_board || !m_renderer) return;
 
     // 开启混合模式（重要！）
-    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+    //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
     
     float pieceRadius = m_cellSize * m_pieceRadiusRatio / 4.0f;
@@ -415,8 +416,43 @@ void BoardRenderer::drawMovementRange() {
         SDL_RenderFillRect(m_renderer, &rect);
     }
     // 如果需要，绘制完可以恢复原来的混合模式
-    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
+    //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
 }
+
+void BoardRenderer::drawComponentRange() {
+    for (const auto& it : m_cachedComponment) {
+        auto [key, component] = it;
+        std::hash<int> hasher;
+        size_t h = hasher(key);
+        // 把哈希空间切成大块，每块颜色突变
+        Uint8 r = static_cast<Uint8>((h * 7) % 256);   // 乘质数打乱
+        Uint8 g = static_cast<Uint8>((h * 17) % 256);
+        Uint8 b = static_cast<Uint8>((h * 37) % 256);
+        // 强化对比：如果太灰，强制拉伸
+        int gray = (r + g + b) / 3;
+        if (std::abs(r - gray) < 30 && std::abs(g - gray) < 30 && std::abs(b - gray) < 30) {
+            // 太灰了，强制变成鲜艳色
+            r = (r + 128) % 256;
+            g = (g + 64) % 256;
+            b = (b + 192) % 256;
+        }
+        SDL_SetRenderDrawColor(m_renderer, r, g, b, 100);
+        for (auto pieceID : component) {
+            auto [row, col] = m_board->getCoordFromID(pieceID);
+            SDL_FRect rect{
+                static_cast<float>(m_area.x + col * m_area.cellSize),
+                static_cast<float>(m_area.y + row * m_area.cellSize),
+                static_cast<float>(m_area.cellSize),
+                static_cast<float>(m_area.cellSize)
+            };
+            
+
+            // SDL3: RenderFillRect 接受 const SDL_FRect*
+            SDL_RenderFillRect(m_renderer, &rect);
+        }
+    }
+}
+
 
 BoardArea BoardRenderer::getBoardArea() const {
     return {
@@ -456,7 +492,7 @@ void BoardRenderer::renderBlackOverlay() {
 }
 
 void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int fromCol, int toRow, int toCol) {
-
+    
     // 计算棋子中心位置
     float fromX = m_area.x + fromCol * m_area.cellSize;
     float fromY = m_area.y + fromRow * m_area.cellSize;
@@ -552,4 +588,10 @@ void BoardRenderer::handleGamePieceEvent(GamePieceEvent event, int fromRow, int 
 
 }
 
+void BoardRenderer::updateComponent() {
+    if (m_board == nullptr) {
+        return;
+    }
+    m_cachedComponment = m_board ->getAllComponents();
+}
 

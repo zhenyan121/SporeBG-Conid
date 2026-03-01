@@ -59,4 +59,8 @@ public:
     bool changeATK(int row, int col, int num);
 
     bool setPieceInfo(int row, int col, PieceInfo pieceInfo);
+
+    std::unordered_map<int, std::unordered_set<int>> getAllComponents() const {
+        return m_component->getAllComponents();
+    }
 };

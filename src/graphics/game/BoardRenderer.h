@@ -114,6 +114,8 @@ private:
 
     PieceAnimation m_pieceAnimation;
 
+    std::unordered_map<int, std::unordered_set<int>> m_cachedComponment;
+
 public:
     BoardRenderer(int WIDTH, int HEIGHT, SDL_Renderer* renderer, TextureManager* textureManager);  
     
@@ -140,6 +142,8 @@ public:
     void drawMovementRange();
     BoardArea getBoardArea() const;
 
+    void drawComponentRange();
+
     void setGameState(GameState state);
        
     void renderBlackOverlay();
@@ -153,7 +157,7 @@ public:
     void updateMoveAnimation(float deltaTime);
     void updateFightAnimation(float deltaTime);
     void updateSelectedAnimation(float deltaTime);
-  
+    void updateComponent();
 };
 
 
