@@ -45,6 +45,7 @@ void GameScene::postHandleClick() {
     m_gameUIManager->updateGameState(m_gameSession->getGameState());
     m_boardRenderer->setGameState(m_gameSession->getGameState());
     m_gameUIManager->updatePlayerTurn(m_gameSession->getCurrentPlayer());
+    m_boardRenderer->updateComponent();
 
 }
 
@@ -91,9 +92,10 @@ void GameScene::renderWorld() {
     
     m_boardRenderer->drawBackground();
     m_boardRenderer->drawBoard();
-    
+    m_boardRenderer->drawComponentRange();
     m_boardRenderer->drawPiece(m_gameSession->getSelectedPiece());
     m_boardRenderer->drawMovementRange();
+    
     m_boardRenderer->renderBlackOverlay();
     
     
@@ -144,7 +146,7 @@ void GameScene::restartGame() {
     m_gameUIManager->updateActionType(ActionType::GROW);
     m_gameUIManager->updateGameState(GameState::GAME_RUNING);
     m_boardRenderer->setGameState(GameState::GAME_RUNING);
-
+    
     m_gameSession->setGamePieceEventCallback(
         [this](GamePieceEvent evnet, int fromRow, int fromCol, int toRow, int toCol) {
             std::cout << "GameScene: recevie the event piece at " << fromRow << " " << fromCol << "\n";
