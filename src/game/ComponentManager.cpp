@@ -12,7 +12,7 @@ ComponentManager::ComponentManager(int maxPossiblePieces)
 void ComponentManager::addPiece(int PieceID, const std::vector<int>& adjacentPiece) {
     if (PieceID < 0 || PieceID >= m_maxPossiblePieces) return;
     if (m_parent[PieceID] != -1) return; // 已存在
-
+    
     m_parent[PieceID] = PieceID;
     m_rank[PieceID] = 0;
     m_componentPieces[PieceID] = {PieceID};
@@ -21,9 +21,9 @@ void ComponentManager::addPiece(int PieceID, const std::vector<int>& adjacentPie
     for (int neighbor : adjacentPiece) {
         if (neighbor < 0 || neighbor >= m_maxPossiblePieces || m_parent[neighbor] == -1)
             continue; // 邻居无效或不存在
-        // 合并连通组件（unite 会自动处理是否已在同一组件）
+        // ★ 先无条件建立邻接表连接（无论是否已在同一组件）
+        addConnection(PieceID, neighbor);
         unite(PieceID, neighbor);
-
         
     }
 
@@ -36,22 +36,8 @@ void ComponentManager::removePiece(int PieceID) {
         std::cout << "piece don't extist" <<std::endl;
     }
     // 1. 断开所有连接（这会为棋子创建独立组件）
-
+    
     disconnectFromComponent(PieceID);
-   /*  // 2. 现在将棋子标记为不存在
-    m_parent[PieceID] = -1;
-    m_rank[PieceID] = 0;
-    
-    // 3. 从组件映射中移除
-    m_pieceToComponent.erase(PieceID);
-    
-    // 4. 从独立组件中移除
-    if (m_componentPieces.count(PieceID)) {
-        m_componentPieces.erase(PieceID);
-    }
-    //m_rank[PieceID] = 0; 重复设置了
-    //m_componentPieces.erase(PieceID);
-    */
 }
 
 
@@ -76,29 +62,34 @@ int ComponentManager::find(int pieceID) {
 void ComponentManager::unite(int pieceID1, int pieceID2) {
     int root1 = find(pieceID1);
     int root2 = find(pieceID2);
+    if (root1 == -1 || root2 == -1) return; // ★ 加空检查
+    if (root1 == root2) return;
 
-    if (root1 == root2) {
-        return;
-
-    }
     if (m_rank[root1] < m_rank[root2]) {
         m_parent[root1] = root2;
-        // 合并棋子集合
         m_componentPieces[root2].merge(m_componentPieces[root1]);
         m_componentPieces.erase(root1);
-        // 更新棋子到组件的映射
         for (int piece : m_componentPieces[root2]) {
             m_pieceToComponent[piece] = root2;
         }
-    } else {
+    } else if (m_rank[root1] > m_rank[root2]) {
         m_parent[root2] = root1;
         m_componentPieces[root1].merge(m_componentPieces[root2]);
         m_componentPieces.erase(root2);
         for (int piece : m_componentPieces[root1]) {
             m_pieceToComponent[piece] = root1;
         }
+    } else {
+        // rank 相等：root2 挂到 root1 下，root1 的 rank +1
+        m_parent[root2] = root1;
+        m_rank[root1]++;
+        m_componentPieces[root1].merge(m_componentPieces[root2]);
+        m_componentPieces.erase(root2);
+        for (int piece : m_componentPieces[root1]) {
+            m_pieceToComponent[piece] = root1;
+        }
     }
-    addConnection(pieceID1, pieceID2);
+    
 }
 
 void ComponentManager::addConnection(int pieceID1, int pieceID2) {
@@ -107,205 +98,81 @@ void ComponentManager::addConnection(int pieceID1, int pieceID2) {
     m_adjacentList[pieceID2].insert(pieceID1);
 
 }
-/*
-bool ComponentManager::disconnectFromNeighbor(int pieceID, int neighborID){
-    // 检查是否真的相连
-    if (!areDirectlyConnected(pieceID, neighborID)) {
-        return false;
-    }
-    // 从邻接表中移除连接
-    m_adjacentList[pieceID].erase(neighborID);
-    m_adjacentList[neighborID].erase(pieceID);
-    // 重新计算连通性
-    recomputeComponentsAfterDisconnection(pieceID);
 
-    return true;
-}
-*/
 bool ComponentManager::disconnectFromComponent(int pieceID) {
     int oldComponentID = find(pieceID);
     if (oldComponentID == -1) return false;
 
-    // 记录所有直接连接
+    // 1. 断开所有邻接表连接
     auto neighbors = m_adjacentList[pieceID];
-
-    // 断开所有连接
     for (int neighborID : neighbors) {
-    
-    m_adjacentList[neighborID].erase(pieceID);
-    
+        m_adjacentList[neighborID].erase(pieceID);
     }
-    // 删除pieceID的邻接表
     m_adjacentList[pieceID].clear();
-    
 
-    // 从原组件中移除 pieceID
-
+    // 2. 从组件的棋子集合里移除 pieceID
+    std::unordered_set<int> remaining;
     if (m_componentPieces.count(oldComponentID)) {
-        // 1. 先从组件集合中移除这个棋子
         m_componentPieces[oldComponentID].erase(pieceID);
-        // 如果断开的是根节点这重新选择根节点
-        if (oldComponentID == pieceID) {
-            int newRoot = -1;
-            for (int remainingPiece : m_componentPieces[oldComponentID]) {
-                if (remainingPiece != pieceID) {
-                    newRoot = remainingPiece;
-                    break;
-                }
-            }
-            if (newRoot != -1) {
-                // 3. 如果找到新的根节点，更新组件映射
-                // 将原组件的数据迁移到新根节点
-                m_componentPieces[newRoot] = std::move(m_componentPieces[oldComponentID]);
-                m_componentPieces.erase(oldComponentID);
-
-                // 更新所有棋子的组件映射到新根节点
-                for (int piece : m_componentPieces[newRoot]) {
-                    m_pieceToComponent[piece] = newRoot;
-                    // 注意：这里不修改 m_parent，因为会通过后续的重新计算来重建
-                }
-                oldComponentID = newRoot;  // 更新oldRoot指向新的根节点
-            } else {
-                // 4. 如果没有其他棋子了，删除这个空组件
-                m_componentPieces.erase(oldComponentID);
-            }
-        }
-        
+        remaining = m_componentPieces[oldComponentID]; // 拷贝！
     }
-    // 将被断开的棋子设为独立组件
-    //createNewComponent(pieceID);
 
-    
-    // 删除这个组件
+    // 3. 删除 pieceID 自身的所有数据
     m_parent[pieceID] = -1;
     m_pieceToComponent.erase(pieceID);
+    // ★ 注意：不再在这里做根节点迁移，统一交给下面处理
 
-    
-
-    // 如果原组件还有其他棋子，需要重新计算连通性
-    if (!m_componentPieces[oldComponentID].empty()) {
-    recomputeComponentsAfterDisconnection(oldComponentID, m_componentPieces[oldComponentID]);
+    // 4. 处理剩余棋子
+    if (!remaining.empty()) {
+        // 先删旧组件（remaining已经是拷贝，安全）
+        m_componentPieces.erase(oldComponentID);
+        // 重新计算连通性（内部会重建所有组件）
+        recomputeComponentsAfterDisconnection(oldComponentID, remaining);
     } else {
         m_componentPieces.erase(oldComponentID);
     }
+
     return true;
 }
 
 void ComponentManager::recomputeComponentsAfterDisconnection(int oldComponentID, const std::unordered_set<int>& remainingPieces) {
     
-   
-
-    // 安全检查：remainingPieces 至少要有 2 个棋子才可能分裂
-    if (remainingPieces.size() <= 1) {
-        int leftpieceID = *remainingPieces.begin();
-        // 将剩下的一个的棋子设为独立组件
-        createNewComponent(leftpieceID);
-        // 遍历那个棋子的邻接表
-        if (!m_adjacentList[leftpieceID].empty())
-            for (int neighbor : m_adjacentList[leftpieceID]) {
-                unite(leftpieceID, neighbor);
-            }
-        // 如果只剩 0 或 1 个棋子，不需要分裂
-        // （如果剩 1 个，它自己就是一个新组件；如果为 0，调用方应已处理）
+    // 安全检查
+    if (remainingPieces.empty()) {
+        
         return;
     }
-
-   
     //处理组件分裂
     handleComponentSplit(oldComponentID, remainingPieces);
 }
 
-void ComponentManager::handleComponentSplit(int oldComponentID, const std:: unordered_set<int>& remainingPieces ) {
-    std::unordered_set<int> visited;
-    std::vector<std::unordered_set<int>> newComponents;
-    
-    //;// 对剩余棋子进行BFS，找到所有连通区域
-    for (int piece : remainingPieces) {
-        if (visited.find(piece) != visited.end()) {
-            continue;
-        }
+void ComponentManager::handleComponentSplit(int oldComponentID, 
+                                             const std::unordered_set<int>& remainingPieces) {
+    // ★ 关键：先复制，切断对 m_componentPieces 内部数据的引用
+    // 因为后续操作会修改 m_componentPieces，导致引用悬空
+    std::unordered_set<int> pieces = remainingPieces;
 
-        // 找到一个新的连通区域
-        std::unordered_set<int> connectedRegion = bfsConnectedRegion(piece, remainingPieces);
-
-        // 标记为已访问
-        visited.insert(connectedRegion.begin(), connectedRegion.end());
-        // 确保区域中的棋子都是存在的（parent != -1）
-        std::unordered_set<int> validRegion;
-        for (int p : connectedRegion) {
-            if (m_parent[p] != -1) {   // 只保留存在的棋子
-                validRegion.insert(p);
-            }
-        }
-        if (!validRegion.empty()) {
-            newComponents.push_back(validRegion);
-        }
-    }
-    // 删除原组件
+    // Step 1: 先删除旧组件，避免后续 operator[] 和 erase 冲突
     m_componentPieces.erase(oldComponentID);
 
-    // 为每个新连通区域创建组件
-    for (const auto& region : newComponents) {
-        if (!region.empty()) {
-            // 需要选择一个确实存在的棋子作为根
-            int newRoot = -1;
-            for (int piece : region) {
-                if (m_parent[piece] != -1) {  // 找到第一个存在的棋子
-                    newRoot = piece;
-                    break;
-                }
-            }
-            
-            if (newRoot == -1) continue;  // 没有有效的棋子
-            
-            // 确保根节点指向自己
-            m_parent[newRoot] = newRoot;
-            m_rank[newRoot] = 0;
-            
-           // int newRoot = *region.begin();
-           // createNewComponent(newRoot);
-
-            // 设置新组件的父节点和棋子集合
-            for (int piece : region) {
-                if (m_parent[piece] != -1) {  // 只处理存在的棋子
-                    m_parent[piece] = newRoot;
-                    m_pieceToComponent[piece] = newRoot;
-                }
-            }
-            m_componentPieces[newRoot] = region;
-        }
+    // Step 2: 重置所有剩余棋子的 parent，让它们各自独立
+    for (int piece : pieces) {
+        if (m_parent[piece] == -1) continue;
+        m_parent[piece] = piece;
+        m_rank[piece] = 0;
+        m_componentPieces[piece] = {piece};
+        m_pieceToComponent[piece] = piece;
     }
-    
-}
 
-
-std::unordered_set<int> ComponentManager::bfsConnectedRegion(int startPiece, const std::unordered_set<int>& availablepieces) {
-    std::unordered_set<int> connectedRegion;
-    // 如果起始棋子不存在，返回空区域
-    if (m_parent[startPiece] == -1) {
-        return connectedRegion;
-    }
-    std::queue<int> queue;
-
-    queue.push(startPiece);
-    connectedRegion.insert(startPiece);
-
-    while(!queue.empty()) {
-        int current = queue.front();
-        queue.pop();
-        // 遍历当前棋子的所有邻居
-        for (int neighbor : m_adjacentList[current]) {
-            // 如果邻居在可用棋子中且未被访问
-            if (availablepieces.find(neighbor) != availablepieces.end() && 
-                connectedRegion.find(neighbor) == connectedRegion.end()) {
-                connectedRegion.insert(neighbor);
-                queue.push(neighbor);
+    // Step 3: 按邻接表重新 unite，让连通的自然合并
+    for (int piece : pieces) {
+        if (m_parent[piece] == -1) continue;
+        for (int neighbor : m_adjacentList[piece]) {
+            if (m_parent[neighbor] != -1 && pieces.count(neighbor)) {
+                unite(piece, neighbor);
             }
         }
     }
-
-
-    return connectedRegion;
 }
 
 int ComponentManager::createNewComponent(int rootPiece) {

@@ -2,8 +2,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <queue>
-#include <memory>
 
 class ComponentManager {
 private:
@@ -26,10 +24,6 @@ private:
     void recomputeComponentsAfterDisconnection(int oldComponentID, const std::unordered_set<int>& remainingPieces);
     // 处理组件分裂
     void handleComponentSplit(int oldComponentID, const std::unordered_set<int>& affectedPieces);
-
-    // 使用BFS查找连通区域
-    std::unordered_set<int> bfsConnectedRegion(int startPiece, const std::unordered_set<int>& afftedPieces);
-
     //  创建新组件
     int createNewComponent(int rootPiece);
 
