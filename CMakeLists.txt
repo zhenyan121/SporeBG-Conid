@@ -69,7 +69,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # ========== 启用 AddressSanitizer (仅 Debug 模式) ==========
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT MINGW)
     message(STATUS "Building with AddressSanitizer enabled for target: ${PROJECT_NAME}")
 
     target_compile_options(${PROJECT_NAME} PRIVATE
